@@ -36,15 +36,15 @@ function modInstall(){
     $("head").append(s);
     modChecked = true;
     modMethod = window[c.modMethod];
-
     modEvnt = window[c.modEvnt];
-    config.plotlyLayout.updatemenus[0].buttons = [{
-        "label": "Discharge",
-        "method": "skip"
-    },
+    if (c.hasOwnProperty('customEval')) eval(c.customEval);
+    config.plotlyLayout.updatemenus[0].buttons = [
         {
-            "label": "Stage",
+            "label": "Discharge",
             "method": "skip"
+        },{
+                "label": "Stage",
+                "method": "skip"
         }
     ]
 }
@@ -194,7 +194,7 @@ function plotTitle(comID){
     _field.forEach(
         p => vals.push(
             $.isNumeric(
-                row.properties[p]
+                row.properties[p] && !Number.isInteger(row.properties[p])
             ) ? Math.round(row.properties[p], 2) :
                 row.properties[p]
         )

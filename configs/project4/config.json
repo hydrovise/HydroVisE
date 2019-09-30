@@ -389,21 +389,6 @@
       }
     }
   },
-  "customBaseMap": {
-    "url": "data/staticLayers/kmls/ifc_net3_simp.geojson",
-    "colors": {
-      "3": "#00e4ff",
-      "4": "#00c5ff",
-      "5": "#00acff",
-      "6": "#018eff",
-      "7": "#007dff",
-      "8": "#007bff",
-      "9": "#0055ff",
-      "10": "#000000",
-      "11": "#321321"
-    },
-    "propoertyName": "h_order"
-  },
   "spatialData": {
     "smap": {
       "geom": {
@@ -430,8 +415,8 @@
     },
     "flow": {
       "geom": {
-        "fnPath": "configs/project3/rvr_3above.geojson",
-        "fn": "rvr_3above.geojson",
+        "fnPath": "configs/project4/simp_rvr.geojson",
+        "fn": "simp_rvr.geojson",
         "alias": "River Network",
         "extension": "geojson",
         "defaultStyle": {

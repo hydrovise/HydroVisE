@@ -1,15 +1,15 @@
 {
   "data_part": {
-    "min_val": 2016,
-    "max_val": 2017,
+    "min_val": 2012,
+    "max_val": 2018,
     "step": 1,
-    "initial": 2016
-  },
+    "initial": 2018
+  },  
   "traces": {
     "t1": {
-      "prod": "Q",
-      "x_name": "dt",
-      "y_name": "Q",
+      "prod": "USGS",
+      "x_name": "date",
+      "y_name": "val",
       "modEnabled": true,
       "dynamic": 0,
       "group": 0,
@@ -18,7 +18,7 @@
           "yr",
           "comID"
         ],
-        "path_format": "data/timeSeries/{0}/Q/{1}.csv"
+        "path_format": "http://s-iihr51.iihr.uiowa.edu/hydro-analytics.net/USGS/{0}/{1}.csv"
       },
       "style": {
         "type": "scattergl",
@@ -31,100 +31,57 @@
       }
     },
     "t2": {
-      "prod": "Q_ifc_nwm",
-      "x_name": "dt",
-      "y_name": "Q",
-      "dynamic": 1,
+      "prod": "HLM_RF",
+      "x_name": "date",
+      "y_name": "0",
+      "dynamic": 0,
       "group": 0,
       "modEnabled": true,
       "template": {
         "var": [
           "yr",
-          "prod",
-          "comID",
-          "sliderState"
+          "comID"
         ],
-        "path_format": "http://s-iihr50.iihr.uiowa.edu/smap/retro/ltime_data/{0}/{1}/{2}/{3}.csv",
-        "argConv": {
-          "var": "sliderState",
-          "arguments": "v",
-          "body": "return ('000' + String(v)).slice(-3);"
-        }
+        "path_format": "http://s-iihr51.iihr.uiowa.edu/hydro-analytics.net/HLM_RF/{0}/{1}.csv"
       },
       "style": {
         "type": "scattergl",
         "mode": "lines",
-        "name": "IFC(HLM)",
+        "name": "HLM_RF",
         "line": {
           "color": "#0fccff"
         }
       }
     },
     "t3": {
-      "prod": "Q_mrms_hlm_QPF",
-      "x_name": "dt",
-      "y_name": "Q",
-      "dynamic": 1,
-      "group": 1,
+      "prod": "HLM_openLoop",
+      "x_name": "date",
+      "y_name": "0",
+      "dynamic": 0,
+      "group": 0,
       "modEnabled": true,
       "template": {
         "var": [
           "yr",
-          "prod",
-          "comID",
-          "sliderState"
+          "comID"
         ],
-        "path_format": "http://s-iihr50.iihr.uiowa.edu/smap/retro/ltime_data/{0}/{1}/{2}/{3}.csv",
-        "argConv": {
-          "var": "sliderState",
-          "arguments": "v",
-          "body": "return ('000' + String(v)).slice(-3);"
-        }
+        "path_format": "http://s-iihr51.iihr.uiowa.edu/hydro-analytics.net/HLM_openLoop/{0}/{1}.csv"
       },
       "style": {
         "type": "scattergl",
         "mode": "lines",
-        "name": "IFC(NWM)",
+        "name": "HLM_openLoop",
         "line": {
           "color": "#0700ff"
-        }
-      }
-    },
-    "t5": {
-      "prod": "Q_mrms_nwm",
-      "dynamic": 1,
-      "group": 1,
-      "modEnabled": true,
-      "x_name": "dt",
-      "y_name": "Q",
-      "template": {
-        "var": [
-          "yr",
-          "prod",
-          "usgs_id",
-          "sliderState"
-        ],
-        "path_format": "http://s-iihr50.iihr.uiowa.edu/smap/retro/ltime_data/{0}/{1}/{2}/{3}.csv",
-        "argConv": {
-          "var": "sliderState",
-          "arguments": "v",
-          "body": "return ('000' + String(v)).slice(-3);"
-        }
-      },
-      "style": {
-        "type": "scattergl",
-        "mode": "lines",
-        "name": "MRMS(NWM)",
-        "line": {
-          "color": "#ff0000"
         }
       }
     }
   },
   "modTrace": {
-    "modJS": "./applications/plugin/modQ2S.js",
+    "modJS": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/applications/plugin/modQ2S.js",
     "modMethod": "Q2Stage",
     "modEvnt": "evntQ2Stage",
+    "customEval": "translate_id=false",
     "default": "flw",
     "mod": {
       "default": {
@@ -139,7 +96,7 @@
       }
     }
   },
-  "timeSlider": {
+  "disabled_timeSlider": {
     "min": 0,
     "max": 119,
     "step": 1,
@@ -149,8 +106,8 @@
       "body": "return 'Lead time:' + String(v) + 'hrs'"
     }
   },
-  "horizontalGrid": {
-    "filename": "./data/sig_stage_flow_usgs.csv",
+  "disabled_horizontalGrid": {
+    "filename": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/data/sig_stage_flow_usgs.csv",
     "comID": "usgs_id",
     "unit_convert": 0.0283168,
     "style": {
@@ -182,31 +139,30 @@
     }
   },
   "mapMarkers": {
-    "fnPath": "lid_usgs.geojson",
-    "comIDName": "usgs_id",
+    "fnPath": "http://s-iihr51.iihr.uiowa.edu/hydro-analytics.net/stationsV1.geojson",
+    "comIDName": "link_id",
     "markerAttrs": {
       "template": {
         "var": [],
-        "path_format": "./data/metrics.csv"
+        "path_format": "http://s-iihr51.iihr.uiowa.edu/hydro-analytics.net/metricsV1.csv"
       },
-      "comID": "USGS_ID"
+      "comID": "link"
     },
     "onEachFeature":{
       "click": "clickFeature"
     },
     "plotTitle": {
       "template": {
-        "var": ["usgs_name","area"],
-        "format": "{0}<br>Area: {1} km<sup>2</sup>"
+        "var": ["foreign_id"],
+        "format": "USGS: {0}"
       }
     },
     "tooltip": {
       "template": {
         "var": [
-          "usgs_id",
-          "area"
+          "foreign_id"
         ],
-        "format": "USGS id: {0}<br>Area:{1} km<sup>2</sup>"
+        "format": "USGS: {0}"
       },
       "format": "",
       "propertires": [
@@ -223,12 +179,11 @@
         "format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/get_boundary.php?id={0}"
       }
     }
-
   },
   "controls": {
     "markerAttrs": {
       "v1": {
-        "var_id": "kge",
+        "var_id": "kgeO",
         "var_name": "KGE",
         "onEvent": "selectMetric",
         "selected": true
@@ -415,15 +370,5 @@
       "11": "#321321"
     },
     "propoertyName": "h_order"
-  },
-  "twoDTimeseries": {
-    "smap": {
-      "timestamps": {
-        "fPath": "data/2dData/timestamps/SMAPL3v2.json",
-        "extension": "json"
-      },
-      "fPath": "data/2dData/SMAPL3v2",
-      "extension": "geotiff"
-    }
   }
 }

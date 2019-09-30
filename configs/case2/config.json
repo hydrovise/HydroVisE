@@ -144,10 +144,14 @@
     }
   },
   "timeSlider": {
-    "min": 1459486800,
-    "max": 1480572000,
-    "step": 3600,
-    "value": 1
+    "min": 0,
+    "max": 119,
+    "step": 1,
+    "value": 0,
+    "label": {
+      "arguments": "v",
+      "body": "return 'Lead time:' + String(v) + 'hrs'"
+    }
   },
   "plotlyLayout": {
     "margin": {

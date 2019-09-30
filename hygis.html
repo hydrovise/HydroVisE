@@ -50,8 +50,10 @@
     <!--<script type="text/javascript" src="applications/visualization/maps/nws_markerPlot.js"></script>-->
     <script type="text/javascript" src="applications/visualization/maps/2dMap.js"></script>
     <script type="text/javascript" src="applications/visualization/timeseries/tracePlot.js"></script>
+<!--    <script type="text/javascript" src="applications/dataReader.js"></script>-->
 
     <script type="text/javascript" src="applications/dataReader.js"></script>
+
 
     <script type="text/javascript" src='dist/html2canvas.min.js'></script>
     <script type="text/javascript" src='dist/FileSaver.js'></script>
@@ -130,7 +132,7 @@
     </div>
 
 </div>
-<div class="tab" id="twoDSelector" style="display:block;z-index: 3;"></div>
+
 
 <div class="generic-control-bar year-control-bar">
     <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="-1">-</div>
@@ -190,6 +192,5 @@
 </html>
 <script>
     div_plot = document.getElementById('div_plot');
-     // twodslider = document.getElementById('twoDSelector');
     ini();
 </script>

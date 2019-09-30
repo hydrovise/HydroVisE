@@ -235,12 +235,13 @@ function contextLayerLoader(fnPath) {
                         pane:fn
                     }).addTo(map);
                     leaflet_layers[fn] = tileLayer;
-                    tileLayer.bringToFront()
+                    tileLayer.bringToFront();
+                    updateLayerZIndex()
                 }
-            })
+            });
             break;
     }
-    updateLayerZIndex()
+
 }
 
 

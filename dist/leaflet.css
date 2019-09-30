@@ -733,3 +733,7 @@
     margin-left: -12px;
     border-right-color: #fff;
 }
+
+.leaflet-control-colorBar.leaflet-bar.leaflet-control{
+    margin-bottom: calc(40%);
+}

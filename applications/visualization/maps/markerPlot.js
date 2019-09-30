@@ -13,7 +13,7 @@ function clickFeature(e) {
     systemState.comID = e.target.feature.properties[c.comIDName];
     tracePlot(systemState.yr, systemState.comID);
     div_plot.style.setProperty('display', 'block');
-    if (c.hasOwnProperty('additionalShapes')){
+    if (c.hasOwnProperty('additionalShapes')) {
         let _temp = c.additionalShapes.template.format;
         let fn = _temp.format(systemState.comID)
         addbasinKML(fn)
@@ -34,7 +34,6 @@ function highlightFeature(e) {
 function resetHighlight(e) {
     geomLayers.resetStyle(e.target);
 }
-
 
 
 function initializeGeom(dynamicGeomID) {
@@ -92,15 +91,14 @@ function initializeGeom(dynamicGeomID) {
             return useConfig.geom.defaultStyle
         }
         return {
-                    radius: 8,
-                    fillColor: "#ff7800",
-                    color: "#000",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.8
-                }
+            radius: 8,
+            fillColor: "#ff7800",
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        }
     }
-
 
 
     // console.log(loadSrc(fn));
@@ -115,7 +113,7 @@ function initializeGeom(dynamicGeomID) {
                 pane: dynamicGeomID
             }).addTo(grp);
         } else {
-            if (dynamicGeomID==='smap'){
+            if (dynamicGeomID === 'smap') {
                 geomLayers = L.geoJSON(srcData, {
                     style: {
                         radius: 8,
@@ -132,7 +130,7 @@ function initializeGeom(dynamicGeomID) {
                 var geomLayers = L.vectorGrid.slicer(srcData, {
                     rendererFactory: L.svg.tile,
                     vectorTileLayerStyles: {
-                        sliced: function (properties, zoom)  {
+                        sliced: function (properties, zoom) {
                             // var p = properties.mapcolor7 % 5;
                             return {
                                 fillColor: 'black',
@@ -146,11 +144,11 @@ function initializeGeom(dynamicGeomID) {
                             }
                         }
                     },
-                    getFeatureId: function(f) {
+                    getFeatureId: function (f) {
                         return f.properties.link_id;
                     },
                     interactive: true,
-                    pane:dynamicGeomID
+                    pane: dynamicGeomID
                 })
             }
 
@@ -194,7 +192,7 @@ function initializeGeom(dynamicGeomID) {
     createGeom();
     let use_config = config.spatialData[dynamicGeomID];
 
-    let lst_item = "<li class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input type='checkbox' onclick=\"toggLyrStd(this)\" value=" + dynamicGeomID +
+    let lst_item = "<li id='li_" + dynamicGeomID + "' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input type='checkbox' onclick=\"toggLyrStd(this)\" value=" + dynamicGeomID +
         " data-type='dynamic' class='checked'><p class='key'> " + use_config.geom.alias + " </p></li>";
 
     var ctxLayerLegend = document.getElementById("sortable")
@@ -226,39 +224,18 @@ function restyle(allLayers) {
 
     });
 }
-function colorcodeNetwork(fn){
-    var flow;
-    Papa.parse(fn,
-        {
-            download: true,
-            header: true,
-            delimiter: ',',
-            skipEmptyLines: true,
-            complete: function (results) {
-                flow = results.data;
-                flow.forEach(f=> leaflet_layers['flow'].setFeatureStyle(f['lid'], {
-                    fillColor: 'red',
-                    fillOpacity: 0.5,
-                    fillOpacity: 1,
-                    stroke: true,
-                    fill: true,
-                    color: getColor(parseFloat(f['flow'])*100),
-                    opacity: 1,
-                    width: parseFloat(f['flow'])*100,
-                }))
-            }
-        }
-    );
-}
+
 
 function draw_markers(pointList, pointListID) {
     function tooltipStrGen(el) {
         let comID = [config.mapMarkers.comIDName];
         let p = el.properties;
+        if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
         let c = config.mapMarkers.tooltip.template;
+
         let vals = [];
         c.var.forEach(
-            v=> vals.push(
+            v => vals.push(
                 $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
             )
         )
@@ -280,13 +257,13 @@ function draw_markers(pointList, pointListID) {
 
     }
     plist = config.mapMarkers;
-	comIDName = plist.comIDName;
-										  
-	typeList = plist.types;
+    comIDName = plist.comIDName;
+
+    typeList = plist.types;
     // if (!plist.hasOwnProperty("style")) {
     //
     // }
-    let defaultStyle =  function(){
+    let defaultStyle = function () {
         return {
             radius: 5,
             color: "black",
@@ -300,98 +277,36 @@ function draw_markers(pointList, pointListID) {
     ).forEach(
         (k) => plist.onEachFeature[k] = eval(plist.onEachFeature[k])
     );
+
     function onEachFeature(feature, layer) {
         layer.on(
             plist.onEachFeature
-						   
-																	  
-					 
-		   
-										
-												 
-											  
-																				  
-
-		 
-							  
-							
-
-							
-									   
-																		  
-			 
-																											  
-																													  
-				 
-																	
-		 
-
-								 
-		   
-	 
-						
-						 
-																   
-				   
- 
-
-															   
-					  
-					 
-				
-							  
-						
-						  
-								
-									 
-			 
         );
     }
+
     geomLayers = L.geoJSON(
         pointList,
         {
-            style: (!plist.hasOwnProperty("style"))? defaultStyle : plist.style,
-            onEachFeature:onEachFeature,
+            style: (!plist.hasOwnProperty("style")) ? defaultStyle : plist.style,
+            onEachFeature: onEachFeature,
             pointToLayer: function (feature, latlng) { //TODO: add custom ICON for style
-                return L.circleMarker(latlng).bindTooltip(tooltipStrGen(feature),{permanent:false,direction:'right'});
+                let tooltipStr = tooltipStrGen(feature);
+                
+                let cMarker = L.circleMarker(latlng);
+                if (tooltipStr) cMarker.bindTooltip(
+                    tooltipStr,
+                    {
+                        permanent: false,
+                        direction: 'right'
+                    }
+                );
+                return L.circleMarker(latlng);
             },
-										  
-										
-												   
-					
-																			
-			 
-																																																						  
-																		   
-
-																											
-																					 
-						  
-							   
-							   
-																								
-						 
-																			  
-								
-
-								
-										   
-												  
-																					
-				 
-																												
-																														
-					 
-																		
-			 
-
-									 
         }
-	 
     );
     geomLayers.addTo(map)
-										 
-				   
+
+
 }
 
 function draw_markers_sub_year(metrics_subyear, useAttribute, _sim_type) {

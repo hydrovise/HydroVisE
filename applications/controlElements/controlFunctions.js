@@ -34,7 +34,7 @@ function selectMetric(_selected) {
 }
 
 function changeYear(val) {
-    console.log(val)
+    // console.log(val)
     zoom_state = false;
     zoom_metric_state = false;
     use_yr = parseInt(systemState.yr) + (parseInt(val) * parseInt(config.data_part.step));
@@ -108,49 +108,48 @@ function toggDiv(a) {
     _elm.css('left', _elm_mini.css('left'))
 }
 
-
+//user has to click twice on the raster layers
 function toggLyrStd(e) {
     let is_checked = e.checked;
     let lyr_id = e.value;
-    console.log(lyr_id)
-    let dynamic = e.getAttribute('data-type');
+    // console.log(lyr_id)
+    let dynamic = e.getAttribute('data-type')=='dynamic' ? true :false;
     let fn, fnPath;
-    if (dynamic=='dynamic'){
+    if (dynamic){
         fn = lyr_id;
-        fnPath = config.spatialData[lyr_id].geom.fnPath;
-        console.log(dynamic)
+        fnPath = config.spatialData[lyr_id].hasOwnProperty('geom')?  config.spatialData[lyr_id].geom.fnPath :'';
+        // console.log(dynamic)
     }
     else {
         fn = config.mapLayers[lyr_id].fn;
         fnPath = config.mapLayers[lyr_id].fnPath;
-        console.log(dynamic)
+        // console.log(dynamic)
     }
-    console.log(dynamic)
+    // console.log(dynamic)
 
     let sel = $(e);
 
     if (!(is_checked)) {
         sel.css("background-color", 'rgba(45,78,69,0)');
-        sel.css("class", '');
-        console.log(fn)
-        leaflet_layers[fn].remove()
+        sel.css("class", 'checked');
+        // console.log(fn);
+        // dynamic ? leaflet_layers[fn].hide() : leaflet_layers[fn].remove()
+        dynamic && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
     } else {
-        sel.css("background-color", '#2d4e45'); //"#359AFF");
-        $.each(
-            $('#con0').find("input[type='checkbox']:checked"),
-            function (ix, ele) {
-                if (ele.value != sel[0].value) $(ele).css("background-color", 'rgb(175, 193, 126)');
-            }
-        )
+        // sel.css("background-color", '#2d4e45'); //"#359AFF");
+        sel.css("background-color", 'rgb(175, 193, 126)');
+        sel.css("class", '');
+        // sel.css("background-color", 'rgb(175, 193, 126)');
         if (leaflet_layers[fn] === undefined) {
             if (dynamic=='dynamic'){
                 initializeGeom(lyr_id)
             }else{
-                contextLayerLoader(fnPath)
+                contextLayerLoader(fnPath);
+                // updateLayerZIndex()
             }
 
         } else {
-            leaflet_layers[fn].addTo(map)
+            dynamic && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
         }
 
     }
@@ -181,7 +180,7 @@ function removeCTXLayer(e) {
         leaflet_layers[lyr_id].remove()
         delete leaflet_layers[lyr_id]
     }
-    console.log(e)
+    // console.log(e)
 }
 
 
@@ -189,17 +188,36 @@ function updateLayerZIndex(){
     $('#sortable li').each( function()
     {
         var layer_idx = $(this).index();
+        // console.log($(this))
+            // [""0""].style.zIndex
         el = $(this)[0].children[1];
-        console.log(el);
+        // console.log(el);
         var tr_id = el.value;
-        console.log(tr_id)
+        // console.log(tr_id)
+        // console.log(layer_idx);
         if (leaflet_layers[tr_id]!==undefined) {
 
             map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
         }
-
+        // map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
 
     });
 }
 
+function open2DTab(evt, tabName) {
+    let i, tabcontent, tablinks, tabID;
+    tabID = 'div_' + tabName;
 
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabID).style.display = "block";
+    evt.currentTarget.className += " active";
+    systemState.timeSelector.activeTab = tabID;
+    dragLayer = document.getElementsByClassName('nsewdrag')[0];
+}

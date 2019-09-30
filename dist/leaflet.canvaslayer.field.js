@@ -1074,15 +1074,16 @@
             return this._map.options.zoomAnimation && L.Browser.any3d && (t.zoomanim = this._animateZoom), t
         }, onAdd: function (t) {
             this._map = t, this._canvas = L.DomUtil.create("canvas", "leaflet-layer"), this.tiles = {};
+            console.log(this)
             var e = this._map.getSize();
             this._canvas.width = e.x, this._canvas.height = e.y;
             var n = this._map.options.zoomAnimation && L.Browser.any3d;
-            L.DomUtil.addClass(this._canvas, "leaflet-zoom-" + (n ? "animated" : "hide")), t._panes.overlayPane.appendChild(this._canvas), t.on(this.getEvents(), this);
+            L.DomUtil.addClass(this._canvas, "leaflet-zoom-" + (n ? "animated" : "hide")), t._panes[this.options.pane].appendChild(this._canvas), t.on(this.getEvents(), this);
             var i = this._delegate || this;
             i.onLayerDidMount && i.onLayerDidMount(), this.needRedraw()
         }, onRemove: function (t) {
             var e = this._delegate || this;
-            e.onLayerWillUnmount && e.onLayerWillUnmount(), t.getPanes().overlayPane.removeChild(this._canvas), t.off(this.getEvents(), this), this._canvas = null
+            e.onLayerWillUnmount && e.onLayerWillUnmount(), t.getPanes()[this.options.pane].remove(this._canvas), t.off(this.getEvents(), this), this._canvas = null
         }, addTo: function (t) {
             return t.addLayer(this), this
         }, LatLonToMercator: function (t) {

@@ -7,29 +7,30 @@ Papa.parsePromise = function (file, config) {
 
 function ini() {
     $(function () {
-        if (config.hasOwnProperty('timeSlider')){
-            $("#slider").slider(
-                {
-                    min: config.timeSlider.min,
-                    max: config.timeSlider.max,
-                    step: config.timeSlider.step,
-                    value: config.timeSlider.value,
-                    slide: function (ev, ui) {
-                        let label = document.getElementById('sliderLabelDIV');
-                        let f = new Function(config.timeSlider.label.arguments, config.timeSlider.label.body)
-                        label.innerText = f(ui.value)
-                    },
-                    stop: function (evt, ui) {
-                        systemState.sliderState = ui.value;
-                        clearTraces('temporary');
-                        addTraces('temporary');
-                    }
-                }
-            );
-            document.getElementById("sliderMainDIV").style.display = 'block';
-        } else {
+        if (!config.hasOwnProperty('timeSlider')) {
             $("#sliderMainDIV").remove();
+            return;
         }
+
+        $("#slider").slider(
+            {
+                min: config.timeSlider.min,
+                max: config.timeSlider.max,
+                step: config.timeSlider.step,
+                value: config.timeSlider.value,
+                slide: function (ev, ui) {
+                    let label = document.getElementById('sliderLabelDIV');
+                    let f = new Function(config.timeSlider.label.arguments, config.timeSlider.label.body)
+                    label.innerText = f(ui.value)
+                },
+                stop: function (evt, ui) {
+                    systemState.sliderState = ui.value;
+                    clearTraces('temporary');
+                    addTraces('temporary');
+                }
+            }
+        );
+        document.getElementById("sliderMainDIV").style.display = 'block';
     });
 
     $("#sortable").sortable();

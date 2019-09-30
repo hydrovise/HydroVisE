@@ -408,77 +408,36 @@
     "propoertyName": "h_order"
   },
   "spatialData": {
-    "geomDefined": {
-      "smap": {
-        "geom": {
-          "fnPath": "configs/project3/smap_grid_5f.geojson",
-          "fn": "smap_grid_5f.geojson",
-          "alias": "SMAP Grid",
-          "extension": "geojson",
-          "defaultStyle": {
-            "weight": 2,
-            "opacity": 1,
-            "color": "white",
-            "dashArray": "3",
-            "fillOpacity": 0.7,
-            "fillColor": "black"
-          }
-        },
-        "fnPath": "data/2dData/SMAPL3v2",
-        "extension": "geotiff",
-        "timestamps": {
-          "fnPath": "data/2dData/timestamps/SMAPL3v2.json",
-          "extension": "json"
-        }
-      },
-      "flow": {
-        "fnPath": "data/2dData/SMAPL3v2",
-        "extension": "geotiff",
-        "timestamps": {
-          "fnPath": "data/2dData/timestamps/SMAPL3v2.json",
-          "extension": "json"
-        },
-        "geom": {
-          "fnPath": "configs/project3/lid_usgs.geojson",
-          "extension": "geojson",
-          "geomType": "Point"
-        }
+    "smap": {
+      "fnPath": "SpatialData/SMAPL3v2",
+      "extension": ".tif",
+      "name": "SMAP",
+      "timestamps": {
+        "fnPath": "SpatialData/timestamps/SMAPL3v2.json",
+        "extension": "json"
       }
     },
-    "geoTIFF": {
-      "t1": {
-        "root": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/get_smap1.php?path=",
-        "template": {
-          "var": [
-            "yr",
-            "comID"
-          ],
-          "path_format": "smap/{0}/{1}"
-        },
-        "dynamic": 0,
-        "group": 0,
-        "prod": "sm",
-        "extension": ".csv",
-        "modeEnabled": false,
-        "x_name": "dt",
-        "y_name": "sm",
-        "style": {
-          "type": "scattergl",
-          "mode": "markers",
-          "name": "SMAP Soil Moisture",
-          "line": {
-            "width": 2,
-            "color": "red"
-          }
+    "flow": {
+      "geom": {
+        "fnPath": "configs/project4/simp_rvr.geojson",
+        "fn": "simp_rvr.geojson",
+        "alias": "River Network",
+        "extension": "geojson",
+        "defaultStyle": {
+          "weight": 2,
+          "opacity": 1,
+          "color": "black",
+          "dashArray": "3",
+          "fillOpacity": 0.7,
+          "fillColor": "black"
         }
       },
-      "smap": {
-        "fnPath": "SpatialData/SMAPL3v2",
-        "extension": "geotiff",
-        "timestamps": {
-          "fnPath": "SpatialData/timestamps/SMAPL3v2.json",
-          "extension": "json"
-        }
+      "name": "FLow",
+      "fnPath": "SpatialData/flow",
+      "extension": ".csv",
+      "timestamps": {
+        "fnPath": "SpatialData/timestamps/flow.json",
+        "extension": "json"
       }
     }
   }
