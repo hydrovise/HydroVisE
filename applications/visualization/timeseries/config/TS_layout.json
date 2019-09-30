@@ -1,0 +1,62 @@
+{
+  "layout": {
+    "margin": {
+      "l": 100,
+      "r": 80,
+      "b": 70,
+      "t": 50,
+      "pad": 1
+    },
+    "title": "aaa",
+    "titlefont": {
+      // family: "Helvetica Neue", Arial, Helvetica,
+      "size": 20,
+      "color": "black"
+    },
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "traceorder": "normal",
+      "font": {
+        // family: 'Cambria, bold',
+        "size": 14,
+        "color": '#000'
+      },
+      "bgcolor": "rgba(0,0,0,0)",
+      "bordercolor": "#FFFFFF",
+      "borderwidth": 2,
+      "orientation": "h"
+    },
+    "xaxis'": {
+      "title'": "Date",
+      "titlefont": {
+        // family: 'Cambria, bold',
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        // family: 'Cambria, bold',
+        "size": 18,
+        "color": "black"
+      },
+      "range": ["2015-04-01 00:00:00", "2015-12-01 00:00:00"],
+      "type": "date"
+    },
+    "yaxis": {
+      "title": "Q (m3/s)",
+      "titlefont": {
+        // "family": 'Cambria, bold',
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        // "family": 'Cambria, bold',
+        "size": 18,
+        "color": "black"
+      }
+    },
+    "plot_bgcolor": "#fff",
+    "paper_bgcolor": "#eee",
+    "hovermode": "closest"
+  }
+}

@@ -1,0 +1,27 @@
+,
+	"t3": {
+      "root": "http://hydroiowa.org/dserv/get_sm_top.php?path=",
+      "template": {
+        "var": [
+		  "yr",
+          "comID"
+        ],
+        "path_format": "/{0}/{1}"
+      },
+      "dynamic": 0,
+      "group": 0,
+      "prod": "sm",
+      "extension": ".csv",
+      "modeEnabled": false,
+      "x_name": "dt",
+      "y_name": "sm",
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "Gage Soil Moisture",
+        "line": {
+          "width": 2,
+          "color": "black"
+        }
+      }
+    }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="2b9caa92-30e6-41f1-8f35-9220ceb6d3b4" name="IIHR 50" url="http://s-iihr50.iihr.uiowa.edu">
+        <fileTransfer host="s-iihr50.iihr.uiowa.edu" port="22" rootFolder="/var/www/html/hydro-analytics.net" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="US">
+<head>
+    <link rel="icon" type="image/ico" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>IFC Hydro-Analytics</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,400">
+    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" type="text/css" href="dist/loading-bar.css"/>
+    <link rel="stylesheet" type="text/css" href="dist/leaflet.loader.css"/>
+    <link rel="stylesheet" type="text/css" href="dist/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="css/examples.css"/>
+    <!--    <link rel="stylesheet" type="text/css" href="tempCode/MainCSSStyle.css"/> &lt;!&ndash;  //TODO: remove this CSS  &ndash;&gt;-->
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-image/v0.0.4/leaflet-image.js'></script>
+    <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
+    <script src="https://unpkg.com/@tmcw/togeojson@3.0.1/dist/togeojsons.min.js"></script>
+    <script src="https://unpkg.com/geojson-vt@3.0.0/geojson-vt.js"></script>
+    <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+    <script src="dist/leaflet.canvaslayer.field.js"></script>
+    <script src="dist/TileLayer.GeoJSON.js"></script>
+    <script src="dist/leaflet.loader.js"></script>
+    <script src="dist/L.KML.js"></script>
+    <script src="dist/geotiff.js"></script>
+    <script src="dist/GeotiffParser.js"></script>
+    <script src="applications/leaflet_plugins/bundle.js"></script>          <!-- ??? -->
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
+    <script src="dist/numeric.js"></script>
+    <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
+    <script src="applications/moment.js"></script>
+
+    <script type="text/javascript" src="applications/general/common.js"></script>
+    <script type="text/javascript" src="applications/controlElements/mapControlElements.js"></script>
+    <script type="text/javascript" src="applications/controlElements/controlFunctions.js"></script>
+
+    <script type="text/javascript" src="applications/metricFunctions/math.js"></script>
+    <script type="text/javascript" src="applications/metricFunctions/trapz.js"></script>
+    <script type="text/javascript" src="applications/metricFunctions/all_metrics.js"></script>
+    <script type="text/javascript" src="applications/metricFunctions/synch.js"></script>
+
+    <script type="text/javascript" src="applications/visualization/maps/markerPlot.js"></script>
+    <script type="text/javascript" src="applications/visualization/maps/2dMap.js"></script>
+    <script type="text/javascript" src="applications/visualization/timeseries/tracePlot.js"></script>
+
+    <script type="text/javascript" src="applications/dataReaderNew.js"></script>
+
+    <script type="text/javascript" src='dist/html2canvas.min.js'></script>
+    <script type="text/javascript" src='dist/FileSaver.js'></script>
+    <script type="text/javascript" src="dist/chroma.min.js"></script>
+
+    <script type="text/javascript" src="dist/colors.js"></script>
+    <script type="text/javascript" src="dist/loading-bar.js"></script>
+
+    <script type="text/javascript" src="dist/dropDatasortable.js"></script>
+
+    <script type="text/javascript" src="ini.js"></script>
+    <script>
+        let config = {};
+        let systemState = {
+            yr: '2016',
+            prod: '',
+            sim_type: 'ifc_nwm',
+            sliderState: 0,
+            usgs_id: "",
+            flow_mode: 1,
+            metric: 'kge',
+            xRange: null,
+            mode: 'flw',
+            timeSelector:{activeTab: 'SMAP'}
+        };
+
+        var metrics;
+        let div_plot;
+        let plotly_plot;
+        zoom_state = false;
+        zoom_metric_state = false;
+        let lid;
+        let layerGeo;
+        /*var bar;*/
+        //let XRange;
+
+        var leaflet_layers = [];
+        let url = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+
+        var lid_usgs;
+        let group;
+
+        $.ajax({
+            dataType: "json",
+            async: false,
+            cache: true,
+            url: "configs/project4/config.json",
+            success: function (data) {
+                config = data;
+            }
+        });
+
+        /* BLOCK NEEDS TO BE MOVED TO CONTROLS */
+        $(function () {
+            $("#slider").slider(
+                {
+                    min: moment("04/01/2016 00:00").unix(),
+                    max: moment("12/01/2016 00:00").unix(),
+                    step: 3600,
+                    value: 1,
+                    slide: function (ev, ui) {
+                        let label = document.getElementById('leadTimeDIV');
+                        label.innerText = "Issue Time: " + String(moment.unix(ui.value).format("MMM DD HH:00")) + " ";
+                    },
+                    stop: function (evt, ui) {
+                        systemState.sliderState = ui.value
+                        clearTraces('from_slider');
+                        addTraces('from_slider');
+                    }
+                }
+            );
+            zOffset = 1000;
+            $("#sortable").sortable();
+            $("#sortable").disableSelection();
+            $("#sortable").on( "sortupdate", function( event, ui )
+            {
+                updateLayerZIndex()
+            });
+            // $("#sortable").on(
+            //     "sortstop",
+            //     function (event, ui) {
+            //         console.log('test')
+            //     }
+            // );
+        });
+        /* END BLOCK NEEDS TO BE MOVED TO CONTROLS */
+
+    </script>
+
+</head>
+<body>
+<div id="progressDIV">
+    <div class="bgLoading" id="progressbar">1%</div>
+</div>
+
+<div id='map'></div>
+<div id="colorbar"></div>
+<div id="div_plot">
+    <div id='sliderMainDIV'>
+        <div id="slider" style="width: calc(100% - 140px); left: 81px;"></div>
+        <input id="buttonAddTrace" type="button" value="add" onclick="addTraces()">
+        <input id="buttonClearTrace" type="button" value="clear" onclick="clearTraces()">
+        <div id="leadTimeDIV">Issue Time:</div>
+    </div>
+</div>
+<div class="tab" id="twoDSelector" style="display:none;z-index: 3;">
+
+</div>
+<div class="generic-control-bar year-control-bar">
+    <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="-1">-</div>
+    <div id="year-selected" class="year-button" data-year=2016>2016</div>
+    <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="1">+</div>
+</div>
+<div class="plot-control-bar">
+    <div id="plotly-button" class=" generic-button" onclick="hideShowCanvas()">
+        <img src="dist/images/plot_ico.png">
+    </div>
+</div>
+<div class="custom-control-container">
+    <div class="metricTypeDIV">
+        <div class="metricTypeControl"
+             onclick="($('.metricTypeOptions').css('display') == 'block') ? $('.metricTypeOptions').css('display', 'none') : $('.metricTypeOptions').css('display', 'block');">
+            Performance<img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div class="metricTypeOptions"></div>
+    </div>
+    <div class="simTypeDIV">
+        <div class="simTypeControl"
+             onclick="($('.simTypeOptions').css('display') == 'block') ? $('.simTypeOptions').css('display', 'none') : $('.simTypeOptions').css('display', 'block');">
+            Sim. Type <img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div class="simTypeOptions"></div>
+    </div>
+    <div class="baseMapDIV">
+        <div class="baseMapControl"
+             onclick="($('.baseMapTypeOptions').css('display') === 'block') ? $('.baseMapTypeOptions').css('display', 'none') : $('.baseMapTypeOptions').css('display', 'block');">
+            Base Map<img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div class="baseMapTypeOptions"></div>
+    </div>
+    <!--<script>-- CONTROL INSTALL
+    </script>-->
+    <button id="claculatemetricsButton" disabled="true" onclick="readData(metrics, selectedRange)">Calculate Event <br>Metrics
+    </button>
+</div>
+<div id="mini_con0" class="mini_con noselect" style="display:none;  background-color: #162d2b;" onclick="toggDiv(0)">
+</div>
+<div id="con0">
+    <div style="color: white; background-color:#162d2b; line-height: 30px; text-align: center;" onclick="toggDiv('0')">
+        Map Inventory
+    </div>
+    <div class="legend">
+        <ul id="sortable"></ul>
+    </div>
+    <div style="width: 100%; display: block; text-align: center;">
+        <input type="file" id="drop" style="    display: inline-block; max-width: 89px;"><label for="drop"></label>
+    </div>
+</div>
+<!--<script type="text/javascript" src="tempCode/tempCode1.js"></script> &lt;!&ndash;//TODO: check this addition with RADEK    &ndash;&gt;-->
+
+</body>
+</html>
+<script>
+    div_plot = document.getElementById('div_plot');
+    timeSelector = document.getElementById('twoDSelector');
+    ini();
+
+    // let twoDTimeseriesConfig = config.spatialData;
+    // function addTab(key) {
+    //     var name = twoDConfig[key].name;
+    //     let template = "<button class=\"tablinks\" onclick=\"open2DTab(event,\'" + key + "\')\">" + name + "</button>";
+    //
+    //     let parentDIV = document.getElementById("twoDSelector");
+    //     parentDIV.innerHTML += template
+    // }
+    //
+    // let TwoDTimeseries = {};
+    // twoDConfig = config.spatialData;
+    // Object.keys(twoDConfig).forEach(key => {
+    //     addTab(key)
+    // });
+    //
+    // function open2DTab(evt, cityName) {
+    //         $.ajax({
+    //             url: twoDTimeseriesConfig[cityName].timestamps.fPath,
+    //             dataType: twoDTimeseriesConfig[cityName].timestamps.extension,
+    //             async: false,
+    //             success: function (data) {
+    //                 TwoDTimeseries[cityName] = data
+    //                 console.log(TwoDTimeseries[cityName])
+    //                 var tsVec = TwoDTimeseries[cityName].map(dt => moment.unix(dt).format('YYYY-MM-DD HH:mm'))
+    //
+    //                 tsVec_y = tsVec.map(v => v = 1)
+    //                 var trace_data = [];
+    //                 var trace1 = {
+    //                     name: 'SMAPL3v2',
+    //                     x: tsVec,
+    //                     y: tsVec_y,
+    //                     marker: {
+    //                         // size: 10,
+    //                         // symbol:'square'
+    //                     },
+    //                     // mode: 'markers',
+    //                     type: 'bar',
+    //                     hoverinfo: 'x'
+    //                     // symbol: 'square',
+    //                     // size: 8,
+    //                     // z: tsVec.map(v => v = Math.round(Math.random()))
+    //                 };
+    //                 let divname = 'div_' + cityName;
+    //                 let parentDIV = document.getElementById("twoDSelector");
+    //
+    //                 template = "<div id=" + "\"div_"+cityName+"\" class=\"tabcontent\"><h3>"+ cityName +"</h3></div>";
+    //                 parentDIV.innerHTML += template
+    //                 twodslider = Plotly.newPlot(divname, trace1, config.timeSelectorLayout, {
+    //                     displayModeBar: false,
+    //                     responsive: true
+    //                 });
+    //             }
+    //         });
+    //
+    //     // $.ajax({
+    //     //     url: twoDConfig[cityName].timestamps.fnPath,
+    //     //     dataType: twoDConfig[cityName].timestamps.extension,
+    //     //     success: function (data) {
+    //     //         // console.log(data)
+    //     //         a = unpack(data,'dt')
+    //     //         TwoDTimestamps[cityName] = a.map(dt => moment.unix(dt).format('YYYY-MM-DD HH:mm'))
+    //     //         console.log(TwoDTimestamps)
+    //     //         let tsVec = TwoDTimestamps[cityName];
+    //     //         let tsVec_y = tsVec.map(v => v = 1);
+    //     //         var traceTemp = {
+    //     //             name: cityName,
+    //     //             x: tsVec,
+    //     //             y: tsVec_y,
+    //     //             type: 'bar',
+    //     //             hoverinfo: 'x'
+    //     //         };
+    //     //         TwoDTimeSliderTraces.push(traceTemp);
+    //     //         let divname = 'div_' + cityName;
+    //     //         let parentDIV = document.getElementById("twoDSelector");
+    //     //
+    //     //         template = "<div id=" + "\"div_"+cityName+"\" class=\"tabcontent\"><h3>"+ cityName +"</h3></div>";
+    //     //         parentDIV.innerHTML += template
+    //     //         twodslider = Plotly.newPlot(divname, traceTemp, config.timeSelectorLayout, {
+    //     //             displayModeBar: false,
+    //     //             responsive: true
+    //     //         });
+    //     //         var i, tabcontent, tablinks;
+    //     //         tabcontent = document.getElementsByClassName("tabcontent");
+    //     //         for (i = 0; i < tabcontent.length; i++) {
+    //     //             tabcontent[i].style.display = "none";
+    //     //         }
+    //     //         tablinks = document.getElementsByClassName("tablinks");
+    //     //         for (i = 0; i < tablinks.length; i++) {
+    //     //             tablinks[i].className = tablinks[i].className.replace(" active", "");
+    //     //         }
+    //     //         document.getElementById("div_"+cityName).style.display = "block";
+    //     //         evt.currentTarget.className += " active";
+    //     //         systemState.timeSelector.activeTab = cityName;
+    //     //         gd = document.getElementById(divname);
+    //     //         // timeSynchedDivs.push(gd);
+    //     //         gd.on('plotly_click', function (data) {
+    //     //             datasetName = data.points[0].data.name;
+    //     //             dt = data.points[0].x;
+    //     //             dt_unix = moment(dt).format('X');
+    //     //             twoDMapPlotter(datasetName, dt_unix)
+    //     //         });
+    //     //     }
+    //     // })
+    // }
+    //
+    // var TwoDTimeSliderTraces = [];
+    // var timeSynchedDivs = [];
+    // gd1 = document.getElementById('div_plot');
+    // // gd1 = document.getElementById('div_plot');
+    // timeSynchedDivs.push(gd1);
+    //
+    // dragLayer = document.getElementsByClassName('nsewdrag')[0];
+    //
+    // function relayout(ed, divs) {
+    //     ed1 = {'xaxis.range[0]': ed["xaxis.range[0]"], 'xaxis.range[1]': ed["xaxis.range[1]"]};
+    //     divs.forEach((div, i) => {
+    //         if (div.layout != undefined) {
+    //             let x = div.layout.xaxis;
+    //             if (ed["xaxis.autorange"] && x.autorange) return;
+    //             if (
+    //                 x.range[0] != ed["xaxis.range[0]"] ||
+    //                 x.range[1] != ed["xaxis.range[1]"]
+    //             ) {
+    //                 Plotly.relayout(div, ed1);
+    //             }
+    //         }
+    //     });
+    // }
+    //
+    // timeSynchedDivs.forEach(div => {
+    //     if (div.layout !== undefined) {
+    //         div.on("plotly_relayout", function (ed) {
+    //             zoom_state = true;
+    //             selectedRange = [ed["xaxis.range[0]"], ed["xaxis.range[1]"]];
+    //             relayout(ed, timeSynchedDivs);
+    //         });
+    //     }
+    // });
+    // //
+    // // gd.on('plotly_hover', function (data) {
+    // //     dragLayer.style.cursor = 'pointer'
+    // // });
+    // //
+    // // gd.on('plotly_unhover', function (data) {
+    // //     dragLayer.style.cursor = '';
+    // // });
+    //
+    //
+    //
+
+    initializeGeom('flow')
+    var fn = 'SpatialData/flow/1459468800.csv';
+
+</script>

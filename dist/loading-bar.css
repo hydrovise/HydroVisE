@@ -1,0 +1,28 @@
+.ldBar {
+    position: relative;
+    /*width:50%;*/
+    /*height:50%;*/
+    top:25%;
+    left: 25%;
+    display: block;
+    z-index: 4;
+}
+
+.ldBar.label-center > .ldBar-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    /* text-shadow: 0 0 3px #fff; */
+    font-size: x-large;
+}
+
+.ldBar-label:after {
+    content: "%";
+    display: inline
+}
+
+.ldBar.no-percent .ldBar-label:after {
+    content: ""
+}

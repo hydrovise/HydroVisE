@@ -1,0 +1,79 @@
+
+body{
+    width:960px;
+    margin:45px auto;
+    background-color: #ffffff
+}
+form{
+    width:330px;
+    border-top:1px dotted #D9D9D9;
+    margin:10px 180px
+}
+button{
+    width:246px;
+    height:40px;
+    color:#4C4C4C;
+    margin-bottom:20px;
+    margin-left:20px
+}
+input{
+    width:280px;
+    height:40px;
+    padding:5px;
+    margin:20px 0 10px;
+    border-radius:5px;
+    border:4px solid #acbfa5
+}
+input[type = submit]{
+    width:100px;
+    background-color:#35c8ef;
+    border-radius:5px;
+    border:2px solid blue;
+    color:#fff
+}
+textarea{
+    width:280px;
+    height:70px;
+    padding:5px;
+    margin:20px 0 10px;
+    border-radius:5px;
+    border:4px solid #acbfa5
+}
+.four p{
+    text-align:center;
+    color:#fff;
+    padding:15px 0
+}
+.first p{
+    padding:15px;
+    color:#fff
+}
+.two{
+    background-color:#fff;
+    width:290px;
+    float:left;
+    height:600px
+}
+.main_content{
+    width:960px;
+    height:auto;
+    background-color:#fff
+}
+.two h4{
+    color:#4C4C4C;
+    text-align:center
+}
+.three{
+    text-align:center;
+    width:660px;
+    border-left:1px solid #D0D0D0;
+    float:left;
+    background-color:#fff
+}
+.four,.first{
+    width:960px;
+    clear:both;
+    background-color:#41A2CD;
+    height:55px
+}
+

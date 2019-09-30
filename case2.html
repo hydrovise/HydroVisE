@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="US">
+
+<head>
+    <link rel="icon" type="image/ico" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Case 1 - Forecast Issue Time</title>
+    <!--CSS StyleSheets-->
+
+    <link rel="stylesheet" href="dist/leaflet.css"/>
+    <link rel="stylesheet" href="dist/leaflet.loader.css"/>
+    <link rel="stylesheet" href="css/examples.css"/>
+
+
+    <!-- Third Party Applications-->
+    <script src="dist/d3.v4.min.js"></script>
+
+    <!--     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script> -->
+    <script src='dist/html2canvas.min.js'></script>
+    <script src='dist/FileSaver.js'></script>
+    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,400" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
+    <script src="dist/jquery-2.1.4.min.js"></script>
+    <!--Major Components-->
+    <script src="applications/visualization/timeseries/tracePlot.js"></script>
+    <script src="applications/visualization/maps/points/markerPlot.js"></script>
+    <script src="applications/visualization/maps/gridded/2dMap.js"></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-image/v0.0.4/leaflet-image.js'></script>
+    <!-- new added -->
+    <script src="applications/metricFunctions/synch.js"></script>
+    <script src="applications/moment.js"></script>
+    <!--<script src="applications/metricFunctions/core.js"></script>-->
+    <script src="applications/jquery-3.4.1.js"></script>
+    <script src="applications/general/common.js"></script>
+    <script src="applications/metricFunctions/math.js"></script>
+    <script src="applications/metricFunctions/trapz.js"></script>
+    <script src="applications/metricFunctions/all_metrics.js"></script>
+    <script src="applications/dataReaderNew.js"></script>
+    <script src="applications/controlElements/controlFunctions.js"></script>
+    <!--Minor Components-->
+
+
+    <script src="dist/colors.js"></script>
+    <script src="dist/numeric.js"></script>
+    <!--     <script src="dist/leaflet.js"></script> -->
+    <!--    <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js'></script>-->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="dist/geotiff.js"></script>
+    <script src="dist/GeotiffParser.js"></script>
+    <!--    <script src="dist/geotiff.js"></script>-->
+    <script src="dist/chroma.min.js"></script>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+
+
+    <!-- Plugin -->
+    <script src="dist/leaflet.canvaslayer.field.js"></script>
+    <!--    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"/>-->
+
+    <script src="dist/leaflet.loader.js"></script>
+    <script src="applications/leaflet_plugins/bundle.js"></script>
+    <script src="dist/KML.js"></script>
+    <link rel="stylesheet" type="text/css" href="dist/loading-bar.css"/>
+    <script type="text/javascript" src="dist/loading-bar.js"></script>
+    <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
+    <script src="dist/leaflet.loader.js"></script>
+    <link rel="stylesheet" href="dist/leaflet.loader.css"/>
+    <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
+    <!-- @tmcw/togeojson -->
+    <script src="https://unpkg.com/@tmcw/togeojson@3.0.1/dist/togeojsons.min.js"></script>
+    <!-- geojson-vt -->
+    <script src="https://unpkg.com/geojson-vt@3.0.0/geojson-vt.js"></script>
+    <!-- Leaflet-KMZ -->
+    <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+    <!--    <script src="dist/togeojson.js"></script>-->
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#slider").slider({ min: 0, max: 119, step: 1, value: 1,
+                slide: function( event, ui ) {
+                    ldtimeDIV = document.getElementById('leadTimeDIV');
+                    ldtimeDIV.innerText = "Lead Time: " + String(ui.value) + " (hr)"
+                    // console.log(ui.value)
+                },
+                stop: function( event, ui ) {
+                    systemState.sliderState = ui.value
+                    clearTraces('from_slider')
+                    addTraces('from_slider')
+                }
+            });
+
+            $("#sortable").sortable();
+            $("#sortable").disableSelection();
+            $("#sortable").on("sortstop", function (event, ui) {
+                console.log('test')
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="progressDIV">
+    <div class="bgLoading" id="progressbar">10%</div>
+</div>
+
+<div id='map'></div>
+<div id="colorbar"></div>
+<div id="canvasDIV"></div>
+<div id='sliderMainDIV'>
+    <div id="slider" style="    width: calc(100% - 140px);
+    left: 81px;"   class="ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content">
+        <!--<span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default" style="left: 42.0168%;"></span>!-->
+    </div>
+    <input id="buttonAddTrace" type="button"  value="add" onclick="addTraces()">
+    <input id="buttonClearTrace" type="button" value="clear" onclick="clearTraces()">
+    <div id="leadTimeDIV">
+        Issue Time:
+    </div>
+</div>
+<div class="generic-control-bar year-control-bar">
+    <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="-1">-</div>
+    <div id="year-selected" class="year-button" data-year=2016>2016</div>
+    <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="1">+</div>
+</div>
+<div class="plot-control-bar">
+    <!--<div id="plot-button" class=" generic-button"
+         onclick="if (layerGeo!==undefined && layerGeo.isVisible()===true){layerGeo.hide(); bar._container.style.opacity=0}else if (layerGeo!==undefined && layerGeo.isVisible()===false){layerGeo.show(); bar._container.style.opacity=1}">
+        <!--<img src="smev/smev.img/plot_ico.png">-->
+    <!--<img src="dist/images/raster_layer_small.png">
+</div>-->
+    <div id="plotly-button" class=" generic-button"
+         onclick="hideShowCanvas()">
+        <!--<img src="smev/smev.img/plot_ico.png">-->
+        <img src="dist/images/plot_ico.png">
+    </div>
+    <!--<div class=" generic-button" id="screenshot" onclick="export_report()" value="Export Report">
+        <img src="dist/images/screen_capture_small.png">
+    </div>-->
+</div>
+
+<!—container positioned absolute -->
+<div class="custom-control-container">
+    <div class="metricTypeDIV">
+        <div class="metricTypeControl"
+             onclick="($('.metricTypeOptions').css('display') == 'block') ? $('.metricTypeOptions').css('display', 'none') : $('.metricTypeOptions').css('display', 'block');">
+            Performance<img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div class="metricTypeOptions">
+        </div>
+    </div>
+    <!—SIMULATION Second group container positioned relative -->
+    <div class="simTypeDIV">
+
+        <div class="simTypeControl"
+             onclick="($('.simTypeOptions').css('display') == 'block') ? $('.simTypeOptions').css('display', 'none') : $('.simTypeOptions').css('display', 'block');">
+            Sim. Type <img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div class="simTypeOptions">
+
+        </div>
+    </div>
+
+    <div class="baseMapDIV">
+        <div class="baseMapControl"
+             onclick="($('.baseMapTypeOptions').css('display') === 'block') ? $('.baseMapTypeOptions').css('display', 'none') : $('.baseMapTypeOptions').css('display', 'block');">
+            Base Map<img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div class="baseMapTypeOptions">
+            <!--            <div class="dropDownItemDivBaseMap" data-mapname="light_all"-->
+            <!--                 onclick="basemap_changer($(this).data('mapname'));"-->
+            <!--                 style="background-color: rgb(235, 235, 235);">Light-->
+            <!--            </div>-->
+            <!--            <div class="dropDownItemDivBaseMap" data-mapname="Dark" onclick="basemap_changer($(this).data('mapname'));"-->
+            <!--                 style="background-color: white;">Dark-->
+            <!--            </div>-->
+            <!--            <div class="dropDownItemDivBaseMap" data-mapname="Esri Imagery"-->
+            <!--                 onclick="basemap_changer($(this).data('mapname'));"-->
+            <!--                 style="background-color: white;">Esri Imagery-->
+            <!--            </div>-->
+            <!--            <div class="dropDownItemDivBaseMap" data-mapname="Toner" onclick="console.log($(this).data('mapname'));-->
+            <!--            basemap_changer($(this).data('mapname'));"-->
+            <!--                 style="background-color: white;"> Toner-->
+            <!--            </div>-->
+        </div>
+    </div>
+    <script>
+        let conf = {
+            metricType: {
+                v1: {var_id: 'kge', var_name: 'KGE', onEvent: 'selectMetric', selected: true},
+                // v2: {var_id: 'timing', var_name: 'Timing', onEvent: 'selectMetric', selected: false},
+                v3: {
+                    var_id: 'cc',
+                    var_name: 'Correlation',
+                    onEvent: 'selectMetric',
+                    selected: false
+                },
+                v4: {var_id: 'nrmse', var_name: 'nRMSE', onEvent: 'selectMetric', selected: false},
+                v5: {var_id: 'mae', var_name: 'nMAE', onEvent: 'selectMetric', selected: false},
+                // v6: {var_id: 'pt_change_vol', var_name: '% Vol Diff.', onEvent: 'selectMetric', selected: false},
+                // v7: {var_id: 'ppd', var_name: '% Peak Difference', onEvent: 'selectMetric', selected: false}
+            },
+            simType: {
+                v1: {var_id: 'ifc_hlm', var_name: 'IFC (HLM)', onEvent: 'select_sim_type', selected: true},
+                v2: {var_id: 'ifc_nwm', var_name: 'IFC (NWM)', onEvent: 'select_sim_type', selected: false},
+                v3: {var_id: 'mrms_hlm', var_name: 'MRMS (HLM)', onEvent: 'select_sim_type', selected: false},
+                v4: {var_id: 'mrms_nwm', var_name: 'MRMS (NWM)', onEvent: 'select_sim_type', selected: false},
+            },
+            baseMapType: {
+                v1: {var_id: 'light_all', var_name: 'Light', onEvent: 'basemap_changer', selected: true},
+                v2: {var_id: 'Dark', var_name: 'Dark', onEvent: 'basemap_changer', selected: false},
+                v3: {var_id: 'Esri Imagery', var_name: 'Esri Imagery', onEvent: 'basemap_changer', selected: false},
+                v4: {var_id: 'Toner', var_name: 'Toner', onEvent: 'basemap_changer', selected: false},
+            }
+        };
+
+        controlList = ['metricType', 'simType', 'baseMapType'];
+        for (let i = 0; i < controlList.length; i++) {
+            controlElem = controlList[i];
+            let container = $("." + controlElem + "Options");
+            let lst_item = "<div class='" + controlElem + "Item {3}' data-value='{0}' onclick=\"{2}(this)\">{1}</div>";
+            use_config = conf[controlElem];
+            console.log(controlElem);
+            Object.keys(use_config).forEach(key => {
+                container.append(
+                    lst_item.format(
+                        use_config[key].var_id,
+                        use_config[key].var_name,
+                        use_config[key].onEvent,
+                        use_config[key].selected ? "selected" : ''
+                    )
+                )
+            })
+        }
+
+    </script>
+
+    <button id="claculatemetricsButton" disabled="true" onclick="readData(metrics, selectedRange)">Calculate Event <br>Metrics
+    </button>
+</div>
+
+
+<div id="mini_con0" class="mini_con" style="display:none;  background-color: #162d2b;"
+     onclick="toggDiv(0)">
+</div>
+
+
+<div id="con0">
+    <div style="color: white; background-color:#162d2b; line-height: 30px; text-align: center;" onclick="toggDiv('0')">
+        Map Inventory
+    </div>
+
+    <div class="legend">
+        <ul id="sortable">
+            <script>
+                var standard = {
+//                     v1: {var_id: 'nexrad_rdr.kmz', var_name: 'NEXRAD Radars', onEvent: 'toggLyrStd', selected: false},
+                    v1: {var_id: 'ifc_rvr.geojson', var_name: 'IFC Bridge Sensor', onEvent: 'toggLyrStd', selected: false},
+                    v2: {
+                        var_id: 'eqd_nexrad.kmz',
+                        var_name: 'Thiessen Polygon',
+                        onEvent: 'toggLyrStd',
+                        selected: false
+                    },
+                    v3: {
+                        var_id: 'nexrad_150_wgs84.kmz',
+                        var_name: 'NEXRAD 230 km',
+                        onEvent: 'toggLyrStd',
+                        selected: false
+                    },
+                    v4: {var_id: 'nexrad230km.kmz', var_name: 'NEXRAD 230 km', onEvent: 'toggLyrStd', selected: false},
+                    v5: {var_id: 'wt_area_kml.kmz', var_name: 'Wind Farms', onEvent: 'toggLyrStd', selected: false},
+                    v6: {var_id: 'wt_point.geojson', var_name: 'Wind Turbines', onEvent: 'toggLyrStd', selected: false},
+                    v7: {var_id: 'IACounties.geojson', var_name: 'IA Counties', onEvent: 'toggLyrStd', selected: false}
+                };
+                let container = $("#sortable");
+                let lst_item = "<li class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input type='checkbox' onclick=\"{2}(this)\" value='{4}'><p class='key'>{1}</p></li>"
+                // "<div class='" + controlElem + "Item {3}' data-value='{0}' onclick=\"{2}(this)\">{1}</div>";
+                use_config = standard;
+                Object.keys(use_config).forEach(key => {
+                    container.append(
+                        lst_item.format(
+                            use_config[key].var_id,
+                            use_config[key].var_name,
+                            use_config[key].onEvent,
+                            use_config[key].selected ? "selected" : '',
+                            key
+                        )
+                    )
+                })
+            </script>
+        </ul>
+
+    </div>
+    <!--    style="position:absolute; right:50px; top:50px; width: 100px; height:120px;background-color: white;-->
+    <!--    border-style:dashed; border-color: blue; border-width:1px; border-radius:4px;padding:5px; opacity:0.9; color:black;"-->
+    <div style="width: 100%; display: block; text-align: center;"><input type="file" id="drop" style="    display: inline-block;
+    /* margin: auto; */
+    /* margin: 47px; */
+    /* min-width: 100px; */
+    max-width: 89px;"><label for="drop">RG</label></div>
+</div>
+<script src="dist/dropDatasortable.js"></script>
+
+<script>
+    var config = {};
+    var systemState = {
+        yr: '2016',
+        prod: 'Q_mrms_hlm_QPF',
+        sliderState: 0,
+        usgs_id: ""
+    };
+    var basin_shape;
+    // window.onload = ()=>{
+    $.ajax({
+        dataType: "json",
+        async: false,
+        url: "configs/case2/config.json",
+        success: function (data) {
+            config = data;
+            console.log(config)}
+    });
+
+    let zoom_state = false;
+    let cur_basemap = 'light_all';
+    var lid;
+    let url = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+
+
+    // initialize the map on the "map" div with a given center and zoom
+    var map = L.map('map', {
+        center: [41.9472, -93.5403],
+        zoom: 8,
+        maxZoom: 15//,
+        // renderer: L.svg()
+    });
+    var basemap = L.tileLayer(url, {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd'
+    });
+
+    basemap.addTo(map);
+    map.getRenderer(map).options.padding = 0;
+
+    var printer = L.easyPrint({
+        tileLayer: basemap,
+        sizeModes: ['Current', 'A4Landscape', 'A4Portrait', 'A3Size'],
+        filename: 'myMap',
+        exportOnly: true,
+        hideControlContainer: true
+    }).addTo(map);
+
+    function manualPrint() {
+        printer.printMap('CurrentSize', 'MyManualPrint')
+    }
+
+    var A3Size = {
+        width: 8000,
+        height: 5000,
+        className: 'a3CssClass',
+        tooltip: 'A custom A3 size'
+    }
+
+    function basemap_changer(_selected) {
+        let controls = $(".baseMapTypeItem");
+        controls.each(i => {
+            $(controls[i]).removeClass('selected')
+        });
+        _sel = $(_selected);
+        _sel.addClass('selected');
+        BasemapName = _sel.data('value');
+        // let attri, url = [];
+        switch (BasemapName) {
+            case 'light_all':
+                url = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+                attri = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>';
+                break;
+            case 'Toner':
+                url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png';
+                attri = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+                break;
+            case 'Esri Imagery':
+                url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+                attri = 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+                break;
+            case 'Dark':
+                url = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+                attri = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+                break;
+            case 'Terrain':
+                url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png';
+                attri = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }
+        // console.log(attri)
+        map.removeLayer(basemap);
+        basemap = L.tileLayer(url, {
+            attribution: attri,
+            subdomains: 'abcd'
+        });
+
+        basemap.addTo(map);
+        cur_basemap = BasemapName;
+    }
+
+
+    var popup = L.popup().setContent('<div id="container" style="height:600px; width:1500px"></div>');
+
+    // you can set .my-div-icon styles in CSS
+    var init = {};
+    if (typeof (init.max_yr) === 'undefined') {
+        init.max_yr = 2017;//parseInt(new Date().getFullYear());
+    }
+
+    if (typeof (init.min_yr) === 'undefined') {
+        init.min_yr = 2016;
+    }
+
+    // if (typeof (init.plt_visible) === 'undefined') {
+    //     init.plt_visible = true;
+    // }
+
+    if (typeof (init.yr) === 'undefined') {
+        init.yr = 2016;//new Date().getFullYear();
+    } else {
+        init.yr = parseInt(init.yr)
+    }
+
+    if (typeof (init.metric) === 'undefined') {
+        init.metric = 'kge';
+    } else {
+        init.metric = init.metric;
+    }
+
+    if (typeof (init.sim_type) === 'undefined') {
+        init.sim_type = 'ifc_hlm';
+    } else {
+        init.sim_type = init.sim_type;
+    }
+    var myplot;
+    var group = L.featureGroup().addTo(map);
+    var smap_ts;
+    var metrics;
+    var markerArray, marker;
+    var jsonFeatures = [];
+    var metric_name = 'kge';
+
+
+    function select_sim_type(_selected) { //sim_type) {
+        let controls = $(".simTypeItem");
+        controls.each(i => {
+            $(controls[i]).removeClass('selected')
+        });
+        _sel = $(_selected);
+        _sel.addClass('selected');
+        init.sim_type = _sel.data('value');
+        console.log(init.sim_type)
+        if (zoom_metric_state) {
+            draw_markers_sub_year(metrics_subyear, init.metric, init.sim_type)
+        } else {
+            draw_markers(metrics, init.metric, init.yr, init.sim_type);
+        }
+
+        generateColorBar();
+    }
+
+    function selectMetric(_selected) {
+        // init.metric = _metric;
+        let controls = $(".metricTypeItem");
+        controls.each(i => {
+            $(controls[i]).removeClass('selected')
+        });
+        _sel = $(_selected);
+        _sel.addClass('selected');
+        init.metric = _sel.data('value');
+
+        if (zoom_metric_state) {
+            draw_markers_sub_year(metrics_subyear, init.metric, init.sim_type)
+        } else {
+            draw_markers(metrics, init.metric, init.yr, init.sim_type);
+        }
+
+        generateColorBar();
+    }
+
+    function changeYear(val) {
+        zoom_state = false;
+        zoom_metric_state = false;
+        _yr = init.yr + parseInt(val);
+        _min = init.min_yr;
+        _max = init.max_yr;
+        var XRange;
+        if (_min <= _yr && _yr <= _max) {
+            init.yr = _yr;
+            $('#year-selected').text(_yr);
+
+            draw_markers(metrics, init.metric, _yr, init.sim_type);
+
+
+            if (myplot !== undefined) {
+                tracePlot(init.yr, lid,usgs_id)
+
+                // // generateColorBar();
+                XRange = CheckXRange(_yr);
+                var update = {
+                    'xaxis.range': XRange
+                };
+                Plotly.relayout('canvasDIV', update)
+            }
+        }
+
+    }
+
+
+    var lid_usgs;
+    Papa.parse('data/lid_usgs.csv', {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        complete: function (results) {
+            lid_usgs = results.data;
+            Papa.parse('data/metrics/metrics.csv', {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                complete: function (results) {
+                    metrics = results.data;
+                    draw_markers(metrics, metric_name, init.yr, init.sim_type)
+                }
+            });
+        }
+    });
+    // $.getJSON("comparisons.json", function (metrics_temp) {
+    //     success:jQuery.parseJSON(JSON.stringify(metrics_temp));
+    //     metrics_comp = metrics_temp;
+    // });
+
+    canvasDIV = document.getElementById('canvasDIV');
+
+
+    L.Layer.prototype.setInteractive = function (interactive) {
+        if (this.getLayers) {
+            this.getLayers().forEach(layer => {
+                layer.setInteractive(interactive);
+            });
+            return;
+        }
+        if (!this._path) {
+            return;
+        }
+
+        this.options.interactive = interactive;
+
+        if (interactive) {
+            L.DomUtil.addClass(this._path, 'leaflet-interactive');
+        } else {
+            L.DomUtil.removeClass(this._path, 'leaflet-interactive');
+        }
+    };
+
+    $.getJSON("data/staticLayers/kmls/ifc_net3_simp.geojson", function (data) {
+        // add GeoJSON layer to the map once the file is loaded
+        // rvr_net = L.geoJson(data);
+        // console.log(data);
+        var tileLayer = L.vectorGrid.slicer(data, {
+            rendererFactory: L.svg.tile,
+            vectorTileLayerStyles: {
+                sliced: function (properties, zoom) {
+                    let p = properties.h_order;
+                    return {
+                        color: p === 3 ? '#00e4ff' :
+                            p === 4 ? '#00c5ff' :
+                                p === 5 ? '#00acff' :
+                                    p === 6 ? '#018eff' :
+                                        p === 7 ? '#007dff' :
+                                            p === 8 ? '#007bff' :
+                                                p === 9 ? '#0055ff' : '#000000',
+                        fillOpacity: 0.5,
+                        //fillOpacity: 1,
+                        stroke: true,
+                        fill: true,
+                        fillColor: 'black',
+                        //opacity: 0.2,
+                        weight: p / 3
+                    }
+                }
+
+            },
+            maxZoom: 22,
+            indexMaxZoom: 5,       // max zoom in the initial tile index
+            interactive: false
+        }).addTo(map);
+        tileLayer.bringToFront()
+    });
+
+
+    // var control = L.control.layers(null, null, { collapsed:false }).addTo(map);
+    // contextLayerLoader('data/gis_files/ifc_net3_simp_gis.kmz')
+    Object.size = function (obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+
+    let XRange;
+    if (zoom_state) {
+        XRange = selectedRange;
+    } else {
+        XRange = ['2016-04-01 00:00:00', '2016-12-01 00:00:00'];
+    }
+
+
+    var layerGeo;
+
+    function addbasin_kml(kml_fn) {
+        if (basin_shape !== undefined) {
+            map.removeLayer(basin_shape);
+        }
+        basin_shape = new L.KML(kml_fn, {async: true});
+        console.log(basin_shape)
+        basin_shape.on("loaded", function (e) {
+            basin_shape.setStyle({color: '#555555', fillColor: '#bcbcbc', 'fillOpacity': 0.4});
+            basin_shape.bringToBack();
+            // map.fitBounds(e.target.getBounds());
+        });
+
+
+        map.addLayer(basin_shape);
+
+        return basin_shape
+    }
+
+
+    group.on("click", function (event) {
+
+        var clickedMarker = event.layer;
+        // do some stuff…
+        usgs_id = clickedMarker.feature.properties.USGS_id;
+        systemState.usgs_id = usgs_id;
+//         lid = String(clickedMarker.feature.properties.lid);
+
+        // usgs_name = clickedMarker.feature.properties.USGS_name;
+        lid = clickedMarker.feature.properties.lid;
+
+        ifis_id = clickedMarker.feature.properties.ifis_id;
+        console.log(lid)
+
+        // ensemble_data = [];
+        // for (i = 1; i < 11; i++) {
+        //     ensemble_data.push('data/results/csv_ensemble_smap/' + lid + '-' + String(i) + '.csv');
+        // }
+
+        // usgs_id = '0' + usgs_id;
+
+//         console.log(zoom_state, lid)
+//         usgs_data = 'data/usgs_gages_long/fifteen_minute1/usgs_' + String(usgs_id) + '.txt';
+//         assim_norm_l3_v2 = 'data/results/csv_smap_l3_v2/' + lid + '.csv';
+//         openloop_new = 'data/results/csv_ol/' + lid + '.csv';
+
+//         flood_level = 'data/mean_annual_flood_q/usgs_' + String(usgs_id) + '.csv';
+//         // console.log(String(getlength(ifis_id)));
+        if (getlength(ifis_id) > 3) {
+            kml_fn = 'data/staticLayers/basinBoundaries/' + String(ifis_id) + '.kml';
+        } else if (getlength(ifis_id) == 3){
+            kml_fn = 'data/staticLayers/basinBoundaries/0' + String(ifis_id) + '.kml';
+        } else if (getlength(ifis_id) == 2){
+            kml_fn = 'data/staticLayers/basinBoundaries/00' + String(ifis_id) + '.kml';
+        } else if (getlength(ifis_id) == 1){
+            kml_fn = 'data/staticLayers/basinBoundaries/000' + String(ifis_id) + '.kml';
+        }
+// //         console.log(lid);
+        console.log(kml_fn)
+
+        addbasin_kml(kml_fn);
+        if (!zoom_state) {
+            XRange = CheckXRange(init.yr);
+        }
+//         var files = [openloop_data, usgs_data, smap_ts_am_fn, smap_ts_pm_fn, assim_norm_l3_v2, flood_level];
+        myplot = tracePlot(init.yr, lid, usgs_id);
+        canvasDIV.style.setProperty('display', 'block');
+        map.setView([44, -93.5], 7);
+        console.log(clickedMarker)
+        return lid;
+    });
+
+    function getlength(number) {
+        return number.toString().length;
+    }
+
+    map.on('popupclose', function (e) {
+        $('#container').html("Loading...");
+    });
+
+    // basemap.on('loading', function (event) {
+    //     loader.addTo(map);
+    //     setTimeout(function (){loader.hide();},5000);
+    // });
+    // basemap.on('load', function (event) {
+    //     console.log('all tiles loaded');
+    //     loader.hide()
+    // });
+    // basemap.on('tileloadstart', function (event) {
+    //     console.log('start loading 1 tile');
+    // });
+    var bar;
+    var leaflet_layers = [];
+
+
+    function toggDiv(a) {
+        _switch = {'block': 'none', 'none': 'block'};
+        _elm = $('#con' + a);
+        _elm_mini = $('#mini_con' + a);
+        _elm.css('display', _switch[_elm.css('display')]);
+        _elm_mini.css('display', _switch[_elm_mini.css('display')]);
+    }
+
+
+    function toggLyrStd(e) {
+        let is_checked = e.checked;
+        let lyr_id = e.value;
+        let sel = $(e);
+        console.log(e.value)
+        let fn = standard[lyr_id].var_id;
+//         let icon = standard[lyr_id].icon ? standard[lyr_id].icon : undefined;
+
+        if (!(is_checked)) {
+            sel.css("background-color", "");
+            console.log(fn)
+            leaflet_layers[fn].remove()
+
+        } else {
+            sel.css("background-color", '#2d4e45'); //"#359AFF");
+            $.each(
+                $('#con0').find("input[type='checkbox']:checked"),
+                function (ix, ele) {
+                    if (ele.value != sel[0].value) $(ele).css("background-color", 'rgb(175, 193, 126)');
+                }
+            )
+            if (leaflet_layers[fn] === undefined) {
+                contextLayerLoader(fn)
+            } else {
+                leaflet_layers[fn].addTo(map)
+            }
+
+        }
+
+    }
+
+
+    let kmzload = function (fn_path, fn) {
+//         var layerID;
+        let kmzParser = new L.KMZParser({
+            async: false,
+            onKMZLoaded: function (layer, name) {
+//             control.addOverlay(layer, name);
+                layer.addTo(map);
+                layer.setStyle({'fillOpacity': 0.1});
+                layer.setInteractive(false);
+                leaflet_layers[fn] = [];
+                leaflet_layers[fn] = layer;
+
+                // layer.setZIndex(2);
+            }
+        });
+        kmzParser.load(fn_path);
+    };
+
+    function contextLayerLoader(fn) {
+        let fn_path;
+        let ext = fn.split('.').pop();
+        switch (ext) {
+            case 'kmz':
+                fn_path = "data/staticLayers/kmls/" + fn;
+                kmzload(fn_path, fn);
+                break;
+            case 'kml':
+                fn_path = 'data/staticLayers/kmls/' + fn;
+                let layer = new L.KML(fn_path, {async: true});
+                layer.on("loaded", function (e) {
+                    map.addLayer(layer);
+                    layer.setStyle({color: '#555555', fillColor: '#bcbcbc', 'fillOpacity': 0.1});
+                    layer.setInteractive(false);
+                    layer.setZIndex(0);
+                    leaflet_layers[fn] = [];
+                    leaflet_layers[fn] = layer;
+                });
+                break;
+            case 'geojson':
+                $.ajax({
+                    dataType: "json",
+                    url: 'data/staticLayers/kmls/' + fn,
+                    success: function (data) {
+                        // add GeoJSON layer to the map once the file is loaded
+                        // rvr_net = L.geoJson(data);
+                        // console.log(data);
+                        var tileLayer = L.vectorGrid.slicer(data, {
+                            rendererFactory: L.svg.tile,
+                            vectorTileLayerStyles: {
+                                sliced: function (properties, zoom) {
+                                    let p = properties.h_order;
+                                    return {
+                                        color: p === 3 ? '#00e4ff' :
+                                            p === 4 ? '#00c5ff' :
+                                                p === 5 ? '#00acff' :
+                                                    p === 6 ? '#018eff' :
+                                                        p === 7 ? '#007dff' :
+                                                            p === 8 ? '#007bff' :
+                                                                p === 9 ? '#0055ff' : '#000000',
+                                        fillOpacity: 0.5,
+                                        //fillOpacity: 1,
+                                        stroke: true,
+                                        fill: true,
+                                        fillColor: 'black',
+                                        //opacity: 0.2,
+                                        weight: p / 3,
+                                    }
+                                }
+
+                            },
+                        }).addTo(map);
+                        leaflet_layers[fn] = tileLayer;
+                        tileLayer.bringToFront()
+                    }
+                })
+                break;
+        }
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="US">
+<head>
+    <link rel="icon" type="image/ico" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>IFC Hydro-Analytics</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,400">
+    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" type="text/css" href="dist/loading-bar.css"/>
+    <link rel="stylesheet" type="text/css" href="dist/leaflet.loader.css"/>
+    <link rel="stylesheet" type="text/css" href="dist/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="css/hygis.css"/>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-image/v0.0.4/leaflet-image.js'></script>
+    <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
+    <script src="https://unpkg.com/@tmcw/togeojson@3.0.1/dist/togeojsons.min.js"></script>
+    <script src="https://unpkg.com/geojson-vt@3.0.0/geojson-vt.js"></script>
+    <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+    <script src="dist/leaflet.canvaslayer.field.js"></script>
+    <script src="dist/leaflet.loader.js"></script>
+    <script src="dist/KML.js"></script>
+    <script src="dist/geotiff.js"></script>
+    <script src="dist/GeotiffParser.js"></script>
+    <script src="applications/leaflet_plugins/bundle.js"></script>          <!-- ??? -->
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
+    <script src="dist/numeric.js"></script>
+    <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
+    <script src="applications/moment.js"></script>
+
+    <script type="text/javascript" src="applications/general/common.js"></script>
+    <script type="text/javascript" src="applications/controlElements/mapControlElements.js"></script>
+    <script type="text/javascript" src="applications/controlElements/controlFunctions.js"></script>
+
+    <script type="text/javascript" src="applications/metricFunctions/math.js"></script>
+    <script type="text/javascript" src="applications/metricFunctions/trapz.js"></script>
+    <script type="text/javascript" src="applications/metricFunctions/all_metrics.js"></script>
+    <script type="text/javascript" src="applications/metricFunctions/synch.js"></script>
+
+    <script type="text/javascript" src="applications/visualization/maps/markerPlot.js"></script>
+    <!--<script type="text/javascript" src="applications/visualization/maps/nws_markerPlot.js"></script>-->
+    <script type="text/javascript" src="applications/visualization/maps/2dMap.js"></script>
+    <script type="text/javascript" src="applications/visualization/timeseries/tracePlot.js"></script>
+
+    <script type="text/javascript" src="applications/dataReader.js"></script>
+
+    <script type="text/javascript" src='dist/html2canvas.min.js'></script>
+    <script type="text/javascript" src='dist/FileSaver.js'></script>
+    <script type="text/javascript" src="dist/chroma.min.js"></script>
+
+    <script type="text/javascript" src="dist/colors.js"></script>
+    <script type="text/javascript" src="dist/loading-bar.js"></script>
+    <script type="text/javascript" src="dist/dropDatasortable.js"></script>
+    <script type="text/javascript" src="ini.js"></script>
+    <script>
+            let config = {};
+            let config_url = "./configs/case1/config.json";
+            let _get = _GET();
+            if (_get.hasOwnProperty('config')) {
+                config_url = _get.config;
+            }
+            delete _get;
+
+            let systemState = {
+                yr: '',
+                prod: '',
+                //sim_type: '', //'ifc_nwm',
+                sliderState: '',
+                //usgs_id: '',
+                xRange: null,
+                mode: ''
+            };
+
+            let markerAttrs;
+            let div_plot;
+            let zOffset = 1000;
+            let basin_shape;
+            let plotly_plot;
+            zoom_state = false;
+            zoom_metric_state = false;
+            let layerGeo;
+            var leaflet_layers = [];
+            var mapMarkers;
+            let group;
+
+            $.ajax({
+                dataType: "json",
+                async: false,
+                cache: true,
+                url: config_url,
+                success: function (data) {
+                    console.log("HyGIS v0.9 Beta: Platform Initialized - Config: ", config_url);
+                    config = data;
+                }
+            });
+
+/* BLOCK NEEDS TO BE MOVED TO CONTROLS */
+/* END BLOCK NEEDS TO BE MOVED TO CONTROLS */
+
+    </script>
+</head>
+<body>
+<div id="progressDIV">
+    <div class="bgLoading" id="progressbar">1%</div>
+</div>
+
+<div id='map'></div>
+<div id="colorbar"></div>
+<div id="div_plot">
+    <div id='sliderMainDIV'>
+        <div id="slider" style="width: calc(100% - 140px); left: 81px;"></div>
+        <input id="buttonAddTrace" type="button" value="add" onclick="addTraces('semi-permanent')">
+        <input id="buttonClearTrace" type="button" value="clear" onclick="clearTraces('semi-permanent')">
+        <div id="sliderLabelDIV"></div>
+    </div>
+</div>
+
+<div class="generic-control-bar year-control-bar">
+    <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="-1">-</div>
+
+    <div id="year-selected" class="year-button" data-year=0></div>
+    <script>
+        let el = document.getElementById('year-selected');
+        el.innerText = config.data_part.initial;
+        el.setAttribute('data-year',config.data_part.initial);
+        systemState.yr = config.data_part.initial;
+    </script>
+    <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="1">+</div>
+</div>
+<div class="plot-control-bar">
+    <div id="plotly-button" class=" generic-button" onclick="hideShowCanvas()">
+        <img src="dist/images/plot_ico.png">
+    </div>
+</div>
+<div class="custom-control-container">
+    <div class="metricTypeDIV">
+        <div id="markerAttrs" class="baseMapControl"
+             onclick="$('#' + this.id + 'Options').is(':visible') ? $('#' + this.id + 'Options').hide() : $('#' + this.id + 'Options').show();">Performance<img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div id=markerAttrsOptions class="baseMapTypeOptions"></div>
+    </div>
+    <div class="simTypeDIV">
+        <div id= "prod" class="baseMapControl"
+             onclick="$('#' + this.id + 'Options').is(':visible') ? $('#' + this.id + 'Options').hide() : $('#' + this.id + 'Options').show();">Sim. Type <img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div id="prodOptions" class="baseMapTypeOptions"></div>
+    </div>
+    <div class="baseMapDIV">
+        <div id="baseMapType" class="baseMapControl"
+             onclick="$('#' + this.id + 'Options').is(':visible') ? $('#' + this.id + 'Options').hide() : $('#' + this.id + 'Options').show();">Base Map<img class="dropDownArrow" src="http://maps.gstatic.com/mapfiles/arrow-down.png">
+        </div>
+        <div id="baseMapTypeOptions" class="baseMapTypeOptions"></div>
+    </div>
+    <!--<script><!-- CONTROL INSTALL
+    </script>-->
+    <button id="claculatemetricsButton" disabled="true" onclick="readData(metrics, selectedRange)">Calculate Event <br>Metrics
+    </button>
+</div>
+<div id="mini_con0" class="mini_con" style="display:none;  background-color: #162d2b;" onclick="toggDiv(0)">
+</div>
+<div id="con0">
+    <div style="color: white; background-color:#162d2b; line-height: 30px; text-align: center;" onclick="toggDiv('0')">
+        Map Inventory
+    </div>
+    <div class="legend">
+        <ul id="sortable"></ul>
+    </div>
+    <div style="width: 100%; display: block; text-align: center;">
+        <input type="file" id="drop" style="    display: inline-block; max-width: 89px;"><label for="drop"></label>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    div_plot = document.getElementById('div_plot');
+    ini();
+</script>
