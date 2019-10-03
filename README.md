@@ -18,9 +18,15 @@ effort for users.
 * Usage
 
 * Contributing
-
+ 
 * Credits
 
 * License
     
+ ### Requirements
  
+ These are the requirements of HyGIS:
+ 
+ * Leaflet
+ * jQuery
+ *  
