@@ -26,7 +26,7 @@ function pathInterpret($path){
         );
     }
     
-    $_arr = explode("/", $path);
+    $_arr = explode("/", trim($path,'/'));
     $_args = [];
     //echo "\n\n", count($_arr), "\n\n";
     if (count($_arr) != 3) return False;
@@ -75,7 +75,7 @@ $_dbq = array(
             y_smap
         ORDER BY date_trunc('hour', to_timestamp(tb_time_utc));"
     ),
-    "smap" => array (
+    "smap_l3" => array (
         "db"=>"rt_smap",
         "qr"=> "SELECT 
             to_char(
@@ -85,17 +85,81 @@ $_dbq = array(
             soil_moisture sm
         FROM 
             smap_l3_v2.data
-        WHERE 
+        WHERE             
             grid_x=%s AND 
-            grid_y=%s AND 
+            grid_y=%s AND
             tb_time_utc between 
                 '%s-01-01 00:00-00'::timestamp with time zone AND 
                 '%s-01-01 00:00-00'::timestamp with time zone + '1 year'::interval
+            
         ORDER BY tb_time_utc;"
+      
+    ),
+    "smap_l4_surface" => array (
+        "db"=>"rt_smap",
+        "qr"=> "SELECT 
+            to_char(
+                date_trunc('hour', sm_time),
+                'YYYY-MM-DD HH24:MI'
+            ) as dt,             
+	        sm_surface	        
+        FROM 
+            smap_l4.data
+        WHERE             
+            grid_x=%s AND 
+            grid_y=%s AND
+            sm_time BETWEEN 
+                '%s-01-01 00:00-00'::timestamp with time zone AND 
+                '%s-01-01 00:00-00'::timestamp with time zone + '1 year'::interval
+            
+        ORDER BY sm_time;"
+
+    ),
+    "smap_l4_rootzone" => array (
+        "db"=>"rt_smap",
+        "qr"=> "SELECT 
+            to_char(
+                date_trunc('hour', sm_time),
+                'YYYY-MM-DD HH24:MI'
+            ) as dt,             
+	        sm_rootzone	        
+        FROM 
+            smap_l4.data
+        WHERE             
+            grid_x=%s AND 
+            grid_y=%s AND
+            sm_time BETWEEN 
+                '%s-01-01 00:00-00'::timestamp with time zone AND 
+                '%s-01-01 00:00-00'::timestamp with time zone + '1 year'::interval
+            
+        ORDER BY sm_time;"
+
+    ),
+    "smap_l4_profile" => array (
+        "db"=>"rt_smap",
+        "qr"=> "SELECT 
+            to_char(
+                date_trunc('hour', sm_time),
+                'YYYY-MM-DD HH24:MI'
+            ) as dt,             
+	        sm_profile	        
+        FROM 
+            smap_l4.data
+        WHERE             
+            grid_x=%s AND 
+            grid_y=%s AND
+            sm_time BETWEEN 
+                '%s-01-01 00:00-00'::timestamp with time zone AND 
+                '%s-01-01 00:00-00'::timestamp with time zone + '1 year'::interval
+            
+        ORDER BY sm_time;"
+
     )
 );
 $dbname = $_dbq[$args["prd"]]["db"];
 $_qr = $_dbq[$args["prd"]]["qr"];
+
+
 
 //echo "$_qr\n\n"    ;
 $qr = sprintf($_qr, $args['x'], $args['y'], $args['yr'], $args['yr']);

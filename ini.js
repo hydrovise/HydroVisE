@@ -190,4 +190,7 @@ function ini() {
         initSpatialData()
     }
 
+    dragElement("mini_con0");
+    dragElement("title_con0", "con0");
+    //dragElement("con0");
 }

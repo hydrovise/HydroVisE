@@ -175,10 +175,10 @@
     <button id="claculatemetricsButton" disabled="true" onclick="readData(metrics, selectedRange)">Calculate Event <br>Metrics
     </button>
 </div>
-<div id="mini_con0" class="mini_con" style="display:none;  background-color: #162d2b;" onclick="toggDiv(0)">
+<div id="mini_con0" class="mini_con" style="top: 10px; left:50px; display:block;  background-color: #162d2b;"> <!-- onclick="toggDiv('mini_con0', 'con0')"> -->
 </div>
-<div id="con0">
-    <div style="color: white; background-color:#162d2b; line-height: 30px; text-align: center;" onclick="toggDiv('0')">
+<div id="con0" class="noselect" style="display:none;">
+    <div id='title_con0' style="color: white; background-color:#162d2b; line-height: 30px; text-align: center;">
         Map Inventory
     </div>
     <div class="legend">

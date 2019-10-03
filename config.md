@@ -177,7 +177,7 @@
          "var": [
            "comID"
          ],
-         "format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/get_boundary.php?id={0}"
+         "format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/services/get_boundary.php?id={0}"
        }
      }
    },

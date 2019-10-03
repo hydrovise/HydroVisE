@@ -62,9 +62,9 @@ function CheckXRange(_yr) {
     let XRange;
     if (!zoom_state) {
         if (div_plot.data !== undefined) {
-            XRange = [_yr + "-04-01 00:00:00", _yr + "-12-01 00:00:00"];
+            XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
         } else {
-            XRange = [systemState.yr + "-04-01 00:00:00", systemState.yr + "-12-01 00:00:00"];
+            XRange = [systemState.yr + "-01-01 00:00:00", systemState.yr + "-12-30 00:00:00"];
         }
         return XRange
     } else {
@@ -271,7 +271,6 @@ function tracePlot(yr, comID) {
                         use_layout,
                         plotly_modBar
                     );
-
                     $(".updatemenu-button").on(
                         "click",
                         (ev) => {
@@ -287,6 +286,7 @@ function tracePlot(yr, comID) {
             )
         });
 //    document.getElementById("sliderMainDIV").style.display = 'block';
+
 }
 
 function addTraces(lifespan='semi-permanent') {

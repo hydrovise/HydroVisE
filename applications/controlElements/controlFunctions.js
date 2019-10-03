@@ -1,6 +1,3 @@
-
-
-
 function select_sim_type(_selected) {
     let _sel = $(_selected)
     let class_arr = (_sel.attr('class').split(/\s+/)).slice(0,2)
@@ -41,9 +38,13 @@ function changeYear(val) {
     if (config.data_part.min_val <= use_yr && use_yr <= config.data_part.max_val) {
         systemState.yr = use_yr;
         $('#year-selected').text(use_yr);
-        draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
+        if (mapMarkers){
+            leaflet_layers['mapMarkers'].remove()
+            draw_markers(mapMarkers, config.mapMarkers.comIDName)
+        }
+        // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
         if (plot !== undefined) {
-            tracePlot(use_yr, lid, usgs_id)
+            tracePlot(use_yr, systemState.comID)
             var update = {
                 'xaxis.range': CheckXRange(use_yr) //XRange
             };
@@ -53,24 +54,16 @@ function changeYear(val) {
 }
 
 
-function dragElement(elmnt, elmnt1) {
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    if (document.getElementById(elmnt.id + "header")) {
-        /* if present, the header is where you move the DIV from:*/
-        document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-    } else {
-        /* otherwise, move the DIV from anywhere inside the DIV:*/
-        elmnt.onmousedown = dragMouseDown;
-    }
-
+function dragElement(el_id) {
     function dragMouseDown(e) {
         e = e || window.event;
         e.preventDefault();
         // get the mouse cursor position at startup:
         pos3 = e.clientX;
         pos4 = e.clientY;
-
-        document.onmouseup = closeDragElement;
+        init_y = elmnt.style.top;
+        init_x = elmnt.style.left;
+        document.onmouseup = closeDragElement
         // call a function whenever the cursor moves:
         document.onmousemove = elementDrag;
     }
@@ -78,34 +71,52 @@ function dragElement(elmnt, elmnt1) {
     function elementDrag(e) {
         e = e || window.event;
         e.preventDefault();
-        // calculate the new cursor position:
         pos1 = pos3 - e.clientX;
         pos2 = pos4 - e.clientY;
         pos3 = e.clientX;
         pos4 = e.clientY;
-        // set the element's new position:
         elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
         elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-        elmnt1.style.top = (elmnt1.offsetTop - pos2) + "px";
-        elmnt1.style.left = (elmnt1.offsetLeft - pos1) + "px";
     }
 
-    function closeDragElement() {
-        /* stop moving when mouse button is released:*/
+    function closeDragElement(e) {
+        let final_x = elmnt.style.left;
+        let final_y = elmnt.style.top;
+        if (final_x == init_x &&
+            final_y == init_y) {
+            minMaxInventory(el_id);
+        }
+
         document.onmouseup = null;
         document.onmousemove = null;
     }
+
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    var init_y;
+    var init_x;
+    var elmnt = document.getElementById(el_id);
+    console.log (el_id, document.getElementById(el_id));
+    elmnt.onmousedown = dragMouseDown;
 }
 
+function minMaxInventory(a) {
+    let vis = new Map (
+        [
+            ['block', 'none'],
+            ['none', 'block']
+        ]
+    );
+    let pref = 'mini_';
+    b = a.includes(pref) ? a.replace(pref, '') : pref + a;
+    el_a = document.getElementById(a);
+    el_b = document.getElementById(b);
+    console.log(el_a,b, el_b)
+    el_a.style.display = vis.get(el_a.style.display);
+    el_b.style.display = vis.get(el_a.style.display);
 
-function toggDiv(a) {
-    _switch = {'block': 'none', 'none': 'block'};
-    _elm = $('#con' + a);
-    _elm_mini = $('#mini_con' + a);
-    _elm.css('display', _switch[_elm.css('display')]);
-    // _elm_mini.css('display', _switch[_elm_mini.css('display')]);
-    _elm.css('top', _elm_mini.css('top'))
-    _elm.css('left', _elm_mini.css('left'))
+    el_b.style.top = el_a.style.top;
+    el_b.style.left = el_a.style.left;
+
 }
 
 //user has to click twice on the raster layers
@@ -200,7 +211,7 @@ function updateLayerZIndex(){
             map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
         }
         // map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
-
+        map.getPane('overlayPane').style.zIndex = 1000;
     });
 }
 

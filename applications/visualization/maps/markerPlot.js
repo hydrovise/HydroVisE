@@ -32,7 +32,7 @@ function highlightFeature(e) {
 }
 
 function resetHighlight(e) {
-    geomLayers.resetStyle(e.target);
+    leaflet_layers['mapMarkers'].resetStyle(e.target);
 }
 
 
@@ -79,8 +79,8 @@ function initializeGeom(dynamicGeomID) {
 
     function onEachFeature(feature, layer) {
         layer.on({
-            // mouseover: highlightFeature,
-            // mouseout: resetHighlight,
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
             click: clickFeature
         });
 
@@ -121,7 +121,7 @@ function initializeGeom(dynamicGeomID) {
                         color: "#000",
                         weight: 1,
                         opacity: 1,
-                        fillOpacity: 0.8
+                        fillOpacity: 0.3
                     },
                     onEachFeature: onEachFeature,
                     pane: dynamicGeomID
@@ -238,7 +238,7 @@ function draw_markers(pointList, pointListID) {
             v => vals.push(
                 $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
             )
-        )
+        );
         //console.log(formatArray(c.format, vals));
         return formatArray(c.format, vals);
     }
@@ -283,30 +283,44 @@ function draw_markers(pointList, pointListID) {
             plist.onEachFeature
         );
     }
+    if (plist.geomType==='point') {
+        leaflet_layers['mapMarkers'] = L.geoJSON(
+            pointList,
+            {
+                style: (!plist.hasOwnProperty("style")) ? defaultStyle : plist.style,
+                onEachFeature: onEachFeature,
+                pointToLayer: function (feature, latlng) { //TODO: add custom ICON for style
+                    let tooltipStr = tooltipStrGen(feature);
 
-    geomLayers = L.geoJSON(
-        pointList,
-        {
+                    let cMarker = L.circleMarker(latlng);
+                    if (tooltipStr) cMarker.bindTooltip(
+                        tooltipStr,
+                        {
+                            permanent: false,
+                            direction: 'right'
+                        }
+                    );
+                    return L.circleMarker(latlng);
+                }
+            }
+        );
+
+        leaflet_layers['mapMarkers'].addTo(map);
+        // leaflet_layers['mapMarkers'].bringToFront()
+    } else{
+        leaflet_layers['mapMarkers'] = L.geoJSON(pointList, {
             style: (!plist.hasOwnProperty("style")) ? defaultStyle : plist.style,
-            onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) { //TODO: add custom ICON for style
-                let tooltipStr = tooltipStrGen(feature);
-                
-                let cMarker = L.circleMarker(latlng);
-                if (tooltipStr) cMarker.bindTooltip(
-                    tooltipStr,
-                    {
-                        permanent: false,
-                        direction: 'right'
-                    }
-                );
-                return L.circleMarker(latlng);
-            },
-        }
-    );
-    geomLayers.addTo(map)
+            onEachFeature: onEachFeature
+        });
+        map.addLayer(leaflet_layers['mapMarkers']);
+        leaflet_layers['mapMarkers'].eachLayer( layer=> {
+            let tooltipStr = tooltipStrGen(layer.feature);
+            if (tooltipStr) layer.bindTooltip(tooltipStr,{permanent: false,direction: 'right'})})
 
+        // leaflet_layers['mapMarkers'].bringToFront()
+    }
 
+    updateLayerZIndex()
 }
 
 function draw_markers_sub_year(metrics_subyear, useAttribute, _sim_type) {

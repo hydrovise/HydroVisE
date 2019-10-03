@@ -35,12 +35,15 @@ function addbasinKML(kml_fn) {
                 fillColor: '#bcbcbc',
                 'fillOpacity': 0.4
             });
-
+            basin_shape.addTo(map);
+            basin_shape.bringToBack();
+            return basin_shape
         }
     );
-    basin_shape.bringToBack();
-    map.addLayer(basin_shape);
-    return basin_shape
+
+    // map.addLayer(basin_shape);
+
+
 }
 
 
@@ -100,7 +103,8 @@ function addCustBaseMap(src){
     if (!config.hasOwnProperty("customBaseMap")) return;
     var tempColor;
     $.getJSON(src.url, function (data) {
-        var tileLayer = L.vectorGrid.slicer(data, {
+        map.createPane('customBaseMap');
+        leaflet_layers['customBaseMap'] = L.vectorGrid.slicer(data, {
             rendererFactory: L.svg.tile,
             vectorTileLayerStyles: {
                 sliced: function (properties, zoom) {
@@ -121,8 +125,16 @@ function addCustBaseMap(src){
                 }
 
             },
+            pane: 'customBaseMap'
         }).addTo(map);
-        tileLayer.bringToFront()
+        let lst_item = "<li id='li_customBaseMap' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input type='checkbox' onclick=\"toggLyrStd(this)\" value='customBaseMap'" +
+            " data-type='static' class='input checked'><p class='key'>" + src.name +"</p></li>";
+        var ctxLayerLegend = document.getElementById("sortable");
+        ctxLayerLegend.innerHTML += lst_item;
+
+        config.mapLayers['customBaseMap'] = {fn:'customBaseMap'};
+        updateLayerZIndex()
+        // tileLayer.bringToFront()
     });
 }
 
