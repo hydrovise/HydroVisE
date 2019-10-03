@@ -1,7 +1,7 @@
 # HyGIS
 ## A Non-Proprietary Web Browser-Based Software For Environmental Science
 
-###Description
+### Description
 HyGIS is developed to facilitate visualization and analysis of environmental data for users 
 with less exposure to web programming languages. The main motivation of HyGIS is to decrease the amount of
 effort for users.  
