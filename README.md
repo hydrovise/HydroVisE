@@ -6,7 +6,7 @@ HyGIS is developed to facilitate visualization and analysis of environmental dat
 with less exposure to web programming languages. The main motivation of HyGIS is to decrease the amount of
 effort for users.  
 
-###Table of Contents
+### Table of Contents
 
 * Requirements
 * Installation
