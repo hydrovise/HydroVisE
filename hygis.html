@@ -96,7 +96,7 @@
                 zoom_state:false
             };
 
-            systemState.xRange = CheckXRange(config.data_part.initial);
+            // ;
             let markerAttrs;
             let div_plot;
             let zOffset = 1000;
@@ -110,7 +110,7 @@
             let group;
             let twoDLegend;
             let timeSynchedDivs = [];
-
+            let repeting_releyout = false;
 
 //TODO * BLOCK NEEDS TO BE MOVED TO CONTROLS */
 //TODO * END BLOCK NEEDS TO BE MOVED TO CONTROLS */
@@ -144,6 +144,7 @@
         el.innerText = config.data_part.initial;
         el.setAttribute('data-year',config.data_part.initial);
         systemState.yr = config.data_part.initial;
+        systemState.xRange = CheckXRange(systemState.yr)
     </script>
     <div class="year-button" onclick="changeYear($(this).data('value'))" data-value="1">+</div>
 </div>

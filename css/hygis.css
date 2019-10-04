@@ -989,27 +989,7 @@ input[type="file"]{
     }
 }
 
-#claculatemetricsButton {
-    background-color: rgb(45, 162, 81); /* Green */
-    border: none;
-    color: white;
-    padding: 25px 3px;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    font-size: 16px;
-    cursor: pointer;
-    cursor: pointer;
-    z-index: 3;
-    position: relative;
-    top: 94px;
-}
 
-#claculatemetricsButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    display:none;
-}
 
 
 .checked {
@@ -1095,4 +1075,47 @@ input[type="file"]{
     position: relative;
     width: 100%;
     height: calc(100% - 30px);
+}
+
+
+#claculatemetricsButton {
+    background-color: rgb(45, 162, 81); /* Green */
+    border: none;
+    color: white;
+    padding: 25px 3px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    z-index: 3;
+    position: relative;
+    top: 94px;
+}
+
+#claculatemetricsButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+#claculatemetricsButton {
+    background-color: rgb(45, 162, 81); /* Green */
+    border: none;
+    color: white;
+    padding: 25px 3px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    cursor: pointer;
+    cursor: pointer;
+    z-index: 3;
+    position: relative;
+    top: 94px;
+}
+
+#claculatemetricsButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    display:none;
 }

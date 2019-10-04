@@ -2,11 +2,15 @@
 
 
 function initSpatialData() {
-    function addTab(key) {
+    function addTab(key,i) {
         var name = twoDConfig[key].name;
-        let template = "<button class=\"tablinks\" onclick=\"open2DTab(event,\'" + key + "\')\">" + name + "</button>";
-        let parentDIV = document.getElementById("twoDSelector");
-        parentDIV.innerHTML += template
+        tabBtn = document.createElement('button');
+        tabBtn.className = i===0 ? "tablinks active" : "tablinks";
+        tabBtn.setAttribute('data-keyname', key);
+        tabBtn.setAttribute('onclick','open2DTab(event,$(this).data(\'keyname\'))');
+        tabBtn.innerText = key;
+        twodSelector = document.getElementById('twoDSelector');
+        twodSelector.append(tabBtn)
     }
 
 
@@ -16,7 +20,8 @@ function initSpatialData() {
 
     let twodslider = {};
     let divname;
-    Object.keys(twoDConfig).forEach(key => {
+
+    Object.keys(twoDConfig).forEach((key, i ) => {
         let subset = twoDConfig[key];
         // console.log(subset)
         $.ajax({
@@ -25,20 +30,14 @@ function initSpatialData() {
             async: false,
             success: function (data) {
                 twoDTimestamps[key] = data.map(dt => moment.unix(dt).format('YYYY-MM-DD HH:mm'))
-                addTab(key);
+                addTab(key,i);
+                if (i==0) systemState.timeSelector.activeTab = 'div_' + key;
                 if (subset.hasOwnProperty('geom')) initializeGeom(key);
-
-                // twoDTimestamps[key] = traceTemp;
-                console.log(TwoDTimeSliderTraces);
-                divname = 'div_' + key;
-
-
             }
         });
     });
     //
-    gd1 = document.getElementById('div_plot');
-    timeSynchedDivs.push(gd1);
+
     var plotlyIterator = 0;
     Object.keys(config.spatialData).forEach(key => {
         var twoDimDIV = document.createElement("div");
@@ -55,7 +54,15 @@ function initSpatialData() {
             type: 'bar',
             hoverinfo: 'x'
         };
-        Plotly.newPlot(twoDimDIV, [traceTemp], config.timeSelectorLayout, {interactive: true, displayModeBar: false});
+        let use_layout = JSON.parse(
+            JSON.stringify(
+                config.timeSelectorLayout
+            )
+        );
+        use_layout.xaxis.range = systemState.xRange;
+        // use_layout.yaxis.fixedrange = true;
+
+        Plotly.newPlot(twoDimDIV, [traceTemp], use_layout, { displayModeBar: false, responsive: true});
         let dragLayer = document.getElementsByClassName('nsewdrag')[plotlyIterator];
         twoDimDIV.on('plotly_hover', function (data) {
             dragLayer.style.cursor = 'pointer'
@@ -72,6 +79,11 @@ function initSpatialData() {
             twoDMapPlotter(datasetName, dt_unix)
         });
         // gd = document.getElementById(twoDimDIV.id);
+        twoDimDIV.on("plotly_relayout", function (ed) {
+
+            syncPlots(ed, 'div_plot');
+
+        });
         timeSynchedDivs.push(twoDimDIV);
         plotlyIterator += 1;
     });

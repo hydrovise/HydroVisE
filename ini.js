@@ -52,10 +52,11 @@ function ini() {
         Object.keys(use_config).forEach(
             key => {
                 _selected = '';
-                if (use_config[key].selected){
+                if (use_config[key].selected) {
                     systemState[controlElem] = use_config[key].var_id;
                     _selected = 'selected';
-                };
+                }
+                ;
                 container.append(
                     lst_item.format(
                         use_config[key].var_id,
@@ -137,7 +138,7 @@ function ini() {
             config.point_data_config.pList1.fn +
             config.point_data_config.pList1.extension
     */
-    if (config.hasOwnProperty('mapMarkers')){
+    if (config.hasOwnProperty('mapMarkers')) {
         $.ajax({
             url: config.mapMarkers.fnPath,
             dataType: 'json',
@@ -149,7 +150,6 @@ function ini() {
         });
 
     }
-
 
 
     var dropArea = document.getElementById('drop');
@@ -167,40 +167,18 @@ function ini() {
     //TODO: setup and finalize system state initialization based on the user-defined configurations
     // Dicuss this matter with Radek
 
-    if (config.hasOwnProperty('spatialData')){
+    if (config.hasOwnProperty('spatialData')) {
         var twodsliderDIV = document.createElement('div');
         twodsliderDIV.id = 'twoDSelector';
         twodsliderDIV.className = 'tab';
         twodsliderDIV.style = 'display:block;z-index: 3;';
-        document.body.appendChild(twodsliderDIV)
-        initSpatialData()
-        function relayout(ed, divs) {
-            ed1 = {'xaxis.range[0]': ed["xaxis.range[0]"], 'xaxis.range[1]': ed["xaxis.range[1]"]};
-            divs.forEach((div, i) => {
-                if (div.layout != undefined) {
-                    let x = div.layout.xaxis;
-                    if (ed["xaxis.autorange"] && x.autorange) return;
-                    if (
-                        x.range[0] != ed["xaxis.range[0]"] ||
-                        x.range[1] != ed["xaxis.range[1]"]
-                    ) {
-                        Plotly.relayout(div, ed1);
-                    }
-                }
-            });
-        }
-
-        timeSynchedDivs.forEach(div => {
-            if (div.layout !== undefined) {
-                div.on("plotly_relayout", function (ed) {
-                    systemState.zoom_state = true;
-                    selectedRange = [ed["xaxis.range[0]"], ed["xaxis.range[1]"]];
-                    relayout(ed, timeSynchedDivs);
-                });
-            }
+        document.body.appendChild(twodsliderDIV);
+        initSpatialData();
+        repeting_releyout = false;
+        document.getElementById(systemState.timeSelector.activeTab).on("plotly_relayout", function (ed) {
+            syncPlots(ed, "div_plot");
         });
     }
-
     dragElement("mini_con0");
     dragElement("title_con0", "con0");
     //dragElement("con0");

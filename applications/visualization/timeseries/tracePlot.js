@@ -61,7 +61,7 @@ function unpack(_data, key) {
 function CheckXRange(_yr) {
     let XRange;
     if (!systemState.zoom_state) {
-            XRange = [systemState.yr + "-01-01 00:00:00", systemState.yr + "-12-30 00:00:00"];
+            XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
         return XRange
     } else {
         return selectedRange
@@ -237,7 +237,8 @@ function tracePlot(yr, comID) {
                             config.plotlyLayout
                         )
                     );
-                    use_layout.xaxis.range = systemState.XRange;
+                    use_layout.xaxis.range = systemState.xRange;
+                    use_layout.xaxis.autorange = false;
 
                     try {
                         use_layout.title = plotTitle(comID);
@@ -267,6 +268,9 @@ function tracePlot(yr, comID) {
                         use_layout,
                         plotly_modBar
                     );
+                    document.getElementById("div_plot").on("plotly_relayout", function (ed) {
+                        syncPlots(ed, systemState.timeSelector.activeTab);
+                    });
                     $(".updatemenu-button").on(
                         "click",
                         (ev) => {

@@ -35,22 +35,28 @@ function changeYear(val) {
     zoom_state = false;
     zoom_metric_state = false;
     use_yr = parseInt(systemState.yr) + (parseInt(val) * parseInt(config.data_part.step));
+
     if (config.data_part.min_val <= use_yr && use_yr <= config.data_part.max_val) {
         systemState.yr = use_yr;
+        systemState.xRange = CheckXRange(use_yr);
         $('#year-selected').text(use_yr);
+        var update = {
+            'xaxis.range': CheckXRange(use_yr) //XRange
+        };
         if (mapMarkers){
             leaflet_layers['mapMarkers'].remove()
             draw_markers(mapMarkers, config.mapMarkers.comIDName)
         }
         // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
-        if (plot !== undefined) {
+        if (div_plot.hasOwnProperty('data')) {
             tracePlot(use_yr, systemState.comID)
-            var update = {
-                'xaxis.range': CheckXRange(use_yr) //XRange
-            };
             Plotly.relayout(div_plot, update)
         }
+
+        repeting_releyout = true;
+        Plotly.relayout(systemState.timeSelector.activeTab, update)
     }
+
 }
 
 
@@ -227,4 +233,8 @@ function open2DTab(evt, tabName) {
     evt.currentTarget.className += " active";
     systemState.timeSelector.activeTab = tabID;
     dragLayer = document.getElementsByClassName('nsewdrag')[0];
+    ed = {"xaxis.range[0]": systemState.xRange[0], "xaxis.range[1]": systemState.xRange[1]};
+    repeting_releyout = true;
+    syncPlots(ed, systemState.timeSelector.activeTab)
+
 }
