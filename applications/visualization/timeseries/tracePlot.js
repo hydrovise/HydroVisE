@@ -60,12 +60,8 @@ function unpack(_data, key) {
 
 function CheckXRange(_yr) {
     let XRange;
-    if (!zoom_state) {
-        if (div_plot.data !== undefined) {
-            XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
-        } else {
+    if (!systemState.zoom_state) {
             XRange = [systemState.yr + "-01-01 00:00:00", systemState.yr + "-12-30 00:00:00"];
-        }
         return XRange
     } else {
         return selectedRange

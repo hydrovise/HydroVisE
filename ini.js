@@ -144,26 +144,12 @@ function ini() {
             async: false,
             success: function (data) {
                 mapMarkers = data;
-                // if (config.mapMarker.hasOwnProperty('markerAttrs')) {
-                //     Papa.parse(
-                //         config.mapMarker.markerAttrs,
-                //         {
-                //             download: true,
-                //             header: true,
-                //             dynamicTyping: false,
-                //             complete: function (results) {
-                //                 markerAttrs = results.data;
-                //             }
-                //         }
-                //     );
-                // }
                 draw_markers(mapMarkers, config.mapMarkers.comIDName)
             }
         });
 
     }
 
-    let kml_src = 'http://s-iihr50.iihr.uiowa.edu/smap/retro/data/';
 
 
     var dropArea = document.getElementById('drop');
@@ -188,6 +174,31 @@ function ini() {
         twodsliderDIV.style = 'display:block;z-index: 3;';
         document.body.appendChild(twodsliderDIV)
         initSpatialData()
+        function relayout(ed, divs) {
+            ed1 = {'xaxis.range[0]': ed["xaxis.range[0]"], 'xaxis.range[1]': ed["xaxis.range[1]"]};
+            divs.forEach((div, i) => {
+                if (div.layout != undefined) {
+                    let x = div.layout.xaxis;
+                    if (ed["xaxis.autorange"] && x.autorange) return;
+                    if (
+                        x.range[0] != ed["xaxis.range[0]"] ||
+                        x.range[1] != ed["xaxis.range[1]"]
+                    ) {
+                        Plotly.relayout(div, ed1);
+                    }
+                }
+            });
+        }
+
+        timeSynchedDivs.forEach(div => {
+            if (div.layout !== undefined) {
+                div.on("plotly_relayout", function (ed) {
+                    systemState.zoom_state = true;
+                    selectedRange = [ed["xaxis.range[0]"], ed["xaxis.range[1]"]];
+                    relayout(ed, timeSynchedDivs);
+                });
+            }
+        });
     }
 
     dragElement("mini_con0");

@@ -92,10 +92,11 @@
                 mode: '',
                 timeSelector:{
                     activeTab:''
-                }
+                },
+                zoom_state:false
             };
 
-            systemState.xRange = CheckXRange;
+            systemState.xRange = CheckXRange(config.data_part.initial);
             let markerAttrs;
             let div_plot;
             let zOffset = 1000;
@@ -108,7 +109,7 @@
             var mapMarkers;
             let group;
             let twoDLegend;
-
+            let timeSynchedDivs = [];
 
 
 //TODO * BLOCK NEEDS TO BE MOVED TO CONTROLS */

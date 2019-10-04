@@ -9,12 +9,6 @@ function initSpatialData() {
         parentDIV.innerHTML += template
     }
 
-    function addDIV(name) {
-        div = document.getElementById("twoDSelector");
-
-        div.innerHTML += template;
-    }
-
 
     let twoDTimestamps = {};
     twoDConfig = config.spatialData;
@@ -43,8 +37,8 @@ function initSpatialData() {
         });
     });
     //
-    // gd1 = document.getElementById('div_plot');
-    // timeSynchedDivs.push(gd1);
+    gd1 = document.getElementById('div_plot');
+    timeSynchedDivs.push(gd1);
     var plotlyIterator = 0;
     Object.keys(config.spatialData).forEach(key => {
         var twoDimDIV = document.createElement("div");
@@ -78,34 +72,10 @@ function initSpatialData() {
             twoDMapPlotter(datasetName, dt_unix)
         });
         // gd = document.getElementById(twoDimDIV.id);
-        // timeSynchedDivs.push(twoDimDIV);
+        timeSynchedDivs.push(twoDimDIV);
         plotlyIterator += 1;
     });
-    function relayout(ed, divs) {
-        ed1 = {'xaxis.range[0]': ed["xaxis.range[0]"], 'xaxis.range[1]': ed["xaxis.range[1]"]};
-        divs.forEach((div, i) => {
-            if (div.layout != undefined) {
-                let x = div.layout.xaxis;
-                if (ed["xaxis.autorange"] && x.autorange) return;
-                if (
-                    x.range[0] != ed["xaxis.range[0]"] ||
-                    x.range[1] != ed["xaxis.range[1]"]
-                ) {
-                    Plotly.relayout(div, ed1);
-                }
-            }
-        });
-    }
 
-    // timeSynchedDivs.forEach(div => {
-    //     if (div.layout !== undefined) {
-    //         div.on("plotly_relayout", function (ed) {
-    //             zoom_state = true;
-    //             selectedRange = [ed["xaxis.range[0]"], ed["xaxis.range[1]"]];
-    //             relayout(ed, timeSynchedDivs);
-    //         });
-    //     }
-    // });
 }
 
 function colorcodeNetwork(fn) {
