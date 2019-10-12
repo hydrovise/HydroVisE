@@ -567,18 +567,16 @@ div.bar-label {
         box-sizing: content-box;
     padding-right: 1px;
 }
-#sliderMainDIV{
-    z-index: 3;
+#sliderMainDIV {
     position: absolute;
-    margin: auto;
-    height: 60px;
-    width: calc(100% - 41px);
+    width: calc(100% - 140px);
     display: none;
-    top: 450px;
+    bottom: 0px;
     left: -1px;
     background-color: #eeeeee;
-    padding: 10px 21px 10px 20px;   /* top right bottom left; */
+    padding: 0px 70px 0px 70px;
     border: 0.7px solid #808080;
+    max-height: 45px;
     border-top: none;
 }
 #slider{
@@ -592,23 +590,14 @@ div.bar-label {
 
 }
 
-#buttonAddTrace{
-    z-index: 3;
-    position: absolute;
-    margin: 5px;
-    left: 149px;
+.button-slider{
+    margin: 5px 5px 5px 0px;
+    float: left;
 }
-#buttonClearTrace{
-    z-index: 3;
-    position: absolute;
-    margin: 5px;
-    left: 90px;
-}
+
 #sliderLabelDIV{
-    z-index: 3;
     color: black;
-    margin-left: calc(16%);
-    margin-top: 5px;
+    float:right;
     font-weight: 500;
     font-size: larger;
 }

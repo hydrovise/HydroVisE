@@ -81,7 +81,7 @@
                     config = data;
                 }
             });
-
+            document.title = config.hasOwnProperty("page") ? config.page.title: "HyGIS Web Platform";
             let systemState = {
                 yr: '',
                 prod: '',
@@ -126,9 +126,9 @@
 <div id="colorbar"></div>
 <div id="div_plot">
     <div id='sliderMainDIV'>
-        <div id="slider" style="width: calc(100% - 140px); left: 81px;"></div>
-        <input id="buttonAddTrace" type="button" value="add" onclick="addTraces('semi-permanent')">
-        <input id="buttonClearTrace" type="button" value="clear" onclick="clearTraces('semi-permanent')">
+        <div id="slider" style="width: 100%"></div>
+        <input class="button-slider" type="button" value="add" onclick="addTraces('semi-permanent')">
+        <input class="button-slider" type="button" value="clear" onclick="clearTraces('semi-permanent')">
         <div id="sliderLabelDIV"></div>
     </div>
 

@@ -80,8 +80,10 @@ function initSpatialData() {
         });
         // gd = document.getElementById(twoDimDIV.id);
         twoDimDIV.on("plotly_relayout", function (ed) {
+            if (div_plot.data){
+                syncPlots(ed, 'div_plot');
+            }
 
-            syncPlots(ed, 'div_plot');
 
         });
         timeSynchedDivs.push(twoDimDIV);
@@ -182,7 +184,7 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             twoDLegend.remove()
         }
 
-        let _scale = chroma.scale(_colorPalette).domain(_range);
+        let _scale = chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod);
         twoDLegend = L.control.colorBar(_scale, _range, getColorbar(_range));
         twoDLegend.addTo(map);
         return bar
@@ -194,7 +196,7 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             return _style.range;
         } else {
             let filtered = [];
-            data.forEach(arr => filtered.push(arr.filter(v => v !== -9999)));
+            data.forEach(arr => filtered.push(arr.filter(v => v > -9999)));
             return [math.min(filtered), math.max(filtered)]
 
         }
@@ -214,8 +216,8 @@ function twoDMapPlotter(twoDDataName, unix_time) {
         // console.log(_range)
         map.createPane(twoDDataName);
         let geomLayers = L.canvasLayer.scalarField(geo, {
-            // inFilter: (v) => v !== _style.hasOwnProperty('invalid') ? _style.invalid :defaultColorBar.invalid,
-            inFilter: (v) => v !== -9999,
+            inFilter: (v) => v < _style.hasOwnProperty('invalid') ? _style.invalid :defaultColorBar.invalid,
+            // inFilter: (v) => v !== -9999,
             color: chroma.scale(_colorPalette).domain(getDynamicRange(geo.grid), _nBins, _colorMethod),
             opacity: 1,
             maxBounds: defaultBounds,

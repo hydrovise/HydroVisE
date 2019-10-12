@@ -43,8 +43,8 @@ function modInstall(){
             "label": "Discharge",
             "method": "skip"
         },{
-                "label": "Stage",
-                "method": "skip"
+            "label": "Stage",
+            "method": "skip"
         }
     ]
 }
@@ -61,7 +61,12 @@ function unpack(_data, key) {
 function CheckXRange(_yr) {
     let XRange;
     if (!systemState.zoom_state) {
-            XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
+            if (config.plotlyLayout.hasOwnProperty('initMD') &&
+                config.plotlyLayout.hasOwnProperty('finalMD')){
+                XRange = [_yr + config.plotlyLayout.initMD, _yr + config.plotlyLayout.finalMD];
+        } else{
+                XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
+            }
         return XRange
     } else {
         return selectedRange
@@ -189,13 +194,14 @@ function plotTitle(comID){
     row = mapMarkers.features[row_ix];
     _field.forEach(
         p => vals.push(
-            $.isNumeric(
-                row.properties[p] && !Number.isInteger(row.properties[p])
-            ) ? Math.round(row.properties[p], 2) :
-                row.properties[p]
+            typeof(row.properties[p]) =="number" ? parseFloat(row.properties[p]).toFixed() : row.properties[p]
+            // $.isNumeric(
+            //     row.properties[p] && !Number.isInteger(row.properties[p])
+            // ) ? row.properties[p].toFixed(2) :
+            //     row.properties[p]
         )
     )
-    console.log(_fmt, vals);
+    console.log(vals);
     return formatArray(_fmt, vals)
 }
 function tracePlot(yr, comID) {
@@ -242,7 +248,7 @@ function tracePlot(yr, comID) {
 
                     try {
                         use_layout.title = plotTitle(comID);
-                    } catch{
+                    } catch {
                         use_layout.title = comID;
                     }
 
@@ -268,14 +274,17 @@ function tracePlot(yr, comID) {
                         use_layout,
                         plotly_modBar
                     );
-                    document.getElementById("div_plot").on("plotly_relayout", function (ed) {
-                        syncPlots(ed, systemState.timeSelector.activeTab);
-                    });
+                    if (systemState.timeSelector.activeTab != '') {
+                        document.getElementById("div_plot").on("plotly_relayout", function (ed) {
+                            syncPlots(ed, systemState.timeSelector.activeTab);
+                        });
+                    }
+
                     $(".updatemenu-button").on(
                         "click",
                         (ev) => {
-                            let modSelected=String(ev.currentTarget.textContent);
-                            //console.log ("ev:", modSelected);
+                            let modSelected = String(ev.currentTarget.textContent);
+                            console.log ("ev:", modSelected);
                             modEvnt(
                                 modSelected,
                                 hGrid
@@ -299,7 +308,8 @@ function addTraces(lifespan='semi-permanent') {
 
     Object.keys(c).forEach(function (key) {
         if (!c[key].dynamic) return;
-        if (c[key].group) {
+        console.log("systemState.prod, c[key].prod", systemState.prod, c[key], c[key].prod)
+        if (c[key].ensemble) {
             if (systemState.prod != c[key].prod) {
                 return
             }

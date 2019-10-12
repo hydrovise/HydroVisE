@@ -5,13 +5,19 @@ function select_sim_type(_selected) {
     $(un_sel).removeClass('selected');
     $(_sel).addClass('selected');
     systemState.prod = _sel.data('value');
+    if (div_plot.hasOwnProperty('data')){
+        clearTraces('temporary');
+        addTraces('temporary');
+    }
 
     if (zoom_metric_state) {
         draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
-        draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        // draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        if (systemState.markerAttrs) colorCodeMapMarkers(systemState.markerAttrs)
     }
-    generateColorBar(systemState.metric);
+
+    // generateColorBar1(systemState.metric);
 }
 
 function selectMetric(_selected) {
@@ -25,9 +31,10 @@ function selectMetric(_selected) {
     if (zoom_metric_state) {
         draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
-        draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        // draw_markers(markerAttrs, systemState.metricType, systemState.yr, systemState.prod);
+        // generateColorBar1(systemState.metricType,val)
+        colorCodeMapMarkers(systemState.markerAttrs)
     }
-    generateColorBar(systemState.metric);
 }
 
 function changeYear(val) {
@@ -46,15 +53,18 @@ function changeYear(val) {
         if (mapMarkers){
             leaflet_layers['mapMarkers'].remove()
             draw_markers(mapMarkers, config.mapMarkers.comIDName)
+            if(markerAttrs)  colorCodeMapMarkers(systemState.markerAttrs)
         }
         // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
         if (div_plot.hasOwnProperty('data')) {
             tracePlot(use_yr, systemState.comID)
             Plotly.relayout(div_plot, update)
         }
+        if (systemState.timeSelector.activeTab !=""){
+            repeting_releyout = true;
+            Plotly.relayout(systemState.timeSelector.activeTab, update)
+        }
 
-        repeting_releyout = true;
-        Plotly.relayout(systemState.timeSelector.activeTab, update)
     }
 
 }
