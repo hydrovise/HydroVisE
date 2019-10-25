@@ -12,10 +12,17 @@ function ini() {
             return;
         }
 
+        function dynamicRange (v) {return v};
+
+        if (config.timeSlider.hasOwnProperty('dynamicRange')){
+            is_dynamic = true;
+            dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)
+        }
+
         $("#slider").slider(
             {
-                min: config.timeSlider.min,
-                max: config.timeSlider.max,
+                min: dynamicRange(config.timeSlider.min),
+                max: dynamicRange(config.timeSlider.max),
                 step: config.timeSlider.step,
                 value: config.timeSlider.value,
                 slide: function (ev, ui) {
@@ -147,13 +154,10 @@ function ini() {
         className: 'a3CssClass',
         tooltip: 'A custom A3 size'
     };
+    if (config.map.hasOwnProperty('geoSearch')) {
+        config.map.geoSearch ? addGeoSearch() : false
+    }
 
-    /*
-            load_pts = config.point_data_config.pList1.root + "/" +
-            config.point_data_config.pList1.subfolder + "/" +
-            config.point_data_config.pList1.fn +
-            config.point_data_config.pList1.extension
-    */
     if (config.hasOwnProperty('mapMarkers')) {
         $.ajax({
             url: config.mapMarkers.fnPath,
@@ -211,4 +215,13 @@ function ini() {
     dragElement("mini_con0");
     dragElement("title_con0", "con0");
     //dragElement("con0");
+
+    if (config.hasOwnProperty('calcMetrics')){
+        //
+        metricDIV = document.getElementById('claculatemetricsButton')
+        metricDIV.style.display = 'block'
+        //     metricDIV.innerHTML = "<button id='claculatemetricsButton' class='noselect' disabled='false'" +
+        //         " onclick='readData(metrics, selectedRange)'>Calculate Event <br>Metrics </button>";
+    }
+
 }

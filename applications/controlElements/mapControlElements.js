@@ -554,3 +554,10 @@ function handleFileSelect(evt) {
         return false;
     }
 }
+
+
+function addGeoSearch(){
+    //code from https://github.com/k4r573n/leaflet-control-osm-geocoder
+    var osmGeocoder = new L.Control.OSMGeocoder();
+    map.addControl(osmGeocoder);
+}

@@ -1100,7 +1100,7 @@ input[type="file"]{
     cursor: pointer;
     z-index: 3;
     position: relative;
-    top: 94px;
+    top: 20px;
 }
 
 #claculatemetricsButton:disabled {

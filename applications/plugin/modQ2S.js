@@ -1,6 +1,6 @@
 var rcCoef = {};
 let rc_url = 'http://s-iihr50.iihr.uiowa.edu/smap/retro/data/ratingCurve/rc_usgs.csv'
-let translate_id  = true;
+// let translate_id  = true;
 
 function translateID (usgs_id){
     t = new Map([
@@ -172,7 +172,7 @@ function evntQ2Stage (butt, hGrid){
     update ={};
     update["shapes"] = JSON.stringify(hGrid[use_mod]);
     update[pltPath] = pltVal;
-    
+
     Plotly.restyle(div_plot, update)
     Plotly.relayout(div_plot, update)
 }
@@ -222,7 +222,7 @@ function Q2Stage(flow_arr) {
             }
         });
     }
-    if (translate_id) lid = translateID(systemState.comID)
+    translate_id ? lid = translateID(systemState.comID) : lid = systemState.comID;
     if (!rcCoef[lid]) {
         loadRatingCurve(lid);
     };
