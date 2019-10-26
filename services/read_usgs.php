@@ -59,11 +59,14 @@ $resp = "dt,Q\n";
 
 foreach (explode("\n", $cont) as $line) {
     $flds = explode("\t", $line);
+    //echo substr($flds[3], 0, 5), $flds[3];
+    //continue;
     if ($flds[0] == 'USGS') {
         $resp .= sprintf(
-            "%s %s,%s\n", 
+            //"%s %s,%s\n", 
+            "%s,%s\n", 
             $flds[2], 
-            $flds[3], 
+            //substr($flds[3], 0, 5),
             is_numeric($flds[4]) ? number_format(floatval($flds[4]) * $_conv,2,'.','') : $flds[4]
         );
     }

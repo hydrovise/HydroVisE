@@ -5,13 +5,19 @@ function select_sim_type(_selected) {
     $(un_sel).removeClass('selected');
     $(_sel).addClass('selected');
     systemState.prod = _sel.data('value');
+    if (div_plot.hasOwnProperty('data')){
+        clearTraces('temporary');
+        addTraces('temporary');
+    }
 
     if (zoom_metric_state) {
         draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
-        draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        // draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        if (systemState.markerAttrs) colorCodeMapMarkers(systemState.markerAttrs)
     }
-    generateColorBar(systemState.metric);
+
+    // generateColorBar1(systemState.metric);
 }
 
 function selectMetric(_selected) {
@@ -25,9 +31,10 @@ function selectMetric(_selected) {
     if (zoom_metric_state) {
         draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
-        draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        // draw_markers(markerAttrs, systemState.metricType, systemState.yr, systemState.prod);
+        // generateColorBar1(systemState.metricType,val)
+        colorCodeMapMarkers(systemState.markerAttrs)
     }
-    generateColorBar(systemState.metric);
 }
 
 function changeYear(val) {
@@ -35,36 +42,43 @@ function changeYear(val) {
     zoom_state = false;
     zoom_metric_state = false;
     use_yr = parseInt(systemState.yr) + (parseInt(val) * parseInt(config.data_part.step));
+
     if (config.data_part.min_val <= use_yr && use_yr <= config.data_part.max_val) {
         systemState.yr = use_yr;
+        systemState.xRange = CheckXRange(use_yr);
         $('#year-selected').text(use_yr);
+        var update = {
+            'xaxis.range': CheckXRange(use_yr) //XRange
+        };
         if (mapMarkers){
             leaflet_layers['mapMarkers'].remove()
             draw_markers(mapMarkers, config.mapMarkers.comIDName)
+            if(markerAttrs)  colorCodeMapMarkers(systemState.markerAttrs)
         }
         // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
-        if (plot !== undefined) {
+        if (div_plot.hasOwnProperty('data')) {
             tracePlot(use_yr, systemState.comID)
-            var update = {
-                'xaxis.range': CheckXRange(use_yr) //XRange
-            };
             Plotly.relayout(div_plot, update)
         }
+        if (systemState.timeSelector.activeTab !=""){
+            repeting_releyout = true;
+            Plotly.relayout(systemState.timeSelector.activeTab, update)
+        }
+
     }
+
 }
 
 
-function dragElement(el_id) {
+function dragElement(el_id, ctrl_id) {
     function dragMouseDown(e) {
         e = e || window.event;
         e.preventDefault();
-        // get the mouse cursor position at startup:
         pos3 = e.clientX;
         pos4 = e.clientY;
-        init_y = elmnt.style.top;
-        init_x = elmnt.style.left;
+        init_y = ctrl.style.top;
+        init_x = ctrl.style.left;
         document.onmouseup = closeDragElement
-        // call a function whenever the cursor moves:
         document.onmousemove = elementDrag;
     }
 
@@ -75,26 +89,27 @@ function dragElement(el_id) {
         pos2 = pos4 - e.clientY;
         pos3 = e.clientX;
         pos4 = e.clientY;
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        ctrl.style.top = (ctrl.offsetTop - pos2) + "px";
+        ctrl.style.left = (ctrl.offsetLeft - pos1) + "px";
     }
 
     function closeDragElement(e) {
-        let final_x = elmnt.style.left;
-        let final_y = elmnt.style.top;
+        let final_x = ctrl.style.left;
+        let final_y = ctrl.style.top;
         if (final_x == init_x &&
             final_y == init_y) {
-            minMaxInventory(el_id);
+            minMaxInventory(ctrl_id);
         }
-
         document.onmouseup = null;
         document.onmousemove = null;
     }
 
+    if (ctrl_id == undefined) ctrl_id = el_id;
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     var init_y;
     var init_x;
     var elmnt = document.getElementById(el_id);
+    var ctrl = document.getElementById(ctrl_id);
     console.log (el_id, document.getElementById(el_id));
     elmnt.onmousedown = dragMouseDown;
 }
@@ -110,13 +125,10 @@ function minMaxInventory(a) {
     b = a.includes(pref) ? a.replace(pref, '') : pref + a;
     el_a = document.getElementById(a);
     el_b = document.getElementById(b);
-    console.log(el_a,b, el_b)
     el_a.style.display = vis.get(el_a.style.display);
     el_b.style.display = vis.get(el_a.style.display);
-
     el_b.style.top = el_a.style.top;
     el_b.style.left = el_a.style.left;
-
 }
 
 //user has to click twice on the raster layers
@@ -231,4 +243,8 @@ function open2DTab(evt, tabName) {
     evt.currentTarget.className += " active";
     systemState.timeSelector.activeTab = tabID;
     dragLayer = document.getElementsByClassName('nsewdrag')[0];
+    ed = {"xaxis.range[0]": systemState.xRange[0], "xaxis.range[1]": systemState.xRange[1]};
+    repeting_releyout = true;
+    syncPlots(ed, systemState.timeSelector.activeTab)
+
 }

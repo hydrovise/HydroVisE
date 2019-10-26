@@ -2,17 +2,15 @@
 
 
 function initSpatialData() {
-    function addTab(key) {
+    function addTab(key,i) {
         var name = twoDConfig[key].name;
-        let template = "<button class=\"tablinks\" onclick=\"open2DTab(event,\'" + key + "\')\">" + name + "</button>";
-        let parentDIV = document.getElementById("twoDSelector");
-        parentDIV.innerHTML += template
-    }
-
-    function addDIV(name) {
-        div = document.getElementById("twoDSelector");
-
-        div.innerHTML += template;
+        tabBtn = document.createElement('button');
+        tabBtn.className = i===0 ? "tablinks active" : "tablinks";
+        tabBtn.setAttribute('data-keyname', key);
+        tabBtn.setAttribute('onclick','open2DTab(event,$(this).data(\'keyname\'))');
+        tabBtn.innerText = key;
+        twodSelector = document.getElementById('twoDSelector');
+        twodSelector.append(tabBtn)
     }
 
 
@@ -22,7 +20,8 @@ function initSpatialData() {
 
     let twodslider = {};
     let divname;
-    Object.keys(twoDConfig).forEach(key => {
+
+    Object.keys(twoDConfig).forEach((key, i ) => {
         let subset = twoDConfig[key];
         // console.log(subset)
         $.ajax({
@@ -31,20 +30,14 @@ function initSpatialData() {
             async: false,
             success: function (data) {
                 twoDTimestamps[key] = data.map(dt => moment.unix(dt).format('YYYY-MM-DD HH:mm'))
-                addTab(key);
+                addTab(key,i);
+                if (i==0) systemState.timeSelector.activeTab = 'div_' + key;
                 if (subset.hasOwnProperty('geom')) initializeGeom(key);
-
-                // twoDTimestamps[key] = traceTemp;
-                console.log(TwoDTimeSliderTraces);
-                divname = 'div_' + key;
-
-
             }
         });
     });
     //
-    // gd1 = document.getElementById('div_plot');
-    // timeSynchedDivs.push(gd1);
+
     var plotlyIterator = 0;
     Object.keys(config.spatialData).forEach(key => {
         var twoDimDIV = document.createElement("div");
@@ -61,7 +54,15 @@ function initSpatialData() {
             type: 'bar',
             hoverinfo: 'x'
         };
-        Plotly.newPlot(twoDimDIV, [traceTemp], config.timeSelectorLayout, {interactive: true, displayModeBar: false});
+        let use_layout = JSON.parse(
+            JSON.stringify(
+                config.timeSelectorLayout
+            )
+        );
+        use_layout.xaxis.range = systemState.xRange;
+        // use_layout.yaxis.fixedrange = true;
+
+        Plotly.newPlot(twoDimDIV, [traceTemp], use_layout, { displayModeBar: false, responsive: true});
         let dragLayer = document.getElementsByClassName('nsewdrag')[plotlyIterator];
         twoDimDIV.on('plotly_hover', function (data) {
             dragLayer.style.cursor = 'pointer'
@@ -78,34 +79,17 @@ function initSpatialData() {
             twoDMapPlotter(datasetName, dt_unix)
         });
         // gd = document.getElementById(twoDimDIV.id);
-        // timeSynchedDivs.push(twoDimDIV);
+        twoDimDIV.on("plotly_relayout", function (ed) {
+            if (div_plot.data){
+                syncPlots(ed, 'div_plot');
+            }
+
+
+        });
+        timeSynchedDivs.push(twoDimDIV);
         plotlyIterator += 1;
     });
-    function relayout(ed, divs) {
-        ed1 = {'xaxis.range[0]': ed["xaxis.range[0]"], 'xaxis.range[1]': ed["xaxis.range[1]"]};
-        divs.forEach((div, i) => {
-            if (div.layout != undefined) {
-                let x = div.layout.xaxis;
-                if (ed["xaxis.autorange"] && x.autorange) return;
-                if (
-                    x.range[0] != ed["xaxis.range[0]"] ||
-                    x.range[1] != ed["xaxis.range[1]"]
-                ) {
-                    Plotly.relayout(div, ed1);
-                }
-            }
-        });
-    }
 
-    // timeSynchedDivs.forEach(div => {
-    //     if (div.layout !== undefined) {
-    //         div.on("plotly_relayout", function (ed) {
-    //             zoom_state = true;
-    //             selectedRange = [ed["xaxis.range[0]"], ed["xaxis.range[1]"]];
-    //             relayout(ed, timeSynchedDivs);
-    //         });
-    //     }
-    // });
 }
 
 function colorcodeNetwork(fn) {
@@ -200,7 +184,7 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             twoDLegend.remove()
         }
 
-        let _scale = chroma.scale(_colorPalette).domain(_range);
+        let _scale = chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod);
         twoDLegend = L.control.colorBar(_scale, _range, getColorbar(_range));
         twoDLegend.addTo(map);
         return bar
@@ -212,7 +196,7 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             return _style.range;
         } else {
             let filtered = [];
-            data.forEach(arr => filtered.push(arr.filter(v => v !== -9999)));
+            data.forEach(arr => filtered.push(arr.filter(v => v > -9999)));
             return [math.min(filtered), math.max(filtered)]
 
         }
@@ -232,8 +216,8 @@ function twoDMapPlotter(twoDDataName, unix_time) {
         // console.log(_range)
         map.createPane(twoDDataName);
         let geomLayers = L.canvasLayer.scalarField(geo, {
-            // inFilter: (v) => v !== _style.hasOwnProperty('invalid') ? _style.invalid :defaultColorBar.invalid,
-            inFilter: (v) => v !== -9999,
+            inFilter: (v) => v < _style.hasOwnProperty('invalid') ? _style.invalid :defaultColorBar.invalid,
+            // inFilter: (v) => v !== -9999,
             color: chroma.scale(_colorPalette).domain(getDynamicRange(geo.grid), _nBins, _colorMethod),
             opacity: 1,
             maxBounds: defaultBounds,

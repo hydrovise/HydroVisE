@@ -74,3 +74,23 @@ function randomColor() {
     return color
 }
 
+function syncPlots(ed, divID) {
+    div = document.getElementById(divID);
+    console.log("ed, div, repeting_releyout", ed, div, repeting_releyout)
+    // if (ed["xaxis.autorange"] && x.autorange) return;
+    // if (ed["xaxis.range[0]"] == undefined ||
+    //     ed["xaxis.range[1]"] == undefined) return;
+    repeting_releyout = !repeting_releyout;
+    // ed["yaxis.range"] = false;
+    // ed["yaxis.autorange"] = false;
+    // ed.yaxis.autorange = false;
+    if (repeting_releyout) {
+        return;
+    }
+    let x = div.layout.xaxis;
+    (
+        x.range[0] != ed["xaxis.range[0]"] ||
+        x.range[1] != ed["xaxis.range[1]"]
+    ) ? Plotly.relayout(div, ed) : repeting_releyout = !repeting_releyout;
+
+}

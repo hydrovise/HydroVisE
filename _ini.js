@@ -169,8 +169,24 @@ function ini() {
                         skipEmptyLines:true,
                         complete: function (results) {
                             markerAttrs = results['data'];
-
-                            colorCodeMapMarkers(systemState.markerAttrs)
+                            leaflet_layers['mapMarkers'].eachLayer( layer=> {
+                                _comID = layer.feature.properties[comIDName]
+                                filtered = markerAttrs.filter(f => f[comIDName]== _comID &
+                                    f['Year'] == systemState.yr & f['ET'] == systemState.prod)
+                                console.log(filtered)
+                                console.log(layer)
+                                attr = systemState.markerAttrs.toLocaleLowerCase();
+                                Object.keys(config.controls.markerAttrs).forEach(k => {
+                                    attrName = config.controls.markerAttrs[k].var_id;
+                                    layer.feature.properties[attrName] = filtered[0][attrName];
+                                    }
+                                );
+                                layer.options.fillColor = vColor(attr, filtered[0][systemState.markerAttrs]);
+                                layer.options.fillOpacity = 1;
+                            });
+                            leaflet_layers['mapMarkers'].remove();
+                            leaflet_layers['mapMarkers'].addTo(map)
+                            generateColorBar(attr)
                         }
                     });
                 }
@@ -203,9 +219,7 @@ function ini() {
         initSpatialData();
         repeting_releyout = false;
         document.getElementById(systemState.timeSelector.activeTab).on("plotly_relayout", function (ed) {
-            if (div_plot.data){
-                syncPlots(ed, 'div_plot');
-            }
+            syncPlots(ed, "div_plot");
         });
     }
     dragElement("mini_con0");
