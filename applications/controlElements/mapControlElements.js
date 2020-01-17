@@ -575,7 +575,7 @@ function addGeoSearch(){
     // };
     let options = {
         collapsed: true, /* Whether its collapsed or not */
-        position: 'topleft', /* The position of the control */
+        position: 'bottomleft', /* The position of the control */
     };
     let osmGeocoder = new L.Control.OSMGeocoder(options);
     map.addControl(osmGeocoder);
