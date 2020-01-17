@@ -443,8 +443,8 @@ function generateColorBar1(selected) {
     colorBar = {};
     delta = parseFloat((_range[1]-_range[0]) / _nBins);
 
-    decimalP = 2;
-    _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((v * delta + _range[0]).toFixed(decimalP)))
+    decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
+    _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) + parseFloat(_range[0])).toFixed(decimalP)))
     colors = _labels.map(l => String(getColor(l)))
     zipped = d3.zip(colors,_labels).reverse()
 
