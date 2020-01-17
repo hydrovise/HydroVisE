@@ -438,14 +438,16 @@ function generateColorBar1(selected) {
     let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
     let _range = _config.range;
     getColor = function (val){
+
         return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
     };
     colorBar = {};
-    delta = parseFloat((_range[1]-_range[0]) / _nBins);
+
 
     decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
+	delta = Math.round((_range[1]-_range[0]) / _nBins *10**decimalP)/ 10**decimalP;
     _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) + parseFloat(_range[0])).toFixed(decimalP)))
-    colors = _labels.map(l => String(getColor(l)))
+    colors = (_colorPalette.length == _nBins) ?  _colorPalette : _labels.map(l => String(getColor(l)))
     zipped = d3.zip(colors,_labels).reverse()
 
     // }

@@ -196,19 +196,30 @@ let kmzload = function (fn_path, fn) {
 
 //TODO: KML file name should not start with numbers / check what is going on in KML file because mostly it takes long time
 function contextLayerLoader(fnPath) {
-    function style() {
-        return {
-            fillOpacity: 1,
-            stroke: true,
-            color:'black',
-            fill: true,
-            fillColor: 'white',
-            //opacity: 0.2,
-            weight: 1,
-        }
-    }
-    let ext = fnPath.split('.').pop();
-    fn = fnPath.replace(/^.*[\\\/]/, '');
+    //function style() {
+    //    return {
+    //        fillOpacity: 1,
+    //        stroke: true,
+    //        color:'black',
+    //        fill: true,
+    //        fillColor: 'white',
+    //        weight: 1,
+    //    }
+    //}
+
+    let style = {
+        fillOpacity: 1,
+        stroke: true,
+        color:'black',
+        fill: true,
+        fillColor: 'white',
+        weight: 1,
+    };
+
+    let fn = fnPath.replace(/^.*[\\\/]/, '')
+        .replace('.gz', '');
+    let ext = fn.split('.').pop();
+
     switch (ext) {
         case 'kmz':
             kmzload(fnPath, fn);
@@ -241,7 +252,8 @@ function contextLayerLoader(fnPath) {
                         vectorTileLayerStyles: {
                             sliced: function (properties, zoom) {
                                 let p = properties.h_order;
-                                return style()
+                                return style
+                                //return style()
                             }
                         },
                         pane:fn

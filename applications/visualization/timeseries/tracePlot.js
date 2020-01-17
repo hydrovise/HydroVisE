@@ -5,10 +5,10 @@ let modTrace;
 modChecked = false;         /// MOVE IT TO INI()
 let modMethod;
 let modEvnt;
-//let hGrid = {
-//    default: false,
-//    derived: false
-//}
+let hGrid = {
+    default: false,
+    derived: false
+}
 
 Papa.parsePromise = function(fn) {
     return new Promise(function(resolve) {
@@ -181,6 +181,7 @@ function traceInstalled(src, update_lifespan){
     }
     return success > 0;
 }
+
 function plotTitle(comID){
     let c = config.mapMarkers;
     let _field = c.plotTitle.template.var;
@@ -206,10 +207,10 @@ function plotTitle(comID){
 }
 function tracePlot(yr, comID) {
     let traceData = [];
-    let hGrid = {
-        default: false,
-        derived: false
-    }
+    //let hGrid = {
+    //    default: false,
+    //    derived: false
+    //}
     let c = config.traces
     systemState.mod = 'default'
 
@@ -227,8 +228,11 @@ function tracePlot(yr, comID) {
         key => {
             if (c[key].dynamic) return;
             src = pathGenerator(key)
-            //console.log(src );
-            if (traceInstalled(src)) return;
+            console.log("trace src", src);
+            if (traceInstalled(src)) {
+                console.log("traceInstalled(src) is true, quiting")
+                return;
+            }
             d3.csv(src,
                 (data) => {
                     let _trace = getTrace(data, key, src)
@@ -264,9 +268,9 @@ function tracePlot(yr, comID) {
                                 }
                             }
                         ],
-                        displayModeBar: config.plotlyLayout.displayModeBar,
                         responsive: true
                     };
+                    plotly_modBar.displayModeBar = config.plotlyLayout.hasOwnProperty('displayModeBar') ? config.plotlyLayout.displayModeBar : true;
 
                     plot = Plotly.newPlot(
                         div_plot,
@@ -314,21 +318,23 @@ function addTraces(lifespan='semi-permanent') {
                 return
             }
         };
-        console.log(key)
+
         let src = pathGenerator(key);
+        console.log(key, "add trace src", src)
         if (traceInstalled(src, lifespan)) {return};
         $.ajax({
             url: src,
             dataType: 'text',
             async: false,
             success: function (data) {
-                let pref = '';
-                if (
-                    data.slice(
-                        csvHeader.length-2
-                    ) != csvHeader.slice(csvHeader.length-2)
-                ) pref = csvHeader;
-                data = d3.csvParse(pref + data);
+                //let pref = '';
+                //if (
+                //    data.slice(
+                //        csvHeader.length-2
+                //    ) != csvHeader.slice(csvHeader.length-2)
+                //) pref = csvHeader;
+                //data = d3.csvParse(pref + data);
+                data = d3.csvParse(data);
                 let _trace = getTrace(data, key, src);
                 _trace.lifespan = lifespan;
                 _trace.showlegend = false;
@@ -359,6 +365,6 @@ function clearTraces(remove_lifespan = 'semi-permanent') {
             }
         }
     )
-    Plotly.deleteTraces(div_plot, idx_vec);
+    if (idx_vec.length > 0) Plotly.deleteTraces(div_plot, idx_vec);
 }
 

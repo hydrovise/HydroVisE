@@ -11,7 +11,6 @@ header("Access-Control-Allow-Origin: *");
 header("Expires: $ts");
 header("Pragma: cache");
 header("Cache-Control: max-age=$seconds_to_cache");
-ob_start("ob_gzhandler");
 
 date_default_timezone_set('America/Chicago');
 
@@ -43,15 +42,16 @@ if (isset ($_GET['conv'])){
 }
 
 
-$local_store = "./service_usgs/Q/";
-$_dst = sprintf("%s/%s/%s.csv", $local_store, $_yr, $_sid);
+$local_store = "/home/hygis_data/usgs/$_par";
+$_dst = sprintf("%s/%s/%s.csv.gz", $local_store, $_yr, $_sid);
 
 if (file_exists ($_dst) && trim($c_yr) != trim($_yr)) {
+    header("Content-Encoding: gzip");
     echo file_get_contents($_dst);
     exit;
 }
 
-
+ob_start("ob_gzhandler");
 
 $src_url = "https://nwis.waterservices.usgs.gov/nwis/iv/?format=rdb&sites=%s&startDT=%s-01-01&endDT=%s-12-31&parameterCd=%s&siteStatus=all";
 $cont = file_get_contents(sprintf($src_url, $_sid, $_yr, $_yr, $_par));
@@ -72,12 +72,16 @@ foreach (explode("\n", $cont) as $line) {
     }
 }
 echo $resp;
-if (
-    trim($c_yr) == trim($_yr)
-) {
-    exit;
-} else {
-    echo $_yr, $c_yr, gettype ($_yr), gettype ($c_yr), $c_yr == $_yr;
-    if (!file_exists("$local_store/$_yr")) mkdir ("$local_store/$_yr", 0775);
-    file_put_contents($_dst, $resp);    
+
+if (trim($c_yr) == trim($_yr) || strlen($resp)==0) exit;
+
+if (!is_dir("$local_store/$_yr")) {
+    mkdir ("$local_store/$_yr", 0775);
 }
+
+
+$fh = gzopen ($_dst, 'w9');
+gzwrite ($fh, $resp);
+gzclose($fh);
+
+?>

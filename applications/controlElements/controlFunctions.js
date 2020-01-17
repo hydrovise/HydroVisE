@@ -64,9 +64,20 @@ function changeYear(val) {
             repeting_releyout = true;
             Plotly.relayout(systemState.timeSelector.activeTab, update)
         }
-
+        if (systemState.hasOwnProperty('sliderState') & systemState.sliderState > 0){
+            function dynamicRange (v) {return v};
+            if (config.timeSlider.hasOwnProperty('dynamicRange')){
+                is_dynamic = true;
+                dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)
+            } 
+            $("#slider").slider(
+                {
+                    min: dynamicRange(config.timeSlider.min),
+                    max: dynamicRange(config.timeSlider.max)
+                }
+            );
+        }
     }
-
 }
 
 
