@@ -264,7 +264,7 @@ function tracePlot(yr, comID) {
                                 }
                             }
                         ],
-                        displayModeBar: true,
+                        displayModeBar: config.plotlyLayout.displayModeBar,
                         responsive: true
                     };
 
