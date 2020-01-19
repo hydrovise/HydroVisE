@@ -27,6 +27,7 @@ effort for users.
  
  These are the requirements of HyGIS:
  
- * Leaflet
- * jQuery
- *  
+ * Web server
+ 
+ Additional requirements for using GZip and Tar file formats: 
+ * PHP support 
