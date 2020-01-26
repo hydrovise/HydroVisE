@@ -154,7 +154,7 @@ function evntQ2Stage (butt, hGrid){
     let c = config.modTrace.mod
     let use_mod = Object.keys(c).filter(
         (k) => {return c[k].button == butt}
-    )[0]
+    )[0];
 
     if (systemState.mod == use_mod) return;
     let was_mod = systemState.mod;
@@ -167,13 +167,13 @@ function evntQ2Stage (butt, hGrid){
         v => {
             v.visible = !v.visible;
         }
-    )
+    );
 
     update ={};
     update["shapes"] = JSON.stringify(hGrid[use_mod]);
     update[pltPath] = pltVal;
 
-    Plotly.restyle(div_plot, update)
+    Plotly.restyle(div_plot, update);
     Plotly.relayout(div_plot, update)
 }
 

@@ -1,5 +1,5 @@
-# HyGIS
-## A Non-Proprietary Web Browser-Based Software For Environmental Science
+# Hydro-NPOSS
+## A NonProprietary Open-Source Software for hydrologic data 
 
 ### Description
 HyGIS is a client-side web browser-based software for visualization and analysis of environmental data. 
