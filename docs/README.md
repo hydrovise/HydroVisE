@@ -32,7 +32,7 @@ HyGIS is a software written mainly in JavaScript, CSS(Cascading Style Sheet), HT
 In general, **Deployment** of the code, **Data preparation** and **Configuration** are the three steps needed to use HyGIS.
 
 
-| ![Three-step setup for HyGIS](images/3step_resized.png)|
+| ![Three-step setup for HyGIS](https://github.com/njadid/HyGIS/wiki/images/3step_resized.png)|
 |:--:|
 | *Three-step setup of HyGIS* |
 
