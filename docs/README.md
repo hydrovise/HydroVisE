@@ -1,8 +1,7 @@
-# Welcome to the HyGIS!
+# Welcome to the HyGIS wiki page!
+![**General layout for HyGIS**](https://github.com/njadid/HyGIS/wiki/images/logo/hygis_logo.svg?sanitize=true)
 
-<span style="display:block;align:center;"><img src="https://github.com/njadid/HyGIS/wiki/images/logo/hygis_logo.svg?sanitize=true" width="300"></span>
-
-This page provides brief information about HyGIS. Refer to [Wiki Page](https://github.com/njadid/HyGIS/wiki) for more information.
+This page provides brief information about HyGIS.
 
 ## **What is HyGIS?**
 
@@ -18,22 +17,24 @@ The rapidly growing volume of environmental data demands new tools and technique
 
 ## **Who can benefit from HyGIS?**
 
-The potential users of HyGIS are researchers, students who are working  or anyone who are interested in visualization and evaluation of their data in a web-based interactive environment.
+Anyone interested in visualization and evaluation of their data in a web-based interactive environment (e.g. researchers and students).
 
 ## **How does HyGIS work?**
 
+Overall, HyGIS uses **configuration** file provided by the user to understand the data sources, metadata, styling, and etc. But the uder does not need to understand the complexity of the internal architecture of the system. Because the config file allows user to connect data sources, control styling, etc.. Users can create different config files and re-utilize the data for different projects.
+
 HyGIS is a software written mainly in JavaScript, CSS(Cascading Style Sheet), HTML (Hyper Text Markup Language). It leverages the most popular web technologies, tools, and libraries for visualizations. These libraries are listed and described briefly in dependencies.
 
-Overall, HyGIS uses **configuration** file provided by the user to understand the data sources, metadata, styling, and etc. This capability allows users to create multiple applications by different configuration files.
+
 
 ## **How to use it?**
 
-In general, **Data preparation**, **Configuration**, and **Deployment** are the three steps needed to use HyGIS.
+In general, **Deployment** of the code, **Data preparation** and **Configuration** are the three steps needed to use HyGIS.
 
 
-| ![Three-step setup for HyGIS](https://github.com/njadid/HyGIS/wiki/images/3step_resized.png)|
+| ![Three-step setup for HyGIS](images/3step_resized.png)|
 |:--:|
-| *Three-step setup of Hydro-NPOSS* |
+| *Three-step setup of HyGIS* |
 
 
 
@@ -53,8 +54,8 @@ _Reason: HyGIS configuration plays significant role in relating data to function
 
 
 ## Acknowledgements
-HyGIS is developed mainly by Navid Jadidoleslam with contributions from Radoslaw Goska on the design of the architecture and overall workflow.
+HyGIS is developed mainly by Navid Jadidoleslam and Radoslaw Goska at the Iowa Flood Center, University of Iowa.
 
 
 ## License
-Refer to [**Licence**](https://github.com/njadid/HyGIS/wiki/license) page for further information and license agreements.
+Refer to [**Licence**](https://github.com/njadid/HyGIS/blob/master/LICENSE) page for further information and license agreements.
