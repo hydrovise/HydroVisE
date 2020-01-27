@@ -1,4 +1,4 @@
-# Welcome to the HyGIS wiki page!
+# Welcome to the HyGIS!
 
 <span style="display:block;align:center;"><img src="https://github.com/njadid/HyGIS/wiki/images/logo/logo1.png" width="300"></span>
 
