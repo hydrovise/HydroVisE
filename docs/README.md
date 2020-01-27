@@ -1,6 +1,6 @@
 # Welcome to the HyGIS wiki page!
 
-<span style="display:block;align:center;"><img src="https://github.com/njadid/HyGIS/wiki/images/logo/logo1.png" width="500"></span>
+<span style="display:block;align:center;"><img src="https://github.com/njadid/HyGIS/wiki/images/logo/logo1.png" width="300"></span>
 
 This page provides brief information about HyGIS.
 
