@@ -1,4 +1,4 @@
-# Welcome to the HyGIS wiki page!
+# Welcome to the HyGIS!
 ![**General layout for HyGIS**](https://github.com/njadid/HyGIS/wiki/images/logo/hygis_logo.svg?sanitize=true)
 
 This page provides brief information about HyGIS.
