@@ -1,5 +1,5 @@
 # Welcome to the HyGIS wiki page!
-![**General layout for HyGIS**](images/logo/logo1.png)
+![**HyGIS Logo**](https://github.com/njadid/HyGIS/wiki/images/logo/logo1.png)
 
 This page provides brief information about HyGIS.
 
@@ -30,7 +30,7 @@ Overall, HyGIS uses **configuration** file provided by the user to understand th
 In general, **Data preparation**, **Configuration**, and **Deployment** are the three steps needed to use HyGIS.
 
 
-| ![Three-step setup for HyGIS](images/3step_resized.png)|
+| ![Three-step setup for HyGIS](https://github.com/njadid/HyGIS/wiki/images/3step_resized.png)|
 |:--:|
 | *Three-step setup of Hydro-NPOSS* |
 
