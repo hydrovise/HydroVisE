@@ -1,0 +1,227 @@
+{
+  "page":{
+    "title": "HyGIS - Tutorial 1"
+  },
+  "map": {
+    "center": [
+      43.041,
+      -91.57
+    ],
+    "defaultZoom": 10,
+    "maxZoom": 15,
+    "basemapList": {
+      "default": {
+        "id": "light_all",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "subdomains": "abcd"
+      }
+    },
+	"geoSearch": true
+  },
+  "data_part": {
+    "min_val": 2016,
+    "max_val": 2017,
+    "step": 1,
+    "initial": 2016
+  },
+  "traces": {
+    "t1": {
+      "prod": "Q",
+      "x_name": "dt",
+      "y_name": "Q",
+      "modEnabled": 0,
+      "dynamic": 0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "example/timeseries/{0}/Q/{1}.csv"
+      },
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "USGS",
+        "line": {
+          "width": 2,
+          "color": "black"
+        }
+      }
+    },
+    "t2": {
+      "prod": "Q_ol",
+      "x_name": "dt",
+      "y_name": "Q",
+      "modEnabled": 0,
+      "dynamic":  0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "example/timeseries/{0}/Q_ol/{1}.csv"
+      },
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "Open Loop",
+        "line": {
+          "color": "blue"
+        }
+      }
+    }
+  },
+  "mapMarkers": {
+    "fnPath": "example/vectors/mapMarkers.geojson",
+    "comIDName": "lid",
+    "geomType":"point",
+    "onEachFeature":{
+      "click": "clickFeature"
+    },
+    "plotTitle": {
+      "template": {
+        "var": ["usgs_name","area"],
+        "format": "{0}<br>Area: {1} km<sup>2</sup>"
+      }
+    },
+    "tooltip": {
+      "template": {
+        "var": [
+          "usgs_name",
+          "area"
+        ],
+        "format": "<b>USGS Name:</b><br> {0}<br><b>Area: </b>{1} km<sup>2</sup>"
+      },
+      "format": "",
+      "propertires": [
+        "usgs_id",
+        "area"
+      ]
+    },
+    "additionalShapes":{
+        "template": {
+          "var": ["comID"],
+          "format": "example/vectors/basin_boundaries/{0}.kml"
+        }
+    }
+  },
+  "controls": {
+    "prod": {
+      "v1": {
+        "var_id": "Q_ol",
+        "var_name": "HLM",
+        "onEvent": "select_sim_type",
+        "selected": 0
+      }
+	},
+    "baseMapType": {
+      "v1": {
+        "var_id": "light_all",
+        "var_name": "Light",
+        "onEvent": "basemap_changer",
+        "selected": 1
+      }
+    }
+  },
+  "plotlyLayout": {
+    "margin": {
+      "l": 80,
+      "r": 80,
+      "b": 70,
+      "t": 50,
+      "pad": 1
+    },
+    "titlefont": {
+      "size": 16,
+      "color": "black"
+    },
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "traceorder": "normal",
+      "font": {
+        "size": 14,
+        "color": "#000"
+      },
+      "bgcolor": "rgba(255,255,255,0.90)",
+      "bordercolor": "#000000",
+      "borderwidth": 1,
+      "orientation": "h"
+    },
+    "xaxis": {
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "type": "date"
+    },
+    "yaxis": {
+      "title": "Q (m3/s)",
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "autorange": true,
+      "rangemode": "tozero",
+      "hoverformat": ".1f"
+    },
+    "plot_bgcolor": "#fff",
+    "paper_bgcolor": "#eee",
+    "hovermode": "closest",
+    "updatemenus": [
+      {
+        "buttons": [],
+        "direction": "left",
+        "pad": {
+          "r": 10,
+          "t": 10
+        },
+        "showactive": true,
+        "type": "buttons",
+        "x": 0,
+        "xanchor": "left",
+        "y": 1.15,
+        "yanchor": "top"
+      }
+    ],
+    "initMD": "-04-01 00:00:00",
+    "finalMD": "-11-01 00:00:00",
+	"displayModeBar": true
+  },
+  "mapLayers": {
+    "IACounties.geojson": {
+      "fnPath": "example/vectors/mapLayers/IACounties.geojson",
+      "fn": "IACounties.geojson",
+      "var_name": "IA Counties",
+      "onEvent": "toggLyrStd",
+      "selected": false
+    }
+  },
+  "customBaseMap": {
+    "url": "example/vectors/customBaseMap.geojson",
+    "colors": {
+      "3": "#00e4ff",
+      "4": "#00c5ff",
+      "5": "#00acff",
+      "6": "#018eff",
+      "7": "#007dff",
+      "8": "#007bff",
+      "9": "#0055ff",
+      "10": "#000000",
+      "11": "#321321"
+    },
+    "propoertyName": "h_order",
+    "name" : "River Network"
+  }
+}
