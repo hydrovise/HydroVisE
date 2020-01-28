@@ -267,7 +267,7 @@ function tracePlot(yr, comID) {
                                     Plotly.downloadImage(gd)
                                 }
                             }
-                        ],
+                        ],                        
                         responsive: true
                     };
                     plotly_modBar.displayModeBar = config.plotlyLayout.hasOwnProperty('displayModeBar') ? config.plotlyLayout.displayModeBar : true;
@@ -310,7 +310,7 @@ function addTraces(lifespan='semi-permanent') {
     let c = config.traces
     //let lifespan = arg == undefined ? 'semi-permanent' : arg;
 
-    Object.keys(c).forEach(function (key) {
+    Object.keys(c).forEach(function (key) {        
         if (!c[key].dynamic) return;
         console.log("systemState.prod, c[key].prod", systemState.prod, c[key], c[key].prod)
         if (c[key].ensemble) {
@@ -318,7 +318,7 @@ function addTraces(lifespan='semi-permanent') {
                 return
             }
         };
-
+        
         let src = pathGenerator(key);
         console.log(key, "add trace src", src)
         if (traceInstalled(src, lifespan)) {return};
