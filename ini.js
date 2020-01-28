@@ -161,6 +161,10 @@ function ini() {
             config.point_data_config.pList1.fn +
             config.point_data_config.pList1.extension
     */
+
+    if (config.map.hasOwnProperty('geoSearch')) {
+        config.map.geoSearch ? addGeoSearch() : false
+    }
     if (config.hasOwnProperty('mapMarkers')) {
         $.ajax({
             url: config.mapMarkers.fnPath,
