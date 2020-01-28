@@ -566,3 +566,14 @@ function handleFileSelect(evt) {
         return false;
     }
 }
+
+
+function addGeoSearch(){
+
+    let options = {
+        collapsed: true, /* Whether its collapsed or not */
+        position: 'bottomleft', /* The position of the control */
+    };
+    let osmGeocoder = new L.Control.OSMGeocoder(options);
+    map.addControl(osmGeocoder);
+}
