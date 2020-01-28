@@ -52,7 +52,7 @@ function changeYear(val) {
         };
         if (mapMarkers){
             leaflet_layers['mapMarkers'].remove()
-            draw_markers(mapMarkers, config.mapMarkers.comIDName)
+            draw_markers(mapMarkers, config.mapMarkers.comIDName)
             if(markerAttrs)  colorCodeMapMarkers(systemState.markerAttrs)
         }
         // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
@@ -69,7 +69,7 @@ function changeYear(val) {
             if (config.timeSlider.hasOwnProperty('dynamicRange')){
                 is_dynamic = true;
                 dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)
-            } 
+            }
             $("#slider").slider(
                 {
                     min: dynamicRange(config.timeSlider.min),
@@ -223,7 +223,7 @@ function updateLayerZIndex(){
     {
         var layer_idx = $(this).index();
         // console.log($(this))
-            // [""0""].style.zIndex
+        // [""0""].style.zIndex
         el = $(this)[0].children[1];
         // console.log(el);
         var tr_id = el.value;
