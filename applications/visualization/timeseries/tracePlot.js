@@ -61,9 +61,11 @@ function unpack(_data, key) {
 function CheckXRange(_yr) {
     let XRange;
     if (!systemState.zoom_state) {
-            if (config.plotlyLayout.hasOwnProperty('initMD') &&
+        if (config.plotlyLayout.hasOwnProperty('initMD') &&
                 config.plotlyLayout.hasOwnProperty('finalMD')){
-                XRange = [_yr + config.plotlyLayout.initMD, _yr + config.plotlyLayout.finalMD];
+            XRange = [_yr + config.plotlyLayout.initMD, config.plotlyLayout.finalMD === 'now' ?
+                moment(new Date().getTime() + 240*3600*1000).format('YYYY-MM-DD HH:mm') :
+                _yr + config.plotlyLayout.finalMD];
         } else{
                 XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
             }
