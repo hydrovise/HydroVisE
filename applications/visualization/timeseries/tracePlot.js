@@ -8,7 +8,7 @@ let modEvnt;
 let hGrid = {
     default: false,
     derived: false
-}
+};
 
 Papa.parsePromise = function(fn) {
     return new Promise(function(resolve) {
@@ -29,7 +29,7 @@ Papa.parsePromise = function(fn) {
 
 function modInstall(){
     if (!config.hasOwnProperty('modTrace') || modChecked) return;
-    let c = config.modTrace
+    let c = config.modTrace;
     var s = document.createElement("script");
     s.type = "text/javascript";
     s.src = c.modJS;
@@ -213,7 +213,7 @@ function tracePlot(yr, comID) {
     //    default: false,
     //    derived: false
     //}
-    let c = config.traces
+    let c = config.traces;
     systemState.mod = 'default'
 
     systemState.xRange = CheckXRange(yr);
@@ -238,11 +238,17 @@ function tracePlot(yr, comID) {
             d3.csv(src,
                 (data) => {
                     let _trace = getTrace(data, key, src)
-                    traceData.push(_trace);
+
+                    traceIdx = Object.keys(c).indexOf(key);
+                    // traceData.push(_trace);
+                    traceData[traceIdx] = _trace;
+                    // if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
+                    //     c[key].modEnabled
+                    // ) traceData.push(getModTrace(_trace));
 
                     if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
                         c[key].modEnabled
-                    ) traceData.push(getModTrace(_trace));
+                    ) traceData[traceIdx] = getModTrace(_trace);
 
                     let use_layout = JSON.parse(
                         JSON.stringify(
