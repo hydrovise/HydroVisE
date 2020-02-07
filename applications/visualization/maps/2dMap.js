@@ -1,6 +1,4 @@
 
-
-
 function initSpatialData() {
     function addTab(key,i) {
         var name = twoDConfig[key].name;
@@ -31,7 +29,7 @@ function initSpatialData() {
             success: function (data) {
                 twoDTimestamps[key] = data.map(dt => moment.unix(dt).format('YYYY-MM-DD HH:mm'))
                 addTab(key,i);
-                if (i==0) systemState.timeSelector.activeTab = 'div_' + key;
+                if (i===0) systemState.timeSelector.activeTab = 'div_' + key;
                 if (subset.hasOwnProperty('geom')) initializeGeom(key);
             }
         });
@@ -147,9 +145,10 @@ function twoDMapPlotter(twoDDataName, unix_time) {
     }
 
     let _config = config.spatialData[twoDDataName];
-    let _fnPath = _config.fnPath;
-    let _ext = _config.extension;
-    fn = _fnPath + '/' + String(unix_time) + _ext;
+    // let _fnPath = _config.fnPath;
+    let fn = pathGeneratorGeneral(_config, unix_time);
+    // let _ext = _config.extension;
+    // let fn = _fnPath + '/' + String(unix_time) + _ext;
     let _style = _config.hasOwnProperty('style') ? _config.style : '';
     let _colorPalette = _style.hasOwnProperty('colorPalette') ? _style.colorPalette : defaultChromaSettings.colorPalette;
     let _dtFormat = _style.hasOwnProperty('dtFormat') ? _style.dtFormat : 'YYYY-MM-DD HH:mm';

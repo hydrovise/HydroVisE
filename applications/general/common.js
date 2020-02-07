@@ -100,3 +100,8 @@ function syncPlots(ed, divID) {
     ) ? Plotly.relayout(div, ed) : repeting_releyout = !repeting_releyout;
 
 }
+
+function pathGeneratorGeneral(subConfig, unix_time) {
+    let c = subConfig.pathTemplate;
+    return formatArray(c.path_format, [String(unix_time)])
+}

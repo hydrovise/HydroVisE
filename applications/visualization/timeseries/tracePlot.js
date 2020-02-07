@@ -226,29 +226,56 @@ function tracePlot(yr, comID) {
         hGrid.default = getGridLines()
         if (config.hasOwnProperty('modTrace')) hGrid.derived = getModGridLines(hGrid.default)
     }
+    // Initialize the array for plotly traces
+    traceIndices = [];
+    count = 0;
+    Object.keys(c).forEach(
+        key => {
+            traceIndices[key] = count;
+            traceData[count] = JSON.parse(
+                JSON.stringify(
+                    c[key].style
+                )
+            );
+            if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
+                c[key].modEnabled
+            ) {
+
+                count = count+1;
+                traceData[count] = JSON.parse(
+                    JSON.stringify(
+                        c[key].style
+                    )
+                );
+
+            }
+            count = count+1;
+        }
+    );
     Object.keys(c).forEach(
         key => {
             if (c[key].dynamic) return;
-            src = pathGenerator(key)
+            src = pathGenerator(key);
             console.log("trace src", src);
             if (traceInstalled(src)) {
                 console.log("traceInstalled(src) is true, quiting")
                 return;
             }
             d3.csv(src,
-                (data) => {
-                    let _trace = getTrace(data, key, src)
+                (error, data) => {
+                if (error) {console.log(error); return}
 
-                    traceIdx = Object.keys(c).indexOf(key);
-                    // traceData.push(_trace);
-                    traceData[traceIdx] = _trace;
+                    let _trace = getTrace(data, key, src);
+
+                    traceData[traceIndices[key]] = _trace;
+                    // traceData[traceIdx].push(_trace);
+                    //
                     // if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
                     //     c[key].modEnabled
                     // ) traceData.push(getModTrace(_trace));
-
                     if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
                         c[key].modEnabled
-                    ) traceData[traceIdx] = getModTrace(_trace);
+                    ) traceData[traceIndices[key]+1] = getModTrace(_trace);
 
                     let use_layout = JSON.parse(
                         JSON.stringify(

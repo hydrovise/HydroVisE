@@ -1,12 +1,6 @@
 let dynamicLayers = {};
 // between tiles and overlays
 //TODO: Add map ordering using map panes
-function pathGeneratorGeneral(subConfig) {
-    let c = subConfig.template;
-    let f = new Function('v', 'return v');
-
-    return formatArray(c.path_format, use_values)
-}
 
 function clickFeature(e) {
     let c = config.mapMarkers;
@@ -277,7 +271,7 @@ function draw_markers(pointList, pointListID) {
                 }
 
             });
-        console.log(c,vals)
+        // console.log(c,vals)
         return formatArray(c.format, vals);
     }
 
@@ -465,3 +459,5 @@ function generateColorBar1(selected) {
     );
     $("#colorbar").replaceWith(str_div_bars + '</div>');
 }
+
+
