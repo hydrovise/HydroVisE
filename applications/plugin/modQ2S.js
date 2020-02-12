@@ -152,30 +152,29 @@ function translateID (usgs_id){
 
 function evntQ2Stage (butt, hGrid){
     let c = config.modTrace.mod
-    let use_mod = Object.keys(c).filter(
+    let use_mod = Object.keys(c).filter(        
         (k) => {return c[k].button == butt}
     )[0]
 
     if (systemState.mod == use_mod) return;
     let was_mod = systemState.mod;
     systemState.mod = use_mod;
-    let pltPath = c[use_mod].pltPath;
-    let pltVal = c[use_mod].pltVal;
+    let pltPath = c[use_mod].pltPath;// + '.text';
+    let pltVal = c[use_mod].val;
     div_plot.layout.shapes = hGrid[use_mod];
-
+    console.log(pltPath, pltVal);
     div_plot.data.forEach(          // was_mod use_mod to make decisions on show hide ?
         v => {
             v.visible = !v.visible;
         }
     )
 
-    update = {
-        "shapes": JSON.stringify(hGrid[use_mod]),
-        pltPath: pltVal
-    };
-
-    //Plotly.relayout(div_plot, update)
+    update ={};
+    update["shapes"] = JSON.stringify(hGrid[use_mod]);
+    update[pltPath] = pltVal;
+    
     Plotly.restyle(div_plot, update)
+    Plotly.relayout(div_plot, update)
 }
 
 function Q2Stage(flow_arr) {

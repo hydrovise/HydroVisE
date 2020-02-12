@@ -1,6 +1,4 @@
 
-
-
 function initSpatialData() {
     function addTab(key,i) {
         var name = twoDConfig[key].name;
@@ -31,7 +29,7 @@ function initSpatialData() {
             success: function (data) {
                 twoDTimestamps[key] = data.map(dt => moment.unix(dt).format('YYYY-MM-DD HH:mm'))
                 addTab(key,i);
-                if (i==0) systemState.timeSelector.activeTab = 'div_' + key;
+                if (i===0) systemState.timeSelector.activeTab = 'div_' + key;
                 if (subset.hasOwnProperty('geom')) initializeGeom(key);
             }
         });
@@ -80,8 +78,10 @@ function initSpatialData() {
         });
         // gd = document.getElementById(twoDimDIV.id);
         twoDimDIV.on("plotly_relayout", function (ed) {
+            if (div_plot.data){
+                syncPlots(ed, 'div_plot');
+            }
 
-            syncPlots(ed, 'div_plot');
 
         });
         timeSynchedDivs.push(twoDimDIV);
@@ -145,9 +145,10 @@ function twoDMapPlotter(twoDDataName, unix_time) {
     }
 
     let _config = config.spatialData[twoDDataName];
-    let _fnPath = _config.fnPath;
-    let _ext = _config.extension;
-    fn = _fnPath + '/' + String(unix_time) + _ext;
+    // let _fnPath = _config.fnPath;
+    let fn = pathGeneratorGeneral(_config, unix_time);
+    // let _ext = _config.extension;
+    // let fn = _fnPath + '/' + String(unix_time) + _ext;
     let _style = _config.hasOwnProperty('style') ? _config.style : '';
     let _colorPalette = _style.hasOwnProperty('colorPalette') ? _style.colorPalette : defaultChromaSettings.colorPalette;
     let _dtFormat = _style.hasOwnProperty('dtFormat') ? _style.dtFormat : 'YYYY-MM-DD HH:mm';
@@ -182,7 +183,7 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             twoDLegend.remove()
         }
 
-        let _scale = chroma.scale(_colorPalette).domain(_range);
+        let _scale = chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod);
         twoDLegend = L.control.colorBar(_scale, _range, getColorbar(_range));
         twoDLegend.addTo(map);
         return bar
@@ -194,7 +195,7 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             return _style.range;
         } else {
             let filtered = [];
-            data.forEach(arr => filtered.push(arr.filter(v => v !== -9999)));
+            data.forEach(arr => filtered.push(arr.filter(v => v > -9999)));
             return [math.min(filtered), math.max(filtered)]
 
         }
@@ -214,8 +215,8 @@ function twoDMapPlotter(twoDDataName, unix_time) {
         // console.log(_range)
         map.createPane(twoDDataName);
         let geomLayers = L.canvasLayer.scalarField(geo, {
-            // inFilter: (v) => v !== _style.hasOwnProperty('invalid') ? _style.invalid :defaultColorBar.invalid,
-            inFilter: (v) => v !== -9999,
+            inFilter: (v) => v < _style.hasOwnProperty('invalid') ? _style.invalid :defaultColorBar.invalid,
+            // inFilter: (v) => v !== -9999,
             color: chroma.scale(_colorPalette).domain(getDynamicRange(geo.grid), _nBins, _colorMethod),
             opacity: 1,
             maxBounds: defaultBounds,

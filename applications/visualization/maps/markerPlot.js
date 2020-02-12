@@ -1,12 +1,6 @@
 let dynamicLayers = {};
 // between tiles and overlays
 //TODO: Add map ordering using map panes
-function pathGeneratorGeneral(subConfig) {
-    let c = subConfig.template;
-    let f = new Function('v', 'return v');
-
-    return formatArray(c.path_format, use_values)
-}
 
 function clickFeature(e) {
     let c = config.mapMarkers;
@@ -145,7 +139,7 @@ function initializeGeom(dynamicGeomID) {
                         }
                     },
                     getFeatureId: function (f) {
-                        return f.properties.link_id;
+                        return f.properties[comIDName];
                     },
                     interactive: true,
                     pane: dynamicGeomID
@@ -224,7 +218,32 @@ function restyle(allLayers) {
 
     });
 }
+function tooltipStrGen(el) {
+    let comID = [config.mapMarkers.comIDName];
+    let p = el.properties;
+    if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
+    let c = config.mapMarkers.tooltip.template;
 
+    let vals = [];
+    c.var.forEach(
+        v => {
+            if (v==='metric'){
+                vals.push(
+                    $.isNumeric(p[systemState.markerAttrs]) ? parseFloat(p[systemState.markerAttrs]).toFixed(2) : p[systemState.markerAttrs]
+                )
+            }else if (v==='metricName'){
+                vals.push(
+                    config.controls.markerAttrs[systemState.markerAttrs].var_name
+                )
+            }else {
+                vals.push(
+                    $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
+                )
+            }}
+
+    );
+    return formatArray(c.format, vals);
+}
 
 function draw_markers(pointList, pointListID) {
     function tooltipStrGen(el) {
@@ -235,11 +254,24 @@ function draw_markers(pointList, pointListID) {
 
         let vals = [];
         c.var.forEach(
-            v => vals.push(
-                $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
-            )
-        );
-        //console.log(formatArray(c.format, vals));
+            v => {
+                if (v==='metric'){
+                    vals.push(
+                        $.isNumeric(p[systemState.markerAttrs]) ? parseFloat(p[systemState.markerAttrs]).toFixed(2) : p[systemState.markerAttrs]
+                    )
+                }else if (v==='metricName'){
+                    vals.push(
+                        config.controls.markerAttrs[systemState.markerAttrs].var_name
+                    )
+                } else
+                {
+                    vals.push(
+                        $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
+                    )
+                }
+
+            });
+        // console.log(c,vals)
         return formatArray(c.format, vals);
     }
 
@@ -250,7 +282,6 @@ function draw_markers(pointList, pointListID) {
     if (map.hasLayer(group)) {
         group.eachLayer(
             function (l) {
-                //console.log(l)
                 group.removeLayer(l);
             }
         );
@@ -258,19 +289,18 @@ function draw_markers(pointList, pointListID) {
     }
     plist = config.mapMarkers;
     comIDName = plist.comIDName;
-
     typeList = plist.types;
-    // if (!plist.hasOwnProperty("style")) {
-    //
-    // }
+
     let defaultStyle = function () {
         return {
-            radius: 5,
+            radius: 8,
             color: "black",
             weight: 2,
             opacity: 1
         }
     };
+
+
     // (String)"Function Name" -> registered Function;
     Object.keys(
         plist.onEachFeature
@@ -283,12 +313,17 @@ function draw_markers(pointList, pointListID) {
             plist.onEachFeature
         );
     }
-    if (plist.geomType==='point') {
+
+    if (plist.geomType === 'point') {
+        map.createPane('topPane')
         leaflet_layers['mapMarkers'] = L.geoJSON(
             pointList,
             {
-                style: (!plist.hasOwnProperty("style")) ? defaultStyle : plist.style,
+                style: plist.hasOwnProperty('style') ? plist.style : defaultStyle,
                 onEachFeature: onEachFeature,
+                getFeatureId: function (f) {
+                    return f.properties[comIDName];
+                },
                 pointToLayer: function (feature, latlng) { //TODO: add custom ICON for style
                     let tooltipStr = tooltipStrGen(feature);
 
@@ -297,67 +332,132 @@ function draw_markers(pointList, pointListID) {
                         tooltipStr,
                         {
                             permanent: false,
-                            direction: 'right'
+                            direction: 'right',
+                            pane:'topPane'
                         }
                     );
-                    return L.circleMarker(latlng);
+                    return cMarker;
                 }
             }
         );
 
         leaflet_layers['mapMarkers'].addTo(map);
-        // leaflet_layers['mapMarkers'].bringToFront()
-    } else{
+        leaflet_layers['mapMarkers'].bringToFront()
+    } else {
+        map.createPane('topPane')
         leaflet_layers['mapMarkers'] = L.geoJSON(pointList, {
-            style: (!plist.hasOwnProperty("style")) ? defaultStyle : plist.style,
+            style: plist.hasOwnProperty('style') ? plist.style : defaultStyle,
             onEachFeature: onEachFeature
         });
         map.addLayer(leaflet_layers['mapMarkers']);
-        leaflet_layers['mapMarkers'].eachLayer( layer=> {
+        leaflet_layers['mapMarkers'].eachLayer(layer => {
             let tooltipStr = tooltipStrGen(layer.feature);
-            if (tooltipStr) layer.bindTooltip(tooltipStr,{permanent: false,direction: 'right'})})
+            if (tooltipStr) layer.bindTooltip(tooltipStr, {permanent: false, direction: 'right',pane:'topPane'})
+        })
 
         // leaflet_layers['mapMarkers'].bringToFront()
     }
-
+    map.getPane('topPane').style.zIndex=1010;
     updateLayerZIndex()
 }
 
-function draw_markers_sub_year(metrics_subyear, useAttribute, _sim_type) {
-    if (map.hasLayer(group)) {
-        // map.removeLayer(drawnFeatures); <-- this the wrong way
-        group.eachLayer(
-            function (l) {
-                group.removeLayer(l);
-            });
+function getStyle() {
+    if (plist.hasOwnProperty("markerAttrs")) {
+        defaultStyle.fillColor = vColor('KGE', markerAttrs['KGE'])
+    } else {
+        return (!plist.hasOwnProperty("style")) ? defaultStyle : plist.style
     }
-    jsonFeatures = [];
-
-//     _sim_type = 'Q_ol';
-    markerArray = [];
-    for (var i = 0; i < Object.size(metrics_subyear[useAttribute]); i++) {
-        if (metrics_subyear['sim_type'][i] === _sim_type) {
-
-            marker = L.circleMarker(L.latLng(metrics_subyear['lat'][i], metrics_subyear['lon'][i]), {
-                radius: 7,
-                fillOpacity: 1,
-                color: 'black',
-                fillColor: vColor(useAttribute, metrics_subyear[useAttribute][i]),//getColor(feature.properties.stype)
-                weight: 1
-            }).addTo(group);
-            marker.feature = {};
-            marker.feature.properties = {};
-            // marker.properties.someprop = "Test"
-            marker.feature.properties.lid = metrics_subyear['lid'][i];
-            marker.feature.properties.USGS_name = metrics_subyear['USGS_name'][i];
-            marker.feature.properties.USGS_id = metrics_subyear['USGS_id'][i];
-            marker.feature.properties.ifis_id = metrics_subyear['ifis_id'][i];
-            markerArray.push(marker);
-        }
-
-    }
-    map.addLayer(group);
-    group.bringToFront();
-    generateColorBar(systemState.metric);
 }
+
+
+
+
+function colorCodeMapMarkers(attrName){
+    console.log(attrName)
+    let _config = config.controls.markerAttrs[attrName];
+    console.log(_config)
+    let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
+    let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
+    let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
+    let _range = _config.range;
+    getColor = function (val){
+        return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
+    };
+    //todo: change the headernames to dynamic names in the config file
+    leaflet_layers['mapMarkers'].eachLayer( layer=> {
+        _comID = layer.feature.properties[comIDName];
+        filtered = markerAttrs.filter(f => f[comIDName]== _comID &
+            f['year'] == systemState.yr & f['prod'] == systemState.prod)
+        // console.log(filtered)
+        // console.log(layer)
+        attr = systemState.markerAttrs;
+        if (filtered.length>0){
+            Object.keys(config.controls.markerAttrs).forEach(k => {
+                attrName = config.controls.markerAttrs[k].var_id;
+                layer.feature.properties[attrName] = filtered[0][attrName];
+            });
+            layer.options.fillColor = getColor(filtered[0][systemState.markerAttrs]);
+
+            layer.options.fillOpacity = 1;
+            layer._tooltip._content = tooltipStrGen(layer.feature);
+        }
+    });
+    leaflet_layers['mapMarkers'].remove();
+    leaflet_layers['mapMarkers'].addTo(map)
+    generateColorBar1(attr)
+}
+function generateColorBar1(selected) {
+    let defaultColorBar = {
+        title: 'generic title',
+        units: '(cm^3/cm^3)',
+        steps: 4,
+        decimals: 2,
+        width: 300,
+        height: 20,
+        position: 'bottomright',
+        background: '#888888',
+        textColor: '#ffffff',
+        labels: [],
+        labelFontSize: 15,
+        invalid: -9999
+    };
+    let defaultChromaSettings = {
+        colorPalette: ['#fafa6e', '#2A4858'],
+        nBins: 5,
+        method: 'quantiles'
+    };
+    let _config = config.controls.markerAttrs[selected];
+    let colorbarTitle = _config.hasOwnProperty('var_name') ? _config.var_name : selected;
+    let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
+    let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
+    let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
+    let _range = _config.range;
+    getColor = function (val){
+
+        return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
+    };
+    colorBar = {};
+
+
+    decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
+    delta = Math.round((_range[1]-_range[0]) / _nBins *10**decimalP)/ 10**decimalP;
+    _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) + parseFloat(_range[0])).toFixed(decimalP)))
+    colors = (_colorPalette.length == _nBins) ?  _colorPalette : _labels.map(l => String(getColor(l)))
+    zipped = d3.zip(colors,_labels).reverse()
+
+    // }
+
+    var str_div_bars = '<div id="colorbar">' +
+        '<p style="font-size:20px;font-weight: 400;color: #111111">' + colorbarTitle + '</p>';
+    zipped.forEach( element => {
+            console.log(element)
+            str_div_bars += ('<div class="bar-row" style="height: {2}px">'+
+                '<div class="bar bar-label">{0}</div>' +
+                '<div class="bar" style="background-color:{1}")></div></div>')
+                .format(element[1], String(element[0]), String(30));
+        }
+    );
+    $("#colorbar").replaceWith(str_div_bars + '</div>');
+}
+
 

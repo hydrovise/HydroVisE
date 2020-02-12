@@ -1,22 +1,28 @@
 function select_sim_type(_selected) {
-    let _sel = $(_selected)
-    let class_arr = (_sel.attr('class').split(/\s+/)).slice(0,2)
+    let _sel = $(_selected);
+    let class_arr = (_sel.attr('class').split(/\s+/)).slice(0,2);
     let un_sel = class_arr.map(v=> '.'+v).join("") + '.selected';
     $(un_sel).removeClass('selected');
     $(_sel).addClass('selected');
     systemState.prod = _sel.data('value');
+    if (div_plot.hasOwnProperty('data')){
+        clearTraces('temporary');
+        addTraces('temporary');
+    }
 
     if (zoom_metric_state) {
         draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
-        draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        // draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        if (systemState.markerAttrs) colorCodeMapMarkers(systemState.markerAttrs)
     }
-    generateColorBar(systemState.metric);
+
+    // generateColorBar1(systemState.metric);
 }
 
 function selectMetric(_selected) {
-    let _sel = $(_selected)
-    let class_arr = (_sel.attr('class').split(/\s+/)).slice(0,2)
+    let _sel = $(_selected);
+    let class_arr = (_sel.attr('class').split(/\s+/)).slice(0,2);
     let un_sel = class_arr.map(v=> '.'+v).join("") + '.selected';
     $(un_sel).removeClass('selected');
     $(_sel).addClass('selected');
@@ -25,9 +31,10 @@ function selectMetric(_selected) {
     if (zoom_metric_state) {
         draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
-        draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
+        // draw_markers(markerAttrs, systemState.metricType, systemState.yr, systemState.prod);
+        // generateColorBar1(systemState.metricType,val)
+        colorCodeMapMarkers(systemState.markerAttrs)
     }
-    generateColorBar(systemState.metric);
 }
 
 function changeYear(val) {
@@ -35,8 +42,9 @@ function changeYear(val) {
     zoom_state = false;
     zoom_metric_state = false;
     use_yr = parseInt(systemState.yr) + (parseInt(val) * parseInt(config.data_part.step));
-
-    if (config.data_part.min_val <= use_yr && use_yr <= config.data_part.max_val) {
+    let min_yr = config.data_part.min_val;
+    let max_yr = config.data_part.max_val === 'now' ? new Date().getFullYear(): config.data_part.max_val;
+    if (min_yr <= use_yr && use_yr <= max_yr) {
         systemState.yr = use_yr;
         systemState.xRange = CheckXRange(use_yr);
         $('#year-selected').text(use_yr);
@@ -44,19 +52,33 @@ function changeYear(val) {
             'xaxis.range': CheckXRange(use_yr) //XRange
         };
         if (mapMarkers){
-            leaflet_layers['mapMarkers'].remove()
-            draw_markers(mapMarkers, config.mapMarkers.comIDName)
+            leaflet_layers['mapMarkers'].remove();
+            draw_markers(mapMarkers, config.mapMarkers.comIDName);
+            if(markerAttrs)  colorCodeMapMarkers(systemState.markerAttrs)
         }
         // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
         if (div_plot.hasOwnProperty('data')) {
-            tracePlot(use_yr, systemState.comID)
+            tracePlot(use_yr, systemState.comID);
             Plotly.relayout(div_plot, update)
         }
-
-        repeting_releyout = true;
-        Plotly.relayout(systemState.timeSelector.activeTab, update)
+        if (systemState.timeSelector.activeTab !==""){
+            repeting_releyout = true;
+            Plotly.relayout(systemState.timeSelector.activeTab, update)
+        }
+        if (systemState.hasOwnProperty('sliderState') & systemState.sliderState > 0){
+            function dynamicRange (v) {return v}
+            if (config.timeSlider.hasOwnProperty('dynamicRange')){
+                is_dynamic = true;
+                dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)
+            }
+            $("#slider").slider(
+                {
+                    min: dynamicRange(config.timeSlider.min),
+                    max: dynamicRange(config.timeSlider.max)
+                }
+            );
+        }
     }
-
 }
 
 
@@ -68,7 +90,7 @@ function dragElement(el_id, ctrl_id) {
         pos4 = e.clientY;
         init_y = ctrl.style.top;
         init_x = ctrl.style.left;
-        document.onmouseup = closeDragElement
+        document.onmouseup = closeDragElement;
         document.onmousemove = elementDrag;
     }
 
@@ -173,7 +195,7 @@ function hideShowCanvas() {
     let p = $("#div_plot");
     let s = $("#sliderMainDIV");
     if (p.css('display') == "none") {
-        p.show()
+        p.show();
         s.show();
     } else {
         p.hide();
@@ -186,11 +208,11 @@ function removeCTXLayer(e) {
     let elem = document.getElementById('li_' + lyr_id)
     // let fn = standard[lyr_id].fn
 
-    elem.parentNode.removeChild(elem)
+    elem.parentNode.removeChild(elem);
 //     $(elem).remove();
 //     document.getElementById(elem)
     if (leaflet_layers[lyr_id]) {
-        leaflet_layers[lyr_id].remove()
+        leaflet_layers[lyr_id].remove();
         delete leaflet_layers[lyr_id]
     }
     // console.log(e)
@@ -202,7 +224,7 @@ function updateLayerZIndex(){
     {
         var layer_idx = $(this).index();
         // console.log($(this))
-            // [""0""].style.zIndex
+        // [""0""].style.zIndex
         el = $(this)[0].children[1];
         // console.log(el);
         var tr_id = el.value;
@@ -236,5 +258,4 @@ function open2DTab(evt, tabName) {
     ed = {"xaxis.range[0]": systemState.xRange[0], "xaxis.range[1]": systemState.xRange[1]};
     repeting_releyout = true;
     syncPlots(ed, systemState.timeSelector.activeTab)
-
 }

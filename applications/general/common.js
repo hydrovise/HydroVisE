@@ -11,6 +11,7 @@ if (!String.prototype.format) {
     }
 }
 
+
 function formatArray(fmt,args){
     return fmt.replace(
         /{(\d+)}/g,
@@ -20,6 +21,11 @@ function formatArray(fmt,args){
         }
     )
 }
+
+
+Date.prototype.getUnixTime = function() { return this.getTime()/1000|0 };
+if(!Date.now) Date.now = function() { return new Date(); }
+Date.time = function() { return Date.now().getUnixTime(); }
 
 
 if (!Number.prototype.toRad) {
@@ -93,4 +99,9 @@ function syncPlots(ed, divID) {
         x.range[1] != ed["xaxis.range[1]"]
     ) ? Plotly.relayout(div, ed) : repeting_releyout = !repeting_releyout;
 
+}
+
+function pathGeneratorGeneral(subConfig, unix_time) {
+    let c = subConfig.pathTemplate;
+    return formatArray(c.path_format, [String(unix_time)])
 }

@@ -5,10 +5,10 @@ let modTrace;
 modChecked = false;         /// MOVE IT TO INI()
 let modMethod;
 let modEvnt;
-//let hGrid = {
-//    default: false,
-//    derived: false
-//}
+let hGrid = {
+    default: false,
+    derived: false
+};
 
 Papa.parsePromise = function(fn) {
     return new Promise(function(resolve) {
@@ -29,7 +29,7 @@ Papa.parsePromise = function(fn) {
 
 function modInstall(){
     if (!config.hasOwnProperty('modTrace') || modChecked) return;
-    let c = config.modTrace
+    let c = config.modTrace;
     var s = document.createElement("script");
     s.type = "text/javascript";
     s.src = c.modJS;
@@ -43,8 +43,8 @@ function modInstall(){
             "label": "Discharge",
             "method": "skip"
         },{
-                "label": "Stage",
-                "method": "skip"
+            "label": "Stage",
+            "method": "skip"
         }
     ]
 }
@@ -61,7 +61,14 @@ function unpack(_data, key) {
 function CheckXRange(_yr) {
     let XRange;
     if (!systemState.zoom_state) {
-            XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
+        if (config.plotlyLayout.hasOwnProperty('initMD') &&
+                config.plotlyLayout.hasOwnProperty('finalMD')){
+            XRange = [_yr + config.plotlyLayout.initMD, config.plotlyLayout.finalMD === 'now' ?
+                moment(new Date().getTime() + 240*3600*1000).format('YYYY-MM-DD HH:mm') :
+                _yr + config.plotlyLayout.finalMD];
+        } else{
+                XRange = [_yr + "-01-01 00:00:00", _yr + "-12-30 00:00:00"];
+            }
         return XRange
     } else {
         return selectedRange
@@ -176,6 +183,7 @@ function traceInstalled(src, update_lifespan){
     }
     return success > 0;
 }
+
 function plotTitle(comID){
     let c = config.mapMarkers;
     let _field = c.plotTitle.template.var;
@@ -189,22 +197,23 @@ function plotTitle(comID){
     row = mapMarkers.features[row_ix];
     _field.forEach(
         p => vals.push(
-            $.isNumeric(
-                row.properties[p] && !Number.isInteger(row.properties[p])
-            ) ? Math.round(row.properties[p], 2) :
-                row.properties[p]
+            typeof(row.properties[p]) =="number" ? parseFloat(row.properties[p]).toFixed() : row.properties[p]
+            // $.isNumeric(
+            //     row.properties[p] && !Number.isInteger(row.properties[p])
+            // ) ? row.properties[p].toFixed(2) :
+            //     row.properties[p]
         )
     )
-    console.log(_fmt, vals);
+    console.log(vals);
     return formatArray(_fmt, vals)
 }
 function tracePlot(yr, comID) {
     let traceData = [];
-    let hGrid = {
-        default: false,
-        derived: false
-    }
-    let c = config.traces
+    //let hGrid = {
+    //    default: false,
+    //    derived: false
+    //}
+    let c = config.traces;
     systemState.mod = 'default'
 
     systemState.xRange = CheckXRange(yr);
@@ -217,20 +226,56 @@ function tracePlot(yr, comID) {
         hGrid.default = getGridLines()
         if (config.hasOwnProperty('modTrace')) hGrid.derived = getModGridLines(hGrid.default)
     }
+    // Initialize the array for plotly traces
+    traceIndices = [];
+    count = 0;
+    Object.keys(c).forEach(
+        key => {
+            traceIndices[key] = count;
+            traceData[count] = JSON.parse(
+                JSON.stringify(
+                    c[key].style
+                )
+            );
+            if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
+                c[key].modEnabled
+            ) {
+
+                count = count+1;
+                traceData[count] = JSON.parse(
+                    JSON.stringify(
+                        c[key].style
+                    )
+                );
+
+            }
+            count = count+1;
+        }
+    );
     Object.keys(c).forEach(
         key => {
             if (c[key].dynamic) return;
-            src = pathGenerator(key)
-            //console.log(src );
-            if (traceInstalled(src)) return;
+            src = pathGenerator(key);
+            console.log("trace src", src);
+            if (traceInstalled(src)) {
+                console.log("traceInstalled(src) is true, quiting")
+                return;
+            }
             d3.csv(src,
-                (data) => {
-                    let _trace = getTrace(data, key, src)
-                    traceData.push(_trace);
+                (error, data) => {
+                if (error) {console.log(error); return}
 
+                    let _trace = getTrace(data, key, src);
+
+                    traceData[traceIndices[key]] = _trace;
+                    // traceData[traceIdx].push(_trace);
+                    //
+                    // if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
+                    //     c[key].modEnabled
+                    // ) traceData.push(getModTrace(_trace));
                     if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
                         c[key].modEnabled
-                    ) traceData.push(getModTrace(_trace));
+                    ) traceData[traceIndices[key]+1] = getModTrace(_trace);
 
                     let use_layout = JSON.parse(
                         JSON.stringify(
@@ -242,7 +287,7 @@ function tracePlot(yr, comID) {
 
                     try {
                         use_layout.title = plotTitle(comID);
-                    } catch{
+                    } catch {
                         use_layout.title = comID;
                     }
 
@@ -257,10 +302,10 @@ function tracePlot(yr, comID) {
                                     Plotly.downloadImage(gd)
                                 }
                             }
-                        ],
-                        displayModeBar: true,
+                        ],                        
                         responsive: true
                     };
+                    plotly_modBar.displayModeBar = config.plotlyLayout.hasOwnProperty('displayModeBar') ? config.plotlyLayout.displayModeBar : true;
 
                     plot = Plotly.newPlot(
                         div_plot,
@@ -268,14 +313,17 @@ function tracePlot(yr, comID) {
                         use_layout,
                         plotly_modBar
                     );
-                    document.getElementById("div_plot").on("plotly_relayout", function (ed) {
-                        syncPlots(ed, systemState.timeSelector.activeTab);
-                    });
+                    if (systemState.timeSelector.activeTab != '') {
+                        document.getElementById("div_plot").on("plotly_relayout", function (ed) {
+                            syncPlots(ed, systemState.timeSelector.activeTab);
+                        });
+                    }
+
                     $(".updatemenu-button").on(
                         "click",
                         (ev) => {
-                            let modSelected=String(ev.currentTarget.textContent);
-                            //console.log ("ev:", modSelected);
+                            let modSelected = String(ev.currentTarget.textContent);
+                            console.log ("ev:", modSelected);
                             modEvnt(
                                 modSelected,
                                 hGrid
@@ -297,28 +345,31 @@ function addTraces(lifespan='semi-permanent') {
     let c = config.traces
     //let lifespan = arg == undefined ? 'semi-permanent' : arg;
 
-    Object.keys(c).forEach(function (key) {
+    Object.keys(c).forEach(function (key) {        
         if (!c[key].dynamic) return;
-        if (c[key].group) {
+        console.log("systemState.prod, c[key].prod", systemState.prod, c[key], c[key].prod)
+        if (c[key].ensemble) {
             if (systemState.prod != c[key].prod) {
                 return
             }
         };
-        console.log(key)
+        
         let src = pathGenerator(key);
+        console.log(key, "add trace src", src)
         if (traceInstalled(src, lifespan)) {return};
         $.ajax({
             url: src,
             dataType: 'text',
             async: false,
             success: function (data) {
-                let pref = '';
-                if (
-                    data.slice(
-                        csvHeader.length-2
-                    ) != csvHeader.slice(csvHeader.length-2)
-                ) pref = csvHeader;
-                data = d3.csvParse(pref + data);
+                //let pref = '';
+                //if (
+                //    data.slice(
+                //        csvHeader.length-2
+                //    ) != csvHeader.slice(csvHeader.length-2)
+                //) pref = csvHeader;
+                //data = d3.csvParse(pref + data);
+                data = d3.csvParse(data);
                 let _trace = getTrace(data, key, src);
                 _trace.lifespan = lifespan;
                 _trace.showlegend = false;
@@ -349,6 +400,6 @@ function clearTraces(remove_lifespan = 'semi-permanent') {
             }
         }
     )
-    Plotly.deleteTraces(div_plot, idx_vec);
+    if (idx_vec.length > 0) Plotly.deleteTraces(div_plot, idx_vec);
 }
 

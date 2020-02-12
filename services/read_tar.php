@@ -7,7 +7,8 @@ header("Pragma: cache");
 header("Cache-Control: max-age=$seconds_to_cache");
 ob_start("ob_gzhandler");
 
-$_base = "/var/www/html/smap/retro";
+$_base = "/var/www/visualriver.net/public_html/data";
+
 #$fn = '/itime_data/2016/Q_ifc_nwm_tar/20161030_23/06904010.csv';
 
 if (isset($_GET['fn'])){

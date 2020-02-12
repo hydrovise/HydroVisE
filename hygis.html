@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="US">
 <head>
-    <link rel="icon" type="image/ico" href="favicon.ico">
+    <link rel="shortcut icon" href="https://hydroiowa.org/diag/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>IFC Hydro-Analytics</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,400">
@@ -27,10 +27,10 @@
     <script src="dist/KML.js"></script>
     <script src="dist/geotiff.js"></script>
     <script src="dist/GeotiffParser.js"></script>
-    <script src="applications/leaflet_plugins/bundle.js"></script>          <!-- ??? -->
+    <script src="applications/leaflet_plugins/bundle.js"></script>
 
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
     <script src="dist/numeric.js"></script>
@@ -81,7 +81,7 @@
                     config = data;
                 }
             });
-
+            document.title = config.hasOwnProperty("page") ? config.page.title: "HyGIS Web Platform";
             let systemState = {
                 yr: '',
                 prod: '',
@@ -126,9 +126,9 @@
 <div id="colorbar"></div>
 <div id="div_plot">
     <div id='sliderMainDIV'>
-        <div id="slider" style="width: calc(100% - 140px); left: 81px;"></div>
-        <input id="buttonAddTrace" type="button" value="add" onclick="addTraces('semi-permanent')">
-        <input id="buttonClearTrace" type="button" value="clear" onclick="clearTraces('semi-permanent')">
+        <div id="slider" style="width: 100%"></div>
+        <input class="button-slider" type="button" value="add" onclick="addTraces('semi-permanent')">
+        <input class="button-slider" type="button" value="clear" onclick="clearTraces('semi-permanent')">
         <div id="sliderLabelDIV"></div>
     </div>
 

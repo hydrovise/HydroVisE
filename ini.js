@@ -11,11 +11,18 @@ function ini() {
             $("#sliderMainDIV").remove();
             return;
         }
-
+        
+        function dynamicRange (v) {return v};
+        
+        if (config.timeSlider.hasOwnProperty('dynamicRange')){
+            is_dynamic = true;
+            dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)               
+        }
+        
         $("#slider").slider(
             {
-                min: config.timeSlider.min,
-                max: config.timeSlider.max,
+                min: dynamicRange(config.timeSlider.min),
+                max: dynamicRange(config.timeSlider.max),
                 step: config.timeSlider.step,
                 value: config.timeSlider.value,
                 slide: function (ev, ui) {
@@ -42,8 +49,24 @@ function ini() {
         }
     );
 
-    // create control elements
-    let controlList = ['markerAttrs', 'prod', 'baseMapType'];
+    function useCtrlContainer(cont_cond, cont_name){
+        if (cont_cond){
+            controlList.push(cont_name);
+        } else {
+            $("#" + cont_name).parent().remove()
+        }
+    }
+    let controlList = []; //['markerAttrs', 'prod', 'baseMapType'];
+    let attr_ctrl = config.hasOwnProperty('mapMarkers') && config.mapMarkers.hasOwnProperty('markerAttrs');
+    let ensemble_ctrl = Object.keys(config.traces).find(
+        v => {
+            return config.traces[v].ensemble;
+        }
+    ) == undefined ? false : true;
+    useCtrlContainer(attr_ctrl,'markerAttrs');
+    useCtrlContainer(ensemble_ctrl || attr_ctrl,'prod')
+    useCtrlContainer(true,'baseMapType')
+
     for (let i = 0; i < controlList.length; i++) {
         let controlElem = controlList[i];
         let container = $("#{0}Options".format(controlElem));
@@ -53,10 +76,10 @@ function ini() {
             key => {
                 _selected = '';
                 if (use_config[key].selected) {
+                    console.log(controlElem, key, use_config[key].selected, systemState[controlElem])
                     systemState[controlElem] = use_config[key].var_id;
                     _selected = 'selected';
-                }
-                ;
+                };
                 container.append(
                     lst_item.format(
                         use_config[key].var_id,
@@ -138,6 +161,10 @@ function ini() {
             config.point_data_config.pList1.fn +
             config.point_data_config.pList1.extension
     */
+
+    if (config.map.hasOwnProperty('geoSearch')) {
+        config.map.geoSearch ? addGeoSearch() : false
+    }
     if (config.hasOwnProperty('mapMarkers')) {
         $.ajax({
             url: config.mapMarkers.fnPath,
@@ -146,9 +173,20 @@ function ini() {
             success: function (data) {
                 mapMarkers = data;
                 draw_markers(mapMarkers, config.mapMarkers.comIDName)
+                if (config.mapMarkers.hasOwnProperty('markerAttrs')) {
+                    Papa.parse(config.mapMarkers.markerAttrs.template.path_format, {
+                        download: true,
+                        header: true,
+                        skipEmptyLines:true,
+                        complete: function (results) {
+                            markerAttrs = results['data'];
+
+                            colorCodeMapMarkers(systemState.markerAttrs)
+                        }
+                    });
+                }
             }
         });
-
     }
 
 
@@ -176,7 +214,9 @@ function ini() {
         initSpatialData();
         repeting_releyout = false;
         document.getElementById(systemState.timeSelector.activeTab).on("plotly_relayout", function (ed) {
-            syncPlots(ed, "div_plot");
+            if (div_plot.data){
+                syncPlots(ed, 'div_plot');
+            }
         });
     }
     dragElement("mini_con0");
