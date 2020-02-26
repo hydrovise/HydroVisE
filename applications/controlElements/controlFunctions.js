@@ -11,7 +11,7 @@ function select_sim_type(_selected) {
     }
 
     if (zoom_metric_state) {
-        colorCodeMapMarkersSubYear(systemState.markerAttrs,metrics_subyear)
+        draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
         // draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
         if (systemState.markerAttrs) colorCodeMapMarkers(systemState.markerAttrs)
@@ -29,7 +29,7 @@ function selectMetric(_selected) {
     systemState.markerAttrs = _sel.data('value');
 
     if (zoom_metric_state) {
-        colorCodeMapMarkersSubYear(systemState.markerAttrs,metrics_subyear)
+        draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
     } else {
         // draw_markers(markerAttrs, systemState.metricType, systemState.yr, systemState.prod);
         // generateColorBar1(systemState.metricType,val)
@@ -38,6 +38,7 @@ function selectMetric(_selected) {
 }
 
 function changeYear(val) {
+    // console.log(val)
     zoom_state = false;
     zoom_metric_state = false;
     use_yr = parseInt(systemState.yr) + (parseInt(val) * parseInt(config.data_part.step));
@@ -164,14 +165,11 @@ function toggLyrStd(e) {
             if (dynamic==='dynamic'){
                 initializeGeom(lyr_id)
             }else{
-                contextLayerLoader(fnPath,fn);
+                contextLayerLoader(fnPath);
                 // updateLayerZIndex()
             }
         } else {
-            (fileUp || dynamic) &&
-            ( leaflet_layers[fn].hasOwnProperty('options') &&
-                !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles'))
-                ? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
+            (fileUp || dynamic) && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
             // fileUp && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
         }
         sel.css("background-color", 'rgb(175, 193, 126)');
@@ -179,10 +177,7 @@ function toggLyrStd(e) {
     } else {
         sel.css("background-color", 'rgba(45,78,69,0)' );
         e.className = 'unchecked';
-        (fileUp || dynamic) &&
-        ( leaflet_layers[fn].hasOwnProperty('options') &&
-            !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles'))
-            ?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
+        (fileUp || dynamic) && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
 
     }
     updateLayerZIndex()

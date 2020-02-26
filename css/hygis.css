@@ -645,15 +645,17 @@ div.bar-row {
 
 #twodcolorbar {
     position: absolute;
-    display: none;
-    bottom: 20%;
+    display: inline-table;
+    top: 50%;
     right: 8px;
-    background-color: rgba(222, 222, 222, 0.9);
-    padding: 6px 4px 8px 6px;
-    width: 30rem;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    background-color: rgba(222, 222, 222, 0.5);;
+    padding: 6px 4px 8px 4px;
+    width: 500px;
     z-index: 1;
 }
-
 div.bar {
     display: block;
     float: right;
@@ -1104,19 +1106,6 @@ input[type="file"]{
     display:none;
 }
 
-.div2dColorTab{
-    width: inherit;
-    color: black;
-    font-size: medium;
-    font-weight: 900;
-    margin-top: 1em;
-}
-.parentTableColor{
-    width: inherit;
-    table-layout: fixed;
-    border-spacing: 01px;
-    margin-bottom: 1em;
-}
 .legendColorLabels{
     height: 19px;
     color: black;
@@ -1126,51 +1115,4 @@ input[type="file"]{
 
 .legendColorStyle{
     height: 25px;
-}
-
-#hide2dSelectorBttn{
-    position: absolute;
-    color: black;
-    font-size: 2em;
-    bottom: 0;
-    left: 5px;
-    display: block;
-    z-index: 1;
-}
-
-#show2dSelectorBttn{
-    size: 2em;
-    position: absolute;
-    color: black;
-    font-size: 2em;
-    bottom: 10px;
-    background-color: #e5e5e4;
-    left: 100px;
-    box-shadow: 0 0 1px black;
-    display: none;
-    z-index: 1;
-}
-
-#show2dLegend{
-    size: 2em;
-    /* left: 0; */
-    position: absolute;
-    color: black;
-    font-size: 2em;
-    bottom: 20%;
-    background-color: #e5e5e4;
-    right: 30px;
-    box-shadow: 0 0 1px black;
-    display: none;
-    z-index: 1;
-}
-
-#hide2dLegend{
-    size: 2em;
-    position: absolute;
-    color: black;
-    font-size: 2em;
-    top: 0;
-    background-color: #e5e5e4;
-    right: 1rem;
 }

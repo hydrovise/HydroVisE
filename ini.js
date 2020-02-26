@@ -114,7 +114,7 @@ function ini() {
             )
         );
         if (use_config[key].selected) {
-            contextLayerLoader(use_config[key].fnPath,key);
+            contextLayerLoader(use_config[key].fnPath);
             document
                 .getElementById('check_lid_' + use_config[key].fn)
                 .classList = 'checked';
@@ -133,8 +133,7 @@ function ini() {
         {
             center: config.map.center,
             zoom: config.map.defaultZoom,
-            maxZoom: config.map.maxZoom,
-            minZoom: 4
+            maxZoom: config.map.maxZoom
             // renderer: L.svg()
         }
     );
@@ -209,7 +208,6 @@ function ini() {
         return false;
     };
 
-
     document.getElementById('drop').addEventListener('change', fileUpload, false);
 
     if (config.hasOwnProperty('spatialData')) {
@@ -227,7 +225,6 @@ function ini() {
     if (config.hasOwnProperty('calcMetrics')) {
         metricDIV = document.getElementById('claculatemetricsButton');
         metricDIV.style.display = 'block';
-        metricDIV.disabled = '';
     }
 
 }
