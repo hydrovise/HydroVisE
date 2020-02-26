@@ -56,13 +56,10 @@ function changeYear(val) {
             draw_markers(mapMarkers, config.mapMarkers.comIDName);
             if(markerAttrs)  colorCodeMapMarkers(systemState.markerAttrs)
         }
-        // draw_markers(metrics, 'pList1', 'kge','kge', systemState.yr,systemState.sim_type);
         if (div_plot.hasOwnProperty('data')) {
-            tracePlot(use_yr, systemState.comID);
-            Plotly.relayout(div_plot, update)
+            tracePlot(systemState.yr, systemState.comID);
         }
         if (systemState.timeSelector.activeTab !==""){
-            repeting_releyout = true;
             Plotly.relayout(systemState.timeSelector.activeTab, update)
         }
         if (systemState.hasOwnProperty('sliderState') & systemState.sliderState > 0){
@@ -108,21 +105,19 @@ function dragElement(el_id, ctrl_id) {
     function closeDragElement(e) {
         let final_x = ctrl.style.left;
         let final_y = ctrl.style.top;
-        if (final_x == init_x &&
-            final_y == init_y) {
+        if (final_x === init_x &&
+            final_y === init_y) {
             minMaxInventory(ctrl_id);
         }
         document.onmouseup = null;
         document.onmousemove = null;
     }
 
-    if (ctrl_id == undefined) ctrl_id = el_id;
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    var init_y;
-    var init_x;
-    var elmnt = document.getElementById(el_id);
-    var ctrl = document.getElementById(ctrl_id);
-    console.log (el_id, document.getElementById(el_id));
+    if (ctrl_id === undefined) ctrl_id = el_id;
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    let init_y,init_x;
+    let elmnt = document.getElementById(el_id);
+    let ctrl = document.getElementById(ctrl_id);
     elmnt.onmousedown = dragMouseDown;
 }
 
@@ -145,47 +140,44 @@ function minMaxInventory(a) {
 
 //user has to click twice on the raster layers
 function toggLyrStd(e) {
-    let is_checked = e.checked;
-    let lyr_id = e.value;
-    // console.log(lyr_id)
-    let dynamic = e.getAttribute('data-type')=='dynamic' ? true :false;
     let fn, fnPath;
+    let is_checked = e.className;
+    let lyr_id = e.value;
+    let dynamic = e.getAttribute('data-type') === 'dynamic';
+    let fileUp  = e.getAttribute('data-type') === 'fileUpload';
     if (dynamic){
         fn = lyr_id;
-        fnPath = config.spatialData[lyr_id].hasOwnProperty('geom')?  config.spatialData[lyr_id].geom.fnPath :'';
-        // console.log(dynamic)
+        fnPath = config.spatialData[lyr_id].hasOwnProperty('geom')?
+            config.spatialData[lyr_id].geom.fnPath :'';
+    }
+    else if (fileUp){
+        fn = lyr_id;
     }
     else {
         fn = config.mapLayers[lyr_id].fn;
         fnPath = config.mapLayers[lyr_id].fnPath;
-        // console.log(dynamic)
     }
-    // console.log(dynamic)
 
     let sel = $(e);
 
-    if (!(is_checked)) {
-        sel.css("background-color", 'rgba(45,78,69,0)');
-        sel.css("class", 'checked');
-        // console.log(fn);
-        // dynamic ? leaflet_layers[fn].hide() : leaflet_layers[fn].remove()
-        dynamic && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
-    } else {
-        // sel.css("background-color", '#2d4e45'); //"#359AFF");
-        sel.css("background-color", 'rgb(175, 193, 126)');
-        sel.css("class", '');
-        // sel.css("background-color", 'rgb(175, 193, 126)');
+    if (is_checked==='unchecked') {
         if (leaflet_layers[fn] === undefined) {
-            if (dynamic=='dynamic'){
+            if (dynamic==='dynamic'){
                 initializeGeom(lyr_id)
             }else{
                 contextLayerLoader(fnPath);
                 // updateLayerZIndex()
             }
-
         } else {
-            dynamic && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
+            (fileUp || dynamic) && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
+            // fileUp && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
         }
+        sel.css("background-color", 'rgb(175, 193, 126)');
+        e.className =  'checked';
+    } else {
+        sel.css("background-color", 'rgba(45,78,69,0)' );
+        e.className = 'unchecked';
+        (fileUp || dynamic) && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
 
     }
     updateLayerZIndex()
@@ -209,32 +201,22 @@ function removeCTXLayer(e) {
     // let fn = standard[lyr_id].fn
 
     elem.parentNode.removeChild(elem);
-//     $(elem).remove();
-//     document.getElementById(elem)
     if (leaflet_layers[lyr_id]) {
         leaflet_layers[lyr_id].remove();
         delete leaflet_layers[lyr_id]
     }
-    // console.log(e)
 }
 
 
 function updateLayerZIndex(){
     $('#sortable li').each( function()
     {
-        var layer_idx = $(this).index();
-        // console.log($(this))
-        // [""0""].style.zIndex
-        el = $(this)[0].children[1];
-        // console.log(el);
-        var tr_id = el.value;
-        // console.log(tr_id)
-        // console.log(layer_idx);
+        let layer_idx = $(this).index();
+        let el = $(this)[0].children[1];
+        let tr_id = el.value;
         if (leaflet_layers[tr_id]!==undefined) {
-
             map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
         }
-        // map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
         map.getPane('overlayPane').style.zIndex = 1000;
     });
 }
@@ -242,7 +224,7 @@ function updateLayerZIndex(){
 function open2DTab(evt, tabName) {
     let i, tabcontent, tablinks, tabID;
     tabID = 'div_' + tabName;
-
+    let lastTab = systemState.timeSelector.activeTab;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
@@ -255,7 +237,7 @@ function open2DTab(evt, tabName) {
     evt.currentTarget.className += " active";
     systemState.timeSelector.activeTab = tabID;
     dragLayer = document.getElementsByClassName('nsewdrag')[0];
-    ed = {"xaxis.range[0]": systemState.xRange[0], "xaxis.range[1]": systemState.xRange[1]};
-    repeting_releyout = true;
-    syncPlots(ed, systemState.timeSelector.activeTab)
+    let ed = {"xaxis.range[0]": systemState.xRange[0], "xaxis.range[1]": systemState.xRange[1]};
+    repeating_relayout = true;
+    syncPlots(ed, tabID)
 }

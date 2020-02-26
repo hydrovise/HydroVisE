@@ -9,9 +9,14 @@
     <link rel="stylesheet" type="text/css" type="text/css" href="dist/loading-bar.css"/>
     <link rel="stylesheet" type="text/css" href="dist/leaflet.loader.css"/>
     <link rel="stylesheet" type="text/css" href="dist/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="applications/leaflet_plugins/Control.OSMGeocoder.css"/>
+    <link rel="stylesheet" type="text/css" href="applications/leaflet_plugins/Control.OSMGeocoder.js"/>
+
     <link rel="stylesheet" type="text/css" href="css/hygis.css"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -27,15 +32,18 @@
     <script src="dist/KML.js"></script>
     <script src="dist/geotiff.js"></script>
     <script src="dist/GeotiffParser.js"></script>
-    <script src="applications/leaflet_plugins/bundle.js"></script>
+    <script src="applications/leaflet_plugins/bundle.js"></script>          <!-- ??? -->
 
     <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
+    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
     <script src="dist/numeric.js"></script>
     <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
     <script src="applications/moment.js"></script>
+    <script src="applications/leaflet_plugins/glify_var_opacity.js"></script>
+    <script src="https://unpkg.com/pbf@3.0.5/dist/pbf.js"></script>
+    <script src="https://unpkg.com/geobuf@3.0.1/dist/geobuf.js"></script>
 
     <script type="text/javascript" src="applications/general/common.js"></script>
     <script type="text/javascript" src="applications/controlElements/mapControlElements.js"></script>
@@ -82,6 +90,9 @@
                 }
             });
             document.title = config.hasOwnProperty("page") ? config.page.title: "HyGIS Web Platform";
+
+            // System State keeps the state of
+            // the controls and time for the plots
             let systemState = {
                 yr: '',
                 prod: '',
@@ -91,31 +102,34 @@
                 xRange: null,
                 mode: '',
                 timeSelector:{
-                    activeTab:''
+                    activeTab: config.hasOwnProperty('spatialData') ?
+                        'div_' + Object.keys(config.spatialData)[0] : ''
                 },
                 zoom_state:false
             };
 
-            // ;
+            // Global Variables
             let markerAttrs;
+            let modChecked = false;
             let div_plot;
             let zOffset = 1000;
             let basin_shape;
-            let plotly_plot;
             zoom_state = false;
             zoom_metric_state = false;
-            let layerGeo;
-            var leaflet_layers = [];
-            var mapMarkers;
+            let leaflet_layers = [];
+            let mapMarkers;
             let group;
-            let twoDLegend;
-            let timeSynchedDivs = [];
-            let repeting_releyout = false;
+            let twoDLegend = [];
+            let timeSyncDivs = [];
+            let repeating_relayout = true;
+            let playAnimation;
 
 //TODO * BLOCK NEEDS TO BE MOVED TO CONTROLS */
 //TODO * END BLOCK NEEDS TO BE MOVED TO CONTROLS */
 
     </script>
+    <link rel="stylesheet" href="applications/leaflet_plugins/Control.OSMGeocoder.css">
+    <script src="applications/leaflet_plugins/Control.OSMGeocoder.js"></script>
 </head>
 <body>
 <div id="progressDIV">
@@ -124,6 +138,7 @@
 
 <div id='map'></div>
 <div id="colorbar"></div>
+<div id="twodcolorbar"></div>
 <div id="div_plot">
     <div id='sliderMainDIV'>
         <div id="slider" style="width: 100%"></div>

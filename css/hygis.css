@@ -460,34 +460,8 @@ div.generic-button:hover {
     margin-bottom: 10px;
 }
 
-#colorbar {
-    position: absolute;
-    display: inline-grid;
-    top: 50%;
-    left: 20px;
-    /* transform: translateY(-50%); */
-    -webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    background-color: rgba(222, 222, 222, 0.5);
-    padding: 6px 4px 8px 4px;
-    width: max-content;
-    z-index: 3;
-}
 
 
-#colorbar {
-    position: absolute;
-    display: inline-grid;
-    top: 50%;
-    right: 8px;
-    transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    background-color: rgba(222, 222, 222, 0.5);;
-    padding: 6px 4px 8px 4px;
-    width: max-content;
-    z-index: 1;
-}
 
 div.bar {
     display: block;
@@ -641,20 +615,6 @@ div.bar-label {
     margin-bottom: 10px;
 }
 
-#colorbar {
-    position: absolute;
-    display: inline-grid;
-    top: 50%;
-    left: 10px;
-    /* transform: translateY(-50%); */
-    -webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    background-color: rgba(222, 222, 222, 0.5);
-    padding: 6px 4px 8px 4px;
-    width: max-content;
-    z-index: 3;
-}
-
 div.bar {
     /* display: block; */
     /* float: right; */ /* right: 0px; */ /* min-width: 10px; */ /* height: 100%; */ /* margin-top: 1px; */ /* user-select: none; */
@@ -671,7 +631,7 @@ div.bar-row {
     position: absolute;
     display: inline-grid;
     top: 55%;
-    right: 8px;
+    left: 8px;
     /* left: 150px; */
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
@@ -683,6 +643,19 @@ div.bar-row {
     color: black;
 }
 
+#twodcolorbar {
+    position: absolute;
+    display: inline-table;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    background-color: rgba(222, 222, 222, 0.5);;
+    padding: 6px 4px 8px 4px;
+    width: 500px;
+    z-index: 1;
+}
 div.bar {
     display: block;
     float: right;
@@ -1055,6 +1028,30 @@ input[type="file"]{
     background-color: #ccc;
 }
 
+
+.animbutton {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    float: left;
+    font-style: italic;
+    color: black;
+    background: #cccccc;
+    height: 30px;
+    font-family: inherit;
+}
+.animbutton .active{
+    display: block;
+}
+
+.animationIcons {
+    cursor: pointer;
+    padding: 0.5em 1em 0 1em;
+    font-size: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
 /* Style the tab content */
 .tabcontent {
     display: block;
@@ -1107,4 +1104,15 @@ input[type="file"]{
     opacity: 0.6;
     cursor: not-allowed;
     display:none;
+}
+
+.legendColorLabels{
+    height: 19px;
+    color: black;
+    font-size: larger;
+    font-weight: 400;
+}
+
+.legendColorStyle{
+    height: 25px;
 }

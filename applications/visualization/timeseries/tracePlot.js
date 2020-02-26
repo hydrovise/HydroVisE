@@ -2,7 +2,6 @@
 //let gridData =[];
 //let shapes;
 let modTrace;
-modChecked = false;         /// MOVE IT TO INI()
 let modMethod;
 let modEvnt;
 let hGrid = {
@@ -100,7 +99,7 @@ function getTrace(data, traceID, fn_src) {
     use_trace.x = unpack(data, trace.x_name);
     use_trace.y = unpack(data, trace.y_name);
     use_trace.visible = 'default' == systemState.mod;
-    console.log("trace:", trace);
+    // console.log("trace:", trace);
     return use_trace
 }
 
@@ -204,7 +203,7 @@ function plotTitle(comID){
             //     row.properties[p]
         )
     )
-    console.log(vals);
+    // console.log(vals);
     return formatArray(_fmt, vals)
 }
 function tracePlot(yr, comID) {
@@ -256,11 +255,12 @@ function tracePlot(yr, comID) {
         key => {
             if (c[key].dynamic) return;
             src = pathGenerator(key);
-            console.log("trace src", src);
+            // console.log("trace src", src);
             if (traceInstalled(src)) {
-                console.log("traceInstalled(src) is true, quiting")
+                // console.log("traceInstalled(src) is true, quiting")
                 return;
             }
+            console.log(systemState.xRange)
             d3.csv(src,
                 (error, data) => {
                 if (error) {console.log(error); return}
@@ -282,6 +282,7 @@ function tracePlot(yr, comID) {
                             config.plotlyLayout
                         )
                     );
+                    // console.log(systemState.xRange, use_layout.xaxis.range)
                     use_layout.xaxis.range = systemState.xRange;
                     use_layout.xaxis.autorange = false;
 
@@ -313,11 +314,14 @@ function tracePlot(yr, comID) {
                         use_layout,
                         plotly_modBar
                     );
-                    if (systemState.timeSelector.activeTab != '') {
-                        document.getElementById("div_plot").on("plotly_relayout", function (ed) {
-                            syncPlots(ed, systemState.timeSelector.activeTab);
-                        });
-                    }
+                        plot.then(()=> {
+                            if (systemState.timeSelector.activeTab !== '') {
+                                document.getElementById("div_plot").on("plotly_relayout", function (ed) {
+                                    syncPlots(ed, systemState.timeSelector.activeTab);
+                                });
+                            }
+                        }
+                    );
 
                     $(".updatemenu-button").on(
                         "click",
@@ -333,13 +337,10 @@ function tracePlot(yr, comID) {
                 }
             )
         });
-//    document.getElementById("sliderMainDIV").style.display = 'block';
-
 }
 
 function addTraces(lifespan='semi-permanent') {
-//lifeSpan = lifeSpan == undefined ? 'semi-permanent' : lifeSpan;
-//function addTraces(arg) {
+
     let csvHeader = "dt,Q\n";
     let adding_traces = [];
     let c = config.traces

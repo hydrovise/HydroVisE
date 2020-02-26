@@ -9,13 +9,13 @@ function clickFeature(e) {
     div_plot.style.setProperty('display', 'block');
     if (c.hasOwnProperty('additionalShapes')) {
         let _temp = c.additionalShapes.template.format;
-        let fn = _temp.format(systemState.comID)
+        let fn = _temp.format(systemState.comID);
         addbasinKML(fn)
     }
 }
 
 function highlightFeature(e) {
-    var layer = e.target;
+    let layer = e.target;
     layer.setStyle({
         weight: 5,
         dashArray: ''
@@ -29,173 +29,6 @@ function resetHighlight(e) {
     leaflet_layers['mapMarkers'].resetStyle(e.target);
 }
 
-
-function initializeGeom(dynamicGeomID) {
-    let useConfig = config.spatialData[dynamicGeomID];
-    let srcData;
-    let grp = L.featureGroup();
-    let fnPath = useConfig.geom.fnPath;
-    let geomLayers;
-    // fn_path = 'configs/project3/smap_grid_5f.geojson';
-    let fn = fnPath.replace(/^.*[\\\/]/, '');
-    let geomType = useConfig.geomType;
-
-    function mapDomainDataloader(fnPath) {
-        let ext = fn.split('.').pop();
-        switch (ext) {
-            case 'kmz':
-                parentLayer = kmzload(fnPath, fn);
-                break;
-            case 'kml':
-                // srcData = toGeoJSON.kml(fnPath);
-                fetch(fnPath)
-                    .then(res => res.text())
-                    .then(kmltext => {
-                        // Create new kml overlay
-                        const parser = new DOMParser();
-                        const kml = parser.parseFromString(kmltext, 'text/xml');
-                        parentLayer = toGeoJSON.kml(kml);
-                        // parentLayer = new L.KML(kml);
-                    });
-                break;
-            case 'geojson': // for now only geojson is supported fully
-                $.ajax({
-                    dataType: "json",
-                    url: fnPath,
-                    async: false,
-                    success: function (data) {
-                        srcData = data;
-                    }
-                });
-                break;
-        }
-    }
-
-    function onEachFeature(feature, layer) {
-        layer.on({
-            mouseover: highlightFeature,
-            mouseout: resetHighlight,
-            click: clickFeature
-        });
-
-    }
-
-    function style(feature) {
-        if (useConfig.geom.defaultStyle) {
-            return useConfig.geom.defaultStyle
-        }
-        return {
-            radius: 8,
-            fillColor: "#ff7800",
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-        }
-    }
-
-
-    // console.log(loadSrc(fn));
-    function createGeom() {
-        if (geomType === 'Point') {
-            geomLayers = L.geoJSON(srcData, {
-                style: style,
-                onEachFeature: onEachFeature,
-                pointToLayer: function (feature, latlng) { //TODO: add custom ICON for style
-                    return L.circleMarker(latlng);
-                },
-                pane: dynamicGeomID
-            }).addTo(grp);
-        } else {
-            if (dynamicGeomID === 'smap') {
-                geomLayers = L.geoJSON(srcData, {
-                    style: {
-                        radius: 8,
-                        fillColor: "#ff7800",
-                        color: "#000",
-                        weight: 1,
-                        opacity: 1,
-                        fillOpacity: 0.3
-                    },
-                    onEachFeature: onEachFeature,
-                    pane: dynamicGeomID
-                })
-            } else {
-                var geomLayers = L.vectorGrid.slicer(srcData, {
-                    rendererFactory: L.svg.tile,
-                    vectorTileLayerStyles: {
-                        sliced: function (properties, zoom) {
-                            // var p = properties.mapcolor7 % 5;
-                            return {
-                                fillColor: 'black',
-                                fillOpacity: 0.5,
-                                //fillOpacity: 1,
-                                stroke: true,
-                                fill: true,
-                                color: 'black',
-                                //opacity: 0.2,
-                                weight: 1,
-                            }
-                        }
-                    },
-                    getFeatureId: function (f) {
-                        return f.properties[comIDName];
-                    },
-                    interactive: true,
-                    pane: dynamicGeomID
-                })
-            }
-
-        }
-        leaflet_layers[dynamicGeomID] = geomLayers;
-        leaflet_layers[dynamicGeomID].addTo(map);
-        leaflet_layers[dynamicGeomID].bringToBack()
-    }
-
-
-    function highlightFeature(e) {
-        var layer = e.target;
-
-        layer.setStyle({
-            weight: 5,
-            dashArray: ''
-        });
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
-    }
-
-    function resetHighlight(e) {
-        geomLayers.resetStyle(e.target);
-    }
-
-    function clickFeature(e) {
-        console.log(e.target.feature.properties)
-        var clkProp = e.target.feature.properties;
-
-        systemState.comID = comID = clkProp.grid_xy;
-        if (!zoom_state) XRange = CheckXRange(systemState.yr);
-
-        tracePlot(systemState.yr, comID);
-        div_plot.style.setProperty('display', 'block');
-    }
-
-    mapDomainDataloader(fnPath);
-    map.createPane(dynamicGeomID);
-
-    createGeom();
-    let use_config = config.spatialData[dynamicGeomID];
-
-    let lst_item = "<li id='li_" + dynamicGeomID + "' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input type='checkbox' onclick=\"toggLyrStd(this)\" value=" + dynamicGeomID +
-        " data-type='dynamic' class='checked'><p class='key'> " + use_config.geom.alias + " </p></li>";
-
-    var ctxLayerLegend = document.getElementById("sortable")
-    ctxLayerLegend.innerHTML += lst_item;
-    updateLayerZIndex()
-    //TODO: requirements:
-}
-
-// function dynamicGeomStyler (){
 function getColor(d) {
     return d > 1000 ? '#800026' :
         d > 500 ? '#BD0026' :
@@ -211,13 +44,14 @@ function getColor(d) {
 
 function restyle(allLayers) {
     allLayers.eachLayer(function (layer) {
-        comID = layer.feature.properties.comID;
-        colorVal = layer.feature.properties.ifis_id;
+        let comID = layer.feature.properties.comID;
+        let colorVal = layer.feature.properties.ifis_id;
 
         layer.setStyle({fillColor: randomColor()})
 
     });
 }
+
 function tooltipStrGen(el) {
     let comID = [config.mapMarkers.comIDName];
     let p = el.properties;
@@ -227,58 +61,25 @@ function tooltipStrGen(el) {
     let vals = [];
     c.var.forEach(
         v => {
-            if (v==='metric'){
+            if (v === 'metric') {
                 vals.push(
                     $.isNumeric(p[systemState.markerAttrs]) ? parseFloat(p[systemState.markerAttrs]).toFixed(2) : p[systemState.markerAttrs]
                 )
-            }else if (v==='metricName'){
+            } else if (v === 'metricName') {
                 vals.push(
                     config.controls.markerAttrs[systemState.markerAttrs].var_name
                 )
-            }else {
+            } else {
                 vals.push(
                     $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
                 )
-            }}
-
+            }
+        }
     );
     return formatArray(c.format, vals);
 }
 
 function draw_markers(pointList, pointListID) {
-    function tooltipStrGen(el) {
-        let comID = [config.mapMarkers.comIDName];
-        let p = el.properties;
-        if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
-        let c = config.mapMarkers.tooltip.template;
-
-        let vals = [];
-        c.var.forEach(
-            v => {
-                if (v==='metric'){
-                    vals.push(
-                        $.isNumeric(p[systemState.markerAttrs]) ? parseFloat(p[systemState.markerAttrs]).toFixed(2) : p[systemState.markerAttrs]
-                    )
-                }else if (v==='metricName'){
-                    vals.push(
-                        config.controls.markerAttrs[systemState.markerAttrs].var_name
-                    )
-                } else
-                {
-                    vals.push(
-                        $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
-                    )
-                }
-
-            });
-        // console.log(c,vals)
-        return formatArray(c.format, vals);
-    }
-
-    jsonFeatures = [];
-    markerArray = [];
-    marker = [];
-
     if (map.hasLayer(group)) {
         group.eachLayer(
             function (l) {
@@ -300,8 +101,6 @@ function draw_markers(pointList, pointListID) {
         }
     };
 
-
-    // (String)"Function Name" -> registered Function;
     Object.keys(
         plist.onEachFeature
     ).forEach(
@@ -333,7 +132,7 @@ function draw_markers(pointList, pointListID) {
                         {
                             permanent: false,
                             direction: 'right',
-                            pane:'topPane'
+                            pane: 'topPane'
                         }
                     );
                     return cMarker;
@@ -352,12 +151,12 @@ function draw_markers(pointList, pointListID) {
         map.addLayer(leaflet_layers['mapMarkers']);
         leaflet_layers['mapMarkers'].eachLayer(layer => {
             let tooltipStr = tooltipStrGen(layer.feature);
-            if (tooltipStr) layer.bindTooltip(tooltipStr, {permanent: false, direction: 'right',pane:'topPane'})
+            if (tooltipStr) layer.bindTooltip(tooltipStr, {permanent: false, direction: 'right', pane: 'topPane'})
         })
 
         // leaflet_layers['mapMarkers'].bringToFront()
     }
-    map.getPane('topPane').style.zIndex=1010;
+    map.getPane('topPane').style.zIndex = 1010;
     updateLayerZIndex()
 }
 
@@ -370,28 +169,24 @@ function getStyle() {
 }
 
 
-
-
-function colorCodeMapMarkers(attrName){
-    console.log(attrName)
+function colorCodeMapMarkers(attrName) {
+    // console.log(attrName)
     let _config = config.controls.markerAttrs[attrName];
-    console.log(_config)
+    // console.log(_config)
     let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
     let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
     let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
     let _range = _config.range;
-    getColor = function (val){
+    getColor = function (val) {
         return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
     };
     //todo: change the headernames to dynamic names in the config file
-    leaflet_layers['mapMarkers'].eachLayer( layer=> {
+    leaflet_layers['mapMarkers'].eachLayer(layer => {
         _comID = layer.feature.properties[comIDName];
-        filtered = markerAttrs.filter(f => f[comIDName]== _comID &
+        filtered = markerAttrs.filter(f => f[comIDName] == _comID &
             f['year'] == systemState.yr & f['prod'] == systemState.prod)
-        // console.log(filtered)
-        // console.log(layer)
         attr = systemState.markerAttrs;
-        if (filtered.length>0){
+        if (filtered.length > 0) {
             Object.keys(config.controls.markerAttrs).forEach(k => {
                 attrName = config.controls.markerAttrs[k].var_id;
                 layer.feature.properties[attrName] = filtered[0][attrName];
@@ -403,9 +198,10 @@ function colorCodeMapMarkers(attrName){
         }
     });
     leaflet_layers['mapMarkers'].remove();
-    leaflet_layers['mapMarkers'].addTo(map)
+    leaflet_layers['mapMarkers'].addTo(map);
     generateColorBar1(attr)
 }
+
 function generateColorBar1(selected) {
     let defaultColorBar = {
         title: 'generic title',
@@ -432,7 +228,7 @@ function generateColorBar1(selected) {
     let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
     let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
     let _range = _config.range;
-    getColor = function (val){
+    getColor = function (val) {
 
         return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
     };
@@ -440,18 +236,18 @@ function generateColorBar1(selected) {
 
 
     decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
-    delta = Math.round((_range[1]-_range[0]) / _nBins *10**decimalP)/ 10**decimalP;
+    delta = Math.round((_range[1] - _range[0]) / _nBins * 10 ** decimalP) / 10 ** decimalP;
     _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) + parseFloat(_range[0])).toFixed(decimalP)))
-    colors = (_colorPalette.length == _nBins) ?  _colorPalette : _labels.map(l => String(getColor(l)))
-    zipped = d3.zip(colors,_labels).reverse()
+    colors = (_colorPalette.length == _nBins) ? _colorPalette : _labels.map(l => String(getColor(l)))
+    zipped = d3.zip(colors, _labels).reverse()
 
     // }
 
     var str_div_bars = '<div id="colorbar">' +
         '<p style="font-size:20px;font-weight: 400;color: #111111">' + colorbarTitle + '</p>';
-    zipped.forEach( element => {
+    zipped.forEach(element => {
             console.log(element)
-            str_div_bars += ('<div class="bar-row" style="height: {2}px">'+
+            str_div_bars += ('<div class="bar-row" style="height: {2}px">' +
                 '<div class="bar bar-label">{0}</div>' +
                 '<div class="bar" style="background-color:{1}")></div></div>')
                 .format(element[1], String(element[0]), String(30));
