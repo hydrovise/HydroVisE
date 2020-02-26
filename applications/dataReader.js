@@ -119,23 +119,22 @@ async function asyncForEach(array, callback) {
 
 function arraysEqual(a1, a2) {
     /* WARNING: arrays must not contain {objects} or behavior may be undefined */
-    return JSON.stringify(a1) == JSON.stringify(a2);
+    return JSON.stringify(a1) === JSON.stringify(a2);
 }
 
-var metrics_subyear;
-//#### Data Reader ####//
+let metrics_subyear;
+
 function readData(metrics, selectedRange) {
-    var num_comaprisons = 2;
-    var test_p_num = 5;
-    var pointData = [];
-//     let fnList = [usgs_data, assim_norm_l3_v2, openloop_data];
+    // for testing the performance
+    const num_comaprisons = 2;
+    const test_p_num = 5;
+    //
 
+    let pointData = [];
     let match = [];
-
-    var processed_points = 0;
-    var progress = 0;
-//     var bar1 = new ldBar("#myItem1");
-    var metrics_local = [];
+    let processed_points = 0;
+    let progress = 0;
+    const metrics_local = [];
 
     let all = [];
     for (keymet in metrics) {
@@ -148,14 +147,11 @@ function readData(metrics, selectedRange) {
     let pointdatacsv = 'data/lid_usgs.csv';
     document.getElementById('progressbar').style.display = 'block';
     document.getElementById('progressDIV').style.display = 'block';
-    //let processed_points = 0;
-//     bar1.set(progress);
 ////////////////////new
     d3.csv(pointdatacsv, function (data) {
         points = data;
 
         asyncForEach(points.slice(0, test_p_num), async (point) => {
-//         points.slice(0, test_p_num).forEach( (point) => {
             var lid = String(point['lid']);
             var usgs_id = String(point['USGS_id']);
             var fnList = returnFileList(lid);
@@ -168,16 +164,12 @@ function readData(metrics, selectedRange) {
                     header: true,
                     dynamicTyping: true,
                     complete: function (results) {
-                        console.log(results)
+
                         dt1[fn] = results['data'];
-//                         console.log(fnList)
-//                         console.log(arraysEqual(Object.keys(dt1),fnList))
                         if (Object.keys(dt1).length === 3) {
-                            // Do whatever you need to do
                             let pointmetric = [];
                             pointmetric = analyse(dt1, point, selectedRange);
-
-                            for (keymet in metrics) {
+                            for (let keymet in metrics) {
                                 if (keymet !== 'year') {
 //                                 console.log(pointmetric[keymet]);
                                     if (pointmetric[keymet] !== undefined) {
@@ -189,11 +181,8 @@ function readData(metrics, selectedRange) {
                             }
                             processed_points += 1;
                             progress = (processed_points / test_p_num) * 100;
-                            console.log(progress)
                             elem_width = document.getElementById("progressbar").style.width;
                             move(progress)
-//                             bar.style.width = progress;
-                            console.log(metrics_local)
                             if (metrics_local.lon.length === num_comaprisons * test_p_num) {
                                 draw_markers_sub_year(metrics_local, metric_name, init.sim_type)
                                 document.getElementById('progressbar').style.display = 'none';

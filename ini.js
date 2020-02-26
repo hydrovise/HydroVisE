@@ -1,8 +1,8 @@
-Papa.parsePromise = function (file, config) {
-    return new Promise(function (complete, error) {
-        Papa.parse(file, config);
-    });
-};
+// Papa.parsePromise = function (file, config) {
+//     return new Promise(function (complete, error) {
+//         Papa.parse(file, config);
+//     });
+// };
 
 
 function ini() {
@@ -11,14 +11,16 @@ function ini() {
             $("#sliderMainDIV").remove();
             return;
         }
-        
-        function dynamicRange (v) {return v};
-        
-        if (config.timeSlider.hasOwnProperty('dynamicRange')){
+
+        function dynamicRange(v) {
+            return v
+        };
+
+        if (config.timeSlider.hasOwnProperty('dynamicRange')) {
             is_dynamic = true;
-            dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)               
+            dynamicRange = new Function(config.timeSlider.dynamicRange.arguments, config.timeSlider.dynamicRange.body)
         }
-        
+
         $("#slider").slider(
             {
                 min: dynamicRange(config.timeSlider.min),
@@ -49,23 +51,24 @@ function ini() {
         }
     );
 
-    function useCtrlContainer(cont_cond, cont_name){
-        if (cont_cond){
+    function useCtrlContainer(cont_cond, cont_name) {
+        if (cont_cond) {
             controlList.push(cont_name);
         } else {
             $("#" + cont_name).parent().remove()
         }
     }
+
     let controlList = []; //['markerAttrs', 'prod', 'baseMapType'];
     let attr_ctrl = config.hasOwnProperty('mapMarkers') && config.mapMarkers.hasOwnProperty('markerAttrs');
     let ensemble_ctrl = Object.keys(config.traces).find(
         v => {
             return config.traces[v].ensemble;
         }
-    ) == undefined ? false : true;
-    useCtrlContainer(attr_ctrl,'markerAttrs');
-    useCtrlContainer(ensemble_ctrl || attr_ctrl,'prod')
-    useCtrlContainer(true,'baseMapType')
+    ) !== undefined;
+    useCtrlContainer(attr_ctrl, 'markerAttrs');
+    useCtrlContainer(ensemble_ctrl || attr_ctrl, 'prod');
+    useCtrlContainer(true, 'baseMapType');
 
     for (let i = 0; i < controlList.length; i++) {
         let controlElem = controlList[i];
@@ -76,10 +79,10 @@ function ini() {
             key => {
                 _selected = '';
                 if (use_config[key].selected) {
-                    console.log(controlElem, key, use_config[key].selected, systemState[controlElem])
+
                     systemState[controlElem] = use_config[key].var_id;
                     _selected = 'selected';
-                };
+                }
                 container.append(
                     lst_item.format(
                         use_config[key].var_id,
@@ -98,7 +101,7 @@ function ini() {
     // create control map-inventory
     let container = $("#sortable");
     let lst_item = "<li id='li_{4}' class='ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span>" +
-        "<input type='checkbox' onclick=\"{2}(this)\" value='{4}' data-type='static'><p class='key'>{1}</p></li>"
+        "<input id='check_lid_{4}' type='checkbox' class='' onclick=\"{2}(this)\" value='{4}' data-type='static'><p class='key'>{1}</p></li>"
     let use_config = config.mapLayers;
     Object.keys(config.mapLayers).forEach(key => {
         container.append(
@@ -109,7 +112,19 @@ function ini() {
                 use_config[key].selected ? "selected" : '',
                 use_config[key].fn
             )
-        )
+        );
+        if (use_config[key].selected) {
+            contextLayerLoader(use_config[key].fnPath);
+            document
+                .getElementById('check_lid_' + use_config[key].fn)
+                .classList = 'checked';
+            // console.log(checkbox)
+            // checkbox.context.;
+        } else {
+            document
+                .getElementById('check_lid_' + use_config[key].fn)
+                .classList = 'unchecked';
+        }
     });
 
 
@@ -155,12 +170,6 @@ function ini() {
         tooltip: 'A custom A3 size'
     };
 
-    /*
-            load_pts = config.point_data_config.pList1.root + "/" +
-            config.point_data_config.pList1.subfolder + "/" +
-            config.point_data_config.pList1.fn +
-            config.point_data_config.pList1.extension
-    */
 
     if (config.map.hasOwnProperty('geoSearch')) {
         config.map.geoSearch ? addGeoSearch() : false
@@ -172,12 +181,12 @@ function ini() {
             async: false,
             success: function (data) {
                 mapMarkers = data;
-                draw_markers(mapMarkers, config.mapMarkers.comIDName)
+                draw_markers(mapMarkers, config.mapMarkers.comIDName);
                 if (config.mapMarkers.hasOwnProperty('markerAttrs')) {
                     Papa.parse(config.mapMarkers.markerAttrs.template.path_format, {
                         download: true,
                         header: true,
-                        skipEmptyLines:true,
+                        skipEmptyLines: true,
                         complete: function (results) {
                             markerAttrs = results['data'];
 
@@ -191,7 +200,7 @@ function ini() {
 
 
     var dropArea = document.getElementById('drop');
-    dropArea.ondrop = evnt_onDrop;
+    dropArea.ondrop = fileUpload;
     dropArea.ondragover = function () {
         return false;
     };
@@ -199,11 +208,7 @@ function ini() {
         return false;
     };
 
-    document.getElementById('drop').addEventListener('change', handleFileSelect, false);
-
-
-    //TODO: setup and finalize system state initialization based on the user-defined configurations
-    // Dicuss this matter with Radek
+    document.getElementById('drop').addEventListener('change', fileUpload, false);
 
     if (config.hasOwnProperty('spatialData')) {
         var twodsliderDIV = document.createElement('div');
@@ -212,14 +217,14 @@ function ini() {
         twodsliderDIV.style = 'display:block;z-index: 3;';
         document.body.appendChild(twodsliderDIV);
         initSpatialData();
-        repeting_releyout = false;
-        document.getElementById(systemState.timeSelector.activeTab).on("plotly_relayout", function (ed) {
-            if (div_plot.data){
-                syncPlots(ed, 'div_plot');
-            }
-        });
     }
     dragElement("mini_con0");
     dragElement("title_con0", "con0");
-    //dragElement("con0");
+
+
+    if (config.hasOwnProperty('calcMetrics')) {
+        metricDIV = document.getElementById('claculatemetricsButton');
+        metricDIV.style.display = 'block';
+    }
+
 }

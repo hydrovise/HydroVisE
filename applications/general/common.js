@@ -1,10 +1,10 @@
 if (!String.prototype.format) {
     String.prototype.format = function() {
-    var args = arguments;
+    let args = arguments;
     return this.replace(
             /{(\d+)}/g,
             function(match, number) {
-                _ret  = typeof args[number] != 'undefined' ? args[number] : match
+                _ret  = typeof args[number] != 'undefined' ? args[number] : match;
                 return _ret != null ? _ret : '';
             }
         )
@@ -16,7 +16,7 @@ function formatArray(fmt,args){
     return fmt.replace(
         /{(\d+)}/g,
         function(match, number) {
-            _ret  = typeof args[number] != 'undefined' ? args[number] : match
+            let _ret  = typeof args[number] != 'undefined' ? args[number] : match;
             return _ret != null ? _ret : '';
         }
     )
@@ -24,8 +24,8 @@ function formatArray(fmt,args){
 
 
 Date.prototype.getUnixTime = function() { return this.getTime()/1000|0 };
-if(!Date.now) Date.now = function() { return new Date(); }
-Date.time = function() { return Date.now().getUnixTime(); }
+if(!Date.now) Date.now = function() { return new Date() };
+Date.time = function() { return Date.now().getUnixTime(); };
 
 
 if (!Number.prototype.toRad) {
@@ -41,14 +41,14 @@ if (!Number.prototype.toDeg) {
 }
 
 function _GET(){
-    var query = window.location.search.substring(1).split("&");
-    var _init ={};
-    for (var i = 0,
+    let query = window.location.search.substring(1).split("&");
+    let _init ={};
+    for (let i = 0,
         max = query.length;
         i < max; i++
     ) {
         if (query[i] === "") continue;
-        var param = query[i].split("=");
+        let param = query[i].split("=");
         _init[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || "");
     }
     return _init
@@ -59,12 +59,12 @@ function getlength(number) {
 }
 
 function fetchFromLUT(comID, IDin, IDOut, LUTData){
-    matchIDX = IsMember(unpack(LUTData,comID),[IDin]);
+    let matchIDX = IsMember(unpack(LUTData,comID),[IDin]);
     return  LUTData[matchIDX[0]]!==undefined ? LUTData[matchIDX[0]][IDOut] : undefined
 }
 
 Object.size = function (obj) {
-    var size = 0, key;
+    let size = 0, key;
     for (key in obj) {
         if (obj.hasOwnProperty(key)) size++;
     }
@@ -72,33 +72,31 @@ Object.size = function (obj) {
 };
 
 function randomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color
 }
 
 function syncPlots(ed, divID) {
-    div = document.getElementById(divID);
-    console.log("ed, div, repeting_releyout", ed, div, repeting_releyout)
-    // if (ed["xaxis.autorange"] && x.autorange) return;
-    // if (ed["xaxis.range[0]"] == undefined ||
-    //     ed["xaxis.range[1]"] == undefined) return;
-    repeting_releyout = !repeting_releyout;
-    // ed["yaxis.range"] = false;
-    // ed["yaxis.autorange"] = false;
-    // ed.yaxis.autorange = false;
-    if (repeting_releyout) {
+    let div = document.getElementById(divID);
+
+    repeating_relayout = !repeating_relayout;
+    if (repeating_relayout) {
         return;
     }
-    let x = div.layout.xaxis;
-    (
-        x.range[0] != ed["xaxis.range[0]"] ||
-        x.range[1] != ed["xaxis.range[1]"]
-    ) ? Plotly.relayout(div, ed) : repeting_releyout = !repeting_releyout;
 
+    let x = div.layout.xaxis;
+    if (x.range[0] !== ed["xaxis.range[0]"] ||
+        x.range[1] !== ed["xaxis.range[1]"]) {
+        ed["xaxis.range[0]"] =  systemState.xRange[0];
+        ed["xaxis.range[1]"] = systemState.xRange[1];
+        Plotly.relayout(div, ed)
+    } else{
+        repeating_relayout = !repeating_relayout;
+    }
 }
 
 function pathGeneratorGeneral(subConfig, unix_time) {
