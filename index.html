@@ -40,7 +40,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
     <script src="dist/numeric.js"></script>
     <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
-    <script src="dist/moment.js"></script>
+    <script src="applications/moment.js"></script>
     <script src="applications/leaflet_plugins/glify_var_opacity.js"></script>
     <script src="https://unpkg.com/pbf@3.0.5/dist/pbf.js"></script>
     <script src="https://unpkg.com/geobuf@3.0.1/dist/geobuf.js"></script>
@@ -58,9 +58,9 @@
     <!--<script type="text/javascript" src="applications/visualization/maps/nws_markerPlot.js"></script>-->
     <script type="text/javascript" src="applications/visualization/maps/2dMap.js"></script>
     <script type="text/javascript" src="applications/visualization/timeseries/tracePlot.js"></script>
-    <!--    <script type="text/javascript" src="applications/evntMetricMain.js"></script>-->
+<!--    <script type="text/javascript" src="applications/dataReader.js"></script>-->
 
-    <script type="text/javascript" src="applications/metricFunctions/evntMetricMain.js"></script>
+    <script type="text/javascript" src="applications/dataReader.js"></script>
 
 
     <script type="text/javascript" src='dist/html2canvas.min.js'></script>
@@ -72,60 +72,60 @@
     <script type="text/javascript" src="dist/dropDatasortable.js"></script>
     <script type="text/javascript" src="ini.js"></script>
     <script>
-        let config = {};
-        let config_url = "./configs/case1/configTrash.json";
-        let _get = _GET();
-        if (_get.hasOwnProperty('config')) {
-            config_url = _get.config;
-        }
-        delete _get;
-        $.ajax({
-            dataType: "json",
-            async: false,
-            cache: true,
-            url: config_url,
-            success: function (data) {
-                console.log("HyGIS v0.9 Beta: Platform Initialized - Config: ", config_url);
-                config = data;
+            let config = {};
+            let config_url = "./configs/case1/configTrash.json";
+            let _get = _GET();
+            if (_get.hasOwnProperty('config')) {
+                config_url = _get.config;
             }
-        });
-        document.title = config.hasOwnProperty("page") ? config.page.title: "HyGIS Web Platform";
+            delete _get;
+            $.ajax({
+                dataType: "json",
+                async: false,
+                cache: true,
+                url: config_url,
+                success: function (data) {
+                    console.log("HyGIS v0.9 Beta: Platform Initialized - Config: ", config_url);
+                    config = data;
+                }
+            });
+            document.title = config.hasOwnProperty("page") ? config.page.title: "HyGIS Web Platform";
 
-        // System State keeps the state of
-        // the controls and time for the plots
-        let systemState = {
-            yr: '',
-            prod: '',
-            //sim_type: '', //'ifc_nwm',
-            sliderState: '',
-            //usgs_id: '',
-            xRange: null,
-            mode: '',
-            timeSelector:{
-                activeTab: config.hasOwnProperty('spatialData') ?
-                    'div_' + Object.keys(config.spatialData)[0] : ''
-            },
-            zoom_state:false
-        };
+            // System State keeps the state of
+            // the controls and time for the plots
+            let systemState = {
+                yr: '',
+                prod: '',
+                //sim_type: '', //'ifc_nwm',
+                sliderState: '',
+                //usgs_id: '',
+                xRange: null,
+                mode: '',
+                timeSelector:{
+                    activeTab: config.hasOwnProperty('spatialData') ?
+                        'div_' + Object.keys(config.spatialData)[0] : ''
+                },
+                zoom_state:false
+            };
 
-        // Global Variables
-        let markerAttrs;
-        let modChecked = false;
-        let div_plot;
-        let zOffset = 1000;
-        let basin_shape;
-        zoom_state = false;
-        zoom_metric_state = false;
-        let leaflet_layers = [];
-        let mapMarkers;
-        let group;
-        let twoDLegend = [];
-        let timeSyncDivs = [];
-        let repeating_relayout = true;
-        let playAnimation;
+            // Global Variables
+            let markerAttrs;
+            let modChecked = false;
+            let div_plot;
+            let zOffset = 1000;
+            let basin_shape;
+            zoom_state = false;
+            zoom_metric_state = false;
+            let leaflet_layers = [];
+            let mapMarkers;
+            let group;
+            let twoDLegend = [];
+            let timeSyncDivs = [];
+            let repeating_relayout = true;
+            let playAnimation;
 
-        //TODO * BLOCK NEEDS TO BE MOVED TO CONTROLS */
-        //TODO * END BLOCK NEEDS TO BE MOVED TO CONTROLS */
+//TODO * BLOCK NEEDS TO BE MOVED TO CONTROLS */
+//TODO * END BLOCK NEEDS TO BE MOVED TO CONTROLS */
 
     </script>
     <link rel="stylesheet" href="applications/leaflet_plugins/Control.OSMGeocoder.css">
@@ -139,15 +139,30 @@
 <div id='map'></div>
 <div id="colorbar"></div>
 <div id="twodcolorbar">
-    <i id='hide2dLegend' class='fa fa-chevron-circle-right' onclick="$('#twodcolorbar').hide('drop', {direction: 'right'}, 500);
-$('#show2dLegend').show('fade',500)"></i>
+    <i id='hide2dLegend' class='fa fa-angle-right' style='    size: 2em;
+    left: 0;
+    position: absolute;
+    color: black;
+    font-size: 3em;
+    top: 0;
+    background-color: #e5e5e4;
+    left: -19px;
+    box-shadow: 0 0 1px black;' onclick="$('#twodcolorbar').hide('drop', {direction: 'right'}, 1000);
+$('#show2dLegend').show('fade',1000)"></i>
 
 </div>
-<i id='show2dLegend' class='fa fa-chevron-circle-left'  onclick="    $('#twodcolorbar').show('drop', {direction: 'right'}, 500);
-$('#show2dLegend').hide('fade',500)"></i>
-"<i id="show2dSelectorBttn" class="fa fa-chevron-circle-up" onclick="
-$('#twoDSelector').show('drop',{direction:'down'},500);
-$('#show2dSelectorBttn').hide('fade',500);"></i>";
+<i id='show2dLegend' class='fa fa-angle-left' style='size: 2em;
+    /* left: 0; */
+    position: absolute;
+    color: black;
+    font-size: 3em;
+    bottom: 20%;
+    background-color: #e5e5e4;
+    right: 30px;
+    box-shadow: 0 0 1px black;
+    display: none;
+    z-index: 1;' onclick="    $('#twodcolorbar').show('drop', {direction: 'right'}, 1000);
+$('#show2dLegend').hide('fade',1000)"></i>
 <div id="div_plot">
     <div id='sliderMainDIV'>
         <div id="slider" style="width: 100%"></div>
@@ -198,7 +213,7 @@ $('#show2dSelectorBttn').hide('fade',500);"></i>";
     </div>
     <!--<script>!-- CONTROL INSTALL
     </script>-->
-    <button id="claculatemetricsButton" disabled="true" onclick="calcEvntMetrics()">Calculate Event <br>Metrics
+    <button id="claculatemetricsButton" disabled="true" onclick="readData(metrics, selectedRange)">Calculate Event <br>Metrics
     </button>
 </div>
 <div id="mini_con0" class="mini_con" style="top: 10px; left:50px; display:block;  background-color: #162d2b;"> <!-- onclick="toggDiv('mini_con0', 'con0')"> -->

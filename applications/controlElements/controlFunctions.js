@@ -169,7 +169,10 @@ function toggLyrStd(e) {
                 // updateLayerZIndex()
             }
         } else {
-            (fileUp || dynamic) && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
+            (fileUp || dynamic) &&
+            ( leaflet_layers[fn].hasOwnProperty('options') &&
+                !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles'))
+                ? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
             // fileUp && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')? leaflet_layers[fn].show() : leaflet_layers[fn].addTo(map);
         }
         sel.css("background-color", 'rgb(175, 193, 126)');
@@ -177,7 +180,10 @@ function toggLyrStd(e) {
     } else {
         sel.css("background-color", 'rgba(45,78,69,0)' );
         e.className = 'unchecked';
-        (fileUp || dynamic) && !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles')?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
+        (fileUp || dynamic) &&
+        ( leaflet_layers[fn].hasOwnProperty('options') &&
+            !leaflet_layers[fn].options.hasOwnProperty('vectorTileLayerStyles'))
+            ?  leaflet_layers[fn].hide() : leaflet_layers[fn].remove();
 
     }
     updateLayerZIndex()

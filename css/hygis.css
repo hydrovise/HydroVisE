@@ -645,17 +645,15 @@ div.bar-row {
 
 #twodcolorbar {
     position: absolute;
-    display: inline-table;
-    top: 50%;
+    display: none;
+    bottom: 20%;
     right: 8px;
-    transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    background-color: rgba(222, 222, 222, 0.5);;
-    padding: 6px 4px 8px 4px;
-    width: 500px;
+    background-color: rgba(222, 222, 222, 0.9);
+    padding: 6px 4px 8px 6px;
+    width: 30rem;
     z-index: 1;
 }
+
 div.bar {
     display: block;
     float: right;
@@ -1106,6 +1104,19 @@ input[type="file"]{
     display:none;
 }
 
+.div2dColorTab{
+    width: inherit;
+    color: black;
+    font-size: medium;
+    font-weight: 900;
+    margin-top: 1em;
+}
+.parentTableColor{
+    width: inherit;
+    table-layout: fixed;
+    border-spacing: 01px;
+    margin-bottom: 1em;
+}
 .legendColorLabels{
     height: 19px;
     color: black;
