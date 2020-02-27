@@ -131,14 +131,38 @@
     <link rel="stylesheet" href="applications/leaflet_plugins/Control.OSMGeocoder.css">
     <script src="applications/leaflet_plugins/Control.OSMGeocoder.js"></script>
 </head>
-<body>
+<body style="overflow: hidden">
 <div id="progressDIV">
     <div class="bgLoading" id="progressbar">1%</div>
 </div>
 
 <div id='map'></div>
 <div id="colorbar"></div>
-<div id="twodcolorbar"></div>
+<div id="twodcolorbar">
+    <i id='hide2dLegend' class='fa fa-angle-right' style='    size: 2em;
+    left: 0;
+    position: absolute;
+    color: black;
+    font-size: 3em;
+    top: 0;
+    background-color: #e5e5e4;
+    left: -19px;
+    box-shadow: 0 0 1px black;' onclick="$('#twodcolorbar').hide('drop', {direction: 'right'}, 1000);
+$('#show2dLegend').show('fade',1000)"></i>
+
+</div>
+<i id='show2dLegend' class='fa fa-angle-left' style='size: 2em;
+    /* left: 0; */
+    position: absolute;
+    color: black;
+    font-size: 3em;
+    bottom: 20%;
+    background-color: #e5e5e4;
+    right: 30px;
+    box-shadow: 0 0 1px black;
+    display: none;
+    z-index: 1;' onclick="    $('#twodcolorbar').show('drop', {direction: 'right'}, 1000);
+$('#show2dLegend').hide('fade',1000)"></i>
 <div id="div_plot">
     <div id='sliderMainDIV'>
         <div id="slider" style="width: 100%"></div>

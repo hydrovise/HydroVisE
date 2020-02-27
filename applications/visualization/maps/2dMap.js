@@ -218,8 +218,8 @@ async function initializeGeom(dynamicGeomID) {
     srcData = await mapDomainDataloader(fnPath)
     createGeom(srcData);
     let use_config = config.spatialData[dynamicGeomID];
-    let lst_item = "<li id='li_" + dynamicGeomID + "' class='ui-state-default'> + " +
-        "<span class='ui-icon ui-icon-arrowthick-2-n-s'></span> + " +
+    let lst_item = "<li id='li_" + dynamicGeomID + "' class='ui-state-default'> " +
+        "<span class='ui-icon ui-icon-arrowthick-2-n-s'></span> " +
         "<input type='checkbox' onclick=\"toggLyrStd(this)\" value=" + dynamicGeomID +
         " data-type='dynamic' class='checked'><p class='key'> "
         + use_config.geom.alias + " </p></li>";
@@ -487,7 +487,9 @@ function twoDMapPlotter(twoDDataName, unix_time) {
 function colorcodeGeomBin(_data, twoDDataName) {
     let _subConfig = config.spatialData[twoDDataName];
     let _dynStyle = _subConfig.dynStyle;
-    _scale = chroma.scale(_dynStyle.colorPalette).domain(_dynStyle.range).classes(_dynStyle.classes);
+    if (!_dynStyle.hasOwnProperty('classes')) alert('Ptrovide the color classes for dynamic styling');
+    let _range = _dynStyle.hasOwnProperty('range') ? _dynStyle.range : [Math.min(_dynStyle.classes), Math.max(_dynStyle.classes)];
+    let _scale = chroma.scale(_dynStyle.colorPalette).domain(_range).classes(_dynStyle.classes);
     function getFloodPotential(i, feature){
         let up_area = feature.properties.up_area;
         let Q_233 = 3.12*(up_area/1000000)**0.57;
@@ -601,6 +603,7 @@ function colorcodeGeometry(fn, twoDDataName) {
             nBins: 5,
             method: 'quantiles'
         };
+        let _classes,_labels;
         let _config = config.spatialData[twoDDataName];
         let dataType = _subConfig.dataType;
         let _dynStyle = _subConfig.dynStyle;
@@ -609,47 +612,46 @@ function colorcodeGeometry(fn, twoDDataName) {
         let colorbarTitle = _dynStyle.hasOwnProperty('var_name') ? _dynStyle.var_name : selected;
         let _colorPalette = _dynStyle.hasOwnProperty('colorPalette') ? _dynStyle.colorPalette : defaultChromaSettings.colorPalette;
         let _nBins = _dynStyle.hasOwnProperty('classes') ? _classes.length : defaultChromaSettings.nBins;
+        if (_dynStyle.hasOwnProperty('labels')) _labels = _dynStyle.labels;
         let _colorMethod = _dynStyle.hasOwnProperty('method') ? _dynStyle.method : defaultChromaSettings.method;
-        let _range = _dynStyle.range;
+        let _range = _dynStyle.hasOwnProperty('range') ? _dynStyle.range : [Math.min(_classes), Math.max(_classes)]
         let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
-        let colorBar = {};
-
-        // Test
-
-        getColor = function (val) {
-
-            return chroma.scale(_colorPalette).domain(_range).classes(_classes)(val).hex()
-        };
-        colorBar = {};
-
-
         decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
 
         delta = Math.round((_range[1] - _range[0]) / _nBins * 10 ** decimalP) / 10 ** decimalP;
-        _labels = _classes ? _classes.map(v => parseFloat(v.toFixed(decimalP))) : Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) +
-            parseFloat(_range[0])).toFixed(decimalP)))
-        colors = (_colorPalette.length == _nBins) ? _colorPalette : _labels.map(l => String(_scale(l)))
-        zipped = d3.zip(colors, _labels)
+        if (_labels == undefined){
+            _labels = _classes ? _classes.map(v => parseFloat(v.toFixed(decimalP))) :
+                Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) +
+                    parseFloat(_range[0])).toFixed(decimalP)))
+        }
+        colors = (_colorPalette.length == _nBins) ? _colorPalette : _classes.map(l => String(_scale(l)))
+        zipped = d3.zip(colors, _labels);
 
         // }
         let colorBarID = "colorbar_" + twoDDataName;
 
-        var _colorbar = document.createElement('table');
+        var _colorbar = document.createElement('div');
         _colorbar.setAttribute("id",colorBarID );
-        _colorbar.setAttribute("style",'\n' +
-            '    width: max-content;\n' +
-            '    display: contents;\n');
+        _colorbar.setAttribute("class",'div2dColorTab');
+        _colorbar.innerText = _dynStyle.hasOwnProperty('title') ? _dynStyle.title : _config.name;
+        // hideShowbutton = "<i id='hide2dLegend' class='fa fa-angle-right' style='size: 2em; left: -12px; position: inherit;'></i>";
+        // _colorbar.appendChild(hideShowbutton);
         document.body.appendChild(_colorbar);
+
+        var _colorbarTab = document.createElement('table');
+        _colorbarTab.setAttribute("id",colorBarID );
+        _colorbarTab.setAttribute("class",'parentTableColor');
+        _colorbar.appendChild(_colorbarTab);
 
         var trColors = document.createElement("tr");
         trColors.setAttribute("id", "cols");
         trColors.setAttribute('class','legendColorStyle')
-        document.getElementById(colorBarID).appendChild(trColors);
+        _colorbarTab.appendChild(trColors);
 
         var trLabels = document.createElement("tr");
         trLabels.setAttribute("id", "labels");
         trLabels.setAttribute('class','legendColorLabels')
-        document.getElementById(colorBarID).appendChild(trLabels);
+        _colorbarTab.appendChild(trLabels);
 
         zipped.forEach(element => {
             let td_color = document.createElement("td");
@@ -665,7 +667,8 @@ function colorcodeGeometry(fn, twoDDataName) {
 
         });
 
-        colorbar = document.getElementById('twodcolorbar')
+        colorbar = document.getElementById('twodcolorbar');
+        colorbar.style.display = 'inline-table';
         colorbar.append(_colorbar);
         twoDLegend[twoDDataName] = colorbar;
         // twoDLegend[twoDDataName].addTo(map);
@@ -854,6 +857,32 @@ function prevFrame() {
 
 function updatedtPlaceholder(dt, twoDDataName) {
     let tab_dt_div = document.getElementById('div_' + twoDDataName + '_dt');
-    tab_dt_div.innerText = moment.unix(dt).format('MMM DD YYYY HH:mm');
+    tab_dt_div.innerHTML = "<p style='font-family: inherit'>" + moment.unix(dt).format('MMM DD YYYY HH:mm')+ "</p>";
 
 }
+
+
+
+    // Set effect from select menu value
+$("#hide2dLegend").on("click", function () {
+    var selectedEffect = 'slide';
+
+// Most effect types need no options passed by default
+    var options = {direction: "right"};
+
+// Run the effect
+    $("#twodcolorbar").hide(selectedEffect, options, 1000);
+    this.hide()
+    $("#show2dLegend").show()
+});
+
+$("#show2dLegend").on("click", function () {
+    var selectedEffect = 'slide';
+
+// Most effect types need no options passed by default
+    var options = {direction: "right"};
+
+// Run the effect
+    $("#twodcolorbar").show('slide', {direction: "right"}, 1000);
+    this.hide()
+});
