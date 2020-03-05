@@ -133,7 +133,8 @@ function ini() {
         {
             center: config.map.center,
             zoom: config.map.defaultZoom,
-            maxZoom: config.map.maxZoom
+            maxZoom: config.map.maxZoom,
+            minZoom: 4
             // renderer: L.svg()
         }
     );
