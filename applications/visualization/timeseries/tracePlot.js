@@ -213,7 +213,7 @@ function tracePlot(yr, comID) {
     //    derived: false
     //}
     let c = config.traces;
-    systemState.mod = 'default'
+    systemState.mod = 'default';
 
     systemState.xRange = CheckXRange(yr);
 // TO DO: MOVE TO INI()
@@ -222,7 +222,7 @@ function tracePlot(yr, comID) {
     }
 // END TO DO: MOVE TO INI()
     if (config.hasOwnProperty('horizontalGrid')) {
-        hGrid.default = getGridLines()
+        hGrid.default = getGridLines();
         if (config.hasOwnProperty('modTrace')) hGrid.derived = getModGridLines(hGrid.default)
     }
     // Initialize the array for plotly traces
@@ -260,7 +260,7 @@ function tracePlot(yr, comID) {
                 // console.log("traceInstalled(src) is true, quiting")
                 return;
             }
-            console.log(systemState.xRange)
+            // console.log(systemState.xRange)
             d3.csv(src,
                 (error, data) => {
                 if (error) {console.log(error); return}
@@ -268,11 +268,6 @@ function tracePlot(yr, comID) {
                     let _trace = getTrace(data, key, src);
 
                     traceData[traceIndices[key]] = _trace;
-                    // traceData[traceIdx].push(_trace);
-                    //
-                    // if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
-                    //     c[key].modEnabled
-                    // ) traceData.push(getModTrace(_trace));
                     if (config.hasOwnProperty('modTrace') && c[key].hasOwnProperty('modEnabled') &&
                         c[key].modEnabled
                     ) traceData[traceIndices[key]+1] = getModTrace(_trace);
@@ -282,14 +277,13 @@ function tracePlot(yr, comID) {
                             config.plotlyLayout
                         )
                     );
-                    // console.log(systemState.xRange, use_layout.xaxis.range)
                     use_layout.xaxis.range = systemState.xRange;
                     use_layout.xaxis.autorange = false;
 
                     try {
                         use_layout.title = plotTitle(comID);
                     } catch {
-                        use_layout.title = comID;
+                        use_layout.title = 'comID:' + comID;
                     }
 
                     if (hGrid.default) use_layout.shapes = hGrid.default;

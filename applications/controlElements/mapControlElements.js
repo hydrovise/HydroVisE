@@ -192,6 +192,7 @@ function contextLayerLoader(fnPath) {
         fill: true,
         fillColor: 'white',
         weight: 1,
+        radius:4
     };
 
     let fn = fnPath.replace(/^.*[\\\/]/, '')

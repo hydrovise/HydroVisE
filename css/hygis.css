@@ -1127,3 +1127,50 @@ input[type="file"]{
 .legendColorStyle{
     height: 25px;
 }
+
+#hide2dSelectorBttn{
+    position: absolute;
+    color: black;
+    font-size: 2em;
+    bottom: 0;
+    left: 5px;
+    display: block;
+    z-index: 1;
+}
+
+#show2dSelectorBttn{
+    size: 2em;
+    position: absolute;
+    color: black;
+    font-size: 2em;
+    bottom: 10px;
+    background-color: #e5e5e4;
+    left: 100px;
+    box-shadow: 0 0 1px black;
+    display: none;
+    z-index: 1;
+}
+
+#show2dLegend{
+    size: 2em;
+    /* left: 0; */
+    position: absolute;
+    color: black;
+    font-size: 2em;
+    bottom: 20%;
+    background-color: #e5e5e4;
+    right: 30px;
+    box-shadow: 0 0 1px black;
+    display: none;
+    z-index: 1;
+}
+
+#hide2dLegend{
+    size: 2em;
+    position: absolute;
+    color: black;
+    font-size: 2em;
+    top: 0;
+    background-color: #e5e5e4;
+    right: 1rem;
+}

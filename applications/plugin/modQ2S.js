@@ -1,6 +1,6 @@
 var rcCoef = {};
 let rc_url = 'http://s-iihr50.iihr.uiowa.edu/smap/retro/data/ratingCurve/rc_usgs.csv'
-let translate_id  = true;
+// let translate_id  = true;
 
 function translateID (usgs_id){
     t = new Map([
@@ -151,30 +151,30 @@ function translateID (usgs_id){
 }
 
 function evntQ2Stage (butt, hGrid){
-    let c = config.modTrace.mod;
-    let use_mod = Object.keys(c).filter(        
+    let c = config.modTrace.mod
+    let use_mod = Object.keys(c).filter(
         (k) => {return c[k].button == butt}
-    )[0];
+    )[0]
 
-    if (systemState.mod === use_mod) return;
+    if (systemState.mod == use_mod) return;
     let was_mod = systemState.mod;
     systemState.mod = use_mod;
     let pltPath = c[use_mod].pltPath;// + '.text';
     let pltVal = c[use_mod].val;
     div_plot.layout.shapes = hGrid[use_mod];
-    // console.log(pltPath, pltVal);
+    console.log(pltPath, pltVal);
     div_plot.data.forEach(          // was_mod use_mod to make decisions on show hide ?
         v => {
             v.visible = !v.visible;
         }
-    );
+    )
 
-    let update ={};
+    update ={};
     update["shapes"] = JSON.stringify(hGrid[use_mod]);
     update[pltPath] = pltVal;
-    
-    Plotly.restyle(div_plot, update);
-    Plotly.relayout(div_plot, update);
+
+    Plotly.restyle(div_plot, update)
+    Plotly.relayout(div_plot, update)
 }
 
 function Q2Stage(flow_arr) {
@@ -212,20 +212,20 @@ function Q2Stage(flow_arr) {
             async: false,
             success: function (data) {
                 data = d3.csvParse(data);
-                let data_rc = data.filter(row => row['link_id'] === String(lid));
-                if (data_rc.length === 0) return;
+                let data_rc = data.filter(row => row['link_id'] == String(lid));
+                if (data_rc.length == 0) return;
                 let x = unpack(data_rc, 'discharge_l');
-                let y = unpack(data_rc, 'stage_l');
+                var y = unpack(data_rc, 'stage_l');
                 x = x.map(data => Number(data) * cfs2cms);
                 y = y.map(Number);
                 rcCoef[lid] = polynomialRegressor(x, y, order = 3);
             }
         });
     }
-    if (translate_id) lid = translateID(systemState.comID);
+    translate_id ? lid = translateID(systemState.comID) : lid = systemState.comID;
     if (!rcCoef[lid]) {
         loadRatingCurve(lid);
-    }
-    if (rcCoef[lid] === undefined) return [];
-    return flow_arr.map(val => val==="" ? "" : polynomFunction(val, rcCoef[lid]))
+    };
+    if (rcCoef[lid] == undefined) return [];
+    return flow_arr.map(val => val=="" ? "" : polynomFunction(val, rcCoef[lid]))
 }
