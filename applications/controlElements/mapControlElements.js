@@ -184,8 +184,9 @@ let kmzload = function (fn_path, fn) {
 };
 
 //TODO: KML file name should not start with numbers / check what is going on in KML file because mostly it takes long time
-function contextLayerLoader(fnPath) {
-    let style = {
+function contextLayerLoader(fnPath,key) {
+
+    let style = config.mapLayers[key].hasOwnProperty('style')? config.mapLayers[key].style : {
         fillOpacity: 1,
         stroke: true,
         color: 'black',

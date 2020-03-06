@@ -374,7 +374,7 @@ function initSpatialData() {
 
 
 function twoDMapPlotter(twoDDataName, unix_time) {
-    let bar = L.control.colorBar();
+
     let defaultColorBar = {
         title: 'generic title',
         units: '(cm^3/cm^3)',
@@ -405,45 +405,16 @@ function twoDMapPlotter(twoDDataName, unix_time) {
 
     let _config = config.spatialData[twoDDataName];
     let fn = pathGeneratorGeneral(_config, unix_time);
-    let _style = _config.hasOwnProperty('dynStyle') ? _config.dynStyle : '';
+    let _style = _config.hasOwnProperty('dynStyle') ? _config.dynStyle : _config.style;
     let _colorPalette = _style.hasOwnProperty('colorPalette') ? _style.colorPalette : defaultChromaSettings.colorPalette;
     let _dtFormat = _style.hasOwnProperty('dtFormat') ? _style.dtFormat : 'YYYY-MM-DD HH:mm';
     let _nBins = _style.hasOwnProperty('nBins') ? _style.nBins : defaultChromaSettings.nBins;
-    let _colorMethod = _style.hasOwnProperty('method') ? _style.method : defaultChromaSettings.method;
+    if (_style.hasOwnProperty('classes')) _classes = _style.classes;
+    let _range = _style.hasOwnProperty('range') ? _style.range : [Math.min(_classes), Math.max(_classes)]
+    let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
+
     let _ts = moment.unix(unix_time).format(_dtFormat); //timestamp
     let _title = _config.name + _ts;
-
-    // function getColorbar(_range) {
-    //     let colorBar = {};
-    //     delta = parseFloat((_range[1] - _range[0]) / _nBins);
-    //     if (_style.hasOwnProperty('labels')) {
-    //         return _style.labels.length === _nBins ? _style.labels : _labels
-    //     } else {
-    //         decimalP = _style.hasOwnProperty('decimals') ? _style.decimals : defaultColorBar.decimals;
-    //         _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((v * delta + _range[0]).toFixed(decimalP)))
-    //     }
-    //     Object.keys(defaultColorBar).forEach(key => {
-    //         if (key == 'labels') {
-    //
-    //             colorBar[key] = _labels;
-    //
-    //         } else {
-    //             colorBar[key] = _style.hasOwnProperty(key) ? _style[key] : defaultColorBar[key];
-    //         }
-    //     });
-    //     return colorBar
-    // }
-    //
-    // function addColorscale(_range) {
-    //     if (twoDLegend[twoDDataName] !== undefined) {
-    //         twoDLegend[twoDDataName].remove()
-    //     }
-    //
-    //     let _scale = chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod);
-    //     twoDLegend[twoDDataName] = L.control.colorBar(_scale, _range, getColorbar(_range));
-    //     twoDLegend[twoDDataName].addTo(map);
-    //     return bar
-    // }
 
 
     function getDynamicRange(data) {
@@ -468,12 +439,12 @@ function twoDMapPlotter(twoDDataName, unix_time) {
             delete leaflet_layers[twoDDataName]
 
         }
-        // console.log(_range)
+
         map.createPane(twoDDataName);
         let geomLayers = L.canvasLayer.scalarField(geo, {
             inFilter: (v) => v < _style.hasOwnProperty('invalid') ? _style.invalid : defaultColorBar.invalid,
             // inFilter: (v) => v !== -9999,
-            color: chroma.scale(_colorPalette).domain(getDynamicRange(geo.grid), _nBins, _colorMethod),
+            color: _scale,
             opacity: 1,
             maxBounds: defaultBounds,
             zoom: defaultBounds,
@@ -523,7 +494,7 @@ function generateColorBarGeneral(twoDDataName, styleObjName) {
     if (_dynStyle.hasOwnProperty('classes')) _classes = _dynStyle.classes;
     selected = twoDDataName;
     let _colorPalette = _dynStyle.hasOwnProperty('colorPalette') ? _dynStyle.colorPalette : defaultChromaSettings.colorPalette;
-    let _nBins = _dynStyle.hasOwnProperty('classes') ? _classes.length : defaultChromaSettings.nBins;
+    let _nBins = _dynStyle.hasOwnProperty('classes') ? _classes.length : _dynStyle.nBins;
     if (_dynStyle.hasOwnProperty('labels')) _labels = _dynStyle.labels;
     let _colorMethod = _dynStyle.hasOwnProperty('method') ? _dynStyle.method : defaultChromaSettings.method;
     let _range = _dynStyle.hasOwnProperty('range') ? _dynStyle.range : [Math.min(_classes), Math.max(_classes)]
@@ -536,7 +507,7 @@ function generateColorBarGeneral(twoDDataName, styleObjName) {
             Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) +
                 parseFloat(_range[0])).toFixed(decimalP)))
     }
-    colors = (_colorPalette.length == _nBins) ? _colorPalette : _classes.map(l => String(_scale(l)))
+    colors = _classes.map(l => String(_scale(l)))
     zipped = d3.zip(colors, _labels);
 
     // }
@@ -651,137 +622,6 @@ function colorcodeGeometry(fn, twoDDataName) {
     let _data;
     let _subConfig = config.spatialData[twoDDataName];
     let dataType = _subConfig.dataType;
-    // function generateColorBar1(selected) {
-    //     let defaultChromaSettings = {
-    //         colorPalette: ['#fafa6e', '#2A4858'],
-    //         nBins: 5,
-    //         method: 'quantiles'
-    //     };
-    //     let _classes,_labels;
-    //     let _config = config.spatialData[twoDDataName];
-    //     let dataType = _subConfig.dataType;
-    //     let _dynStyle = _subConfig.dynStyle;
-    //     if (_dynStyle.hasOwnProperty('classes')) _classes = _dynStyle.classes;
-    //     selected = twoDDataName;
-    //     let colorbarTitle = _dynStyle.hasOwnProperty('var_name') ? _dynStyle.var_name : selected;
-    //     let _colorPalette = _dynStyle.hasOwnProperty('colorPalette') ? _dynStyle.colorPalette : defaultChromaSettings.colorPalette;
-    //     let _nBins = _dynStyle.hasOwnProperty('classes') ? _classes.length : defaultChromaSettings.nBins;
-    //     if (_dynStyle.hasOwnProperty('labels')) _labels = _dynStyle.labels;
-    //     let _colorMethod = _dynStyle.hasOwnProperty('method') ? _dynStyle.method : defaultChromaSettings.method;
-    //     let _range = _dynStyle.hasOwnProperty('range') ? _dynStyle.range : [Math.min(_classes), Math.max(_classes)]
-    //     let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
-    //     decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
-    //
-    //     delta = Math.round((_range[1] - _range[0]) / _nBins * 10 ** decimalP) / 10 ** decimalP;
-    //     if (_labels == undefined){
-    //         _labels = _classes ? _classes.map(v => parseFloat(v.toFixed(decimalP))) :
-    //             Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) +
-    //                 parseFloat(_range[0])).toFixed(decimalP)))
-    //     }
-    //     colors = (_colorPalette.length == _nBins) ? _colorPalette : _classes.map(l => String(_scale(l)))
-    //     zipped = d3.zip(colors, _labels);
-    //
-    //     // }
-    //     let colorBarID = "colorbar_" + twoDDataName;
-    //
-    //     var _colorbar = document.createElement('div');
-    //     _colorbar.setAttribute("id",colorBarID );
-    //     _colorbar.setAttribute("class",'div2dColorTab');
-    //     _colorbar.innerText = _dynStyle.hasOwnProperty('title') ? _dynStyle.title : _config.name;
-    //     // hideShowbutton = "<i id='hide2dLegend' class='fa fa-angle-right' style='size: 2em; left: -12px; position: inherit;'></i>";
-    //     // _colorbar.appendChild(hideShowbutton);
-    //     document.body.appendChild(_colorbar);
-    //
-    //     var _colorbarTab = document.createElement('table');
-    //     _colorbarTab.setAttribute("id",colorBarID );
-    //     _colorbarTab.setAttribute("class",'parentTableColor');
-    //     _colorbar.appendChild(_colorbarTab);
-    //
-    //     var trColors = document.createElement("tr");
-    //     trColors.setAttribute("id", "cols");
-    //     trColors.setAttribute('class','legendColorStyle')
-    //     _colorbarTab.appendChild(trColors);
-    //
-    //     var trLabels = document.createElement("tr");
-    //     trLabels.setAttribute("id", "labels");
-    //     trLabels.setAttribute('class','legendColorLabels')
-    //     _colorbarTab.appendChild(trLabels);
-    //
-    //     zipped.forEach(element => {
-    //         let td_color = document.createElement("td");
-    //         td_color.style.background = String(element[0]);
-    //
-    //         let td_label = document.createElement("td");
-    //         let labelText = document.createTextNode(element[1]);
-    //         td_label.appendChild(labelText);
-    //
-    //         trColors.appendChild(td_color);
-    //         trLabels.appendChild(td_label)
-    //
-    //
-    //     });
-    //
-    //     colorbar = document.getElementById('twodcolorbar');
-    //     colorbar.style.display = 'inline-table';
-    //     colorbar.append(_colorbar);
-    //     twoDLegend[twoDDataName] = colorbar;
-    //     // twoDLegend[twoDDataName].addTo(map);
-    // }
-    // function getColorbar() {
-    //
-    //     let _data;
-    //     let _subConfig = config.spatialData[twoDDataName];
-    //     let dataType = _subConfig.dataType;
-    //     let _dynStyle = _subConfig.dynStyle;
-    //     let _colorPalette = _dynStyle.colorPalette;
-    //     let _range = _dynStyle.range;
-    //     let _classes = _dynStyle.classes;
-    //     let _nBins = _classes.length;
-    //     let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
-    //     let colorBar = {};
-    //     let defaultColorBar = {
-    //         title: 'generic title',
-    //         units: '(cm^3/cm^3)',
-    //         steps: _classes ? _nBins : 4,
-    //         decimals: _dynStyle.hasOwnProperty('decimalP') ? _dynStyle.decimalP : 0,
-    //         width: 300,
-    //         height: 20,
-    //         position: 'bottomright',
-    //         background: '#888888',
-    //         textColor: '#ffffff',
-    //         labels: _dynStyle.hasOwnProperty('classes') ? _dynStyle.classes : [],
-    //         labelFontSize: 15,
-    //         invalid: -9999
-    //     };
-    //     let defaultChromaSettings = {
-    //         colorPalette: ['#fafa6e', '#2A4858'],
-    //         nBins: 5,
-    //         method: 'quantiles'
-    //     };
-    //
-    //     delta = parseFloat((_range[1] - _range[0]) / _nBins);
-    //     if (_dynStyle.hasOwnProperty('labels')) {
-    //         return _dynStyle.labels.length === _nBins ? _style.labels : _labels
-    //     } else {
-    //         decimalP = _dynStyle.hasOwnProperty('decimals') ? _dynStyle.decimals : defaultColorBar.decimals;
-    //         _labels = _dynStyle.hasOwnProperty('classes') ? _classes.map(v => parseFloat(v.toFixed(decimalP))) :
-    //             Array.from(_classes.keys()).map(v => parseFloat((v * delta + _range[0]).toFixed(decimalP)))
-    //     }
-    //     Object.keys(defaultColorBar).forEach(key => {
-    //         if (key === 'labels') {
-    //
-    //             colorBar[key] = _labels;
-    //
-    //         } else {
-    //             colorBar[key] = _dynStyle.hasOwnProperty(key) ? _dynStyle[key] : defaultColorBar[key];
-    //         }
-    //     });
-    //
-    //     twoDLegend[twoDDataName] = L.control.colorBar(_scale, _range, colorBar);
-    //     twoDLegend[twoDDataName].addTo(map);
-    // }
-
-    // if (!twoDLegend.hasOwnProperty(twoDDataName)) getColorbar();
     if (!twoDLegend.hasOwnProperty(twoDDataName)) generateColorBarGeneral(twoDDataName, 'dynStyle');
     switch (dataType) {
         case 'binary':
