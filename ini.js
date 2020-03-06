@@ -114,7 +114,7 @@ function ini() {
             )
         );
         if (use_config[key].selected) {
-            contextLayerLoader(use_config[key].fnPath);
+            contextLayerLoader(use_config[key].fnPath,key);
             document
                 .getElementById('check_lid_' + use_config[key].fn)
                 .classList = 'checked';
