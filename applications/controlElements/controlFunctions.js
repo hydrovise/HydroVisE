@@ -165,7 +165,7 @@ function toggLyrStd(e) {
             if (dynamic==='dynamic'){
                 initializeGeom(lyr_id)
             }else{
-                contextLayerLoader(fnPath);
+                contextLayerLoader(fnPath,fn);
                 // updateLayerZIndex()
             }
         } else {
