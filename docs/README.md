@@ -1,5 +1,5 @@
 # Welcome to HydroVisE
-# Software for Hydrologic Data Visualization and Evaluation
+### Software for Hydrologic Data Visualization and Evaluation
 ![**General layout for HydroVisE**](https://github.com/njadid/HydroVisE/wiki/images/logo/hydroviseLogo.svg?sanitize=true)
 
 This page provides brief information about HydroVisE.
