@@ -78,9 +78,6 @@ async function initializeGeom(dynamicGeomID) {
             fillOpacity: 0.8
         }
     }
-
-
-    // console.log(loadSrc(fn));
     async function createGeom(srcData) {
         if (webGL_option) {
             if (geomType === 'Point') {
@@ -203,7 +200,6 @@ async function initializeGeom(dynamicGeomID) {
     }
 
     function clickFeature(e) {
-        // console.log(e.target.feature.properties)
         var clkProp = e.target.feature.properties;
 
         systemState.comID = comID = clkProp.grid_xy;
@@ -397,8 +393,6 @@ function twoDMapPlotter(twoDDataName, unix_time) {
 
     async function readRaster(fn) {
         return fetch(fn).then((resp) => resp.arrayBuffer()).then(function (data) {
-            // console.log(data)
-
             return L.ScalarField.fromGeoTIFF(data)
         })
     }
@@ -584,7 +578,6 @@ function colorcodeGeomBin(_data, twoDDataName) {
     }
     function getColor(i, feature) {
         featData = _data[i];
-        // console.log(func())
         cl = _scale(featData).rgb();
         if (_subConfig.geom.geomType === 'Polygon') {
             return {
