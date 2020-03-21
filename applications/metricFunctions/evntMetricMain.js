@@ -97,48 +97,16 @@ function arraysEqual(a1, a2) {
 
 let metrics_subyear;
 function calcEvntMetrics() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    let metricList = config.calcMetrics.metricList;
-=======
->>>>>>> dev
-=======
-
-    let metricList = config.calcMetrics.metricList;
->>>>>>> parent of d66453d... Evaluations module updated
     let features = mapMarkers.features;
     let nFeatures = features.length;
     let processedFeatures = 0;
     let progress = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    let elem_width = 0;
-
-=======
     let elem_width = 0;
     let metrics_local = [];
->>>>>>> dev
-=======
-
-    let elem_width = 0;
-
->>>>>>> parent of d66453d... Evaluations module updated
 
     document.getElementById('progressbar').style.display = 'block';
     document.getElementById('progressDIV').style.display = 'block';
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    let metrics_local = [];
-
-=======
->>>>>>> dev
-=======
-    let metrics_local = [];
-
->>>>>>> parent of d66453d... Evaluations module updated
 
     asyncForEach(features.slice(0, nFeatures), async (feature) => {
         var comID = String(feature.properties[comIDName]);
