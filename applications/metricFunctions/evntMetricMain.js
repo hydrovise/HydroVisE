@@ -97,20 +97,15 @@ function arraysEqual(a1, a2) {
 
 let metrics_subyear;
 function calcEvntMetrics() {
-
-    let metricList = config.calcMetrics.metricList;
     let features = mapMarkers.features;
     let nFeatures = features.length;
     let processedFeatures = 0;
     let progress = 0;
-
     let elem_width = 0;
-
+    let metrics_local = [];
 
     document.getElementById('progressbar').style.display = 'block';
     document.getElementById('progressDIV').style.display = 'block';
-
-    let metrics_local = [];
 
 
     asyncForEach(features.slice(0, nFeatures), async (feature) => {
