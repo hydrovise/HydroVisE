@@ -71,7 +71,7 @@ function basemap_changer(_selected) {
             url = 'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png';
             attri = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }
-    // console.log(attri)
+
     if (basemap != undefined) {
         map.removeLayer(basemap);
     }
@@ -92,7 +92,6 @@ function basemap_changer(_selected) {
 // });
 
 function addCustBaseMap(src) {
-
     if (!config.hasOwnProperty("customBaseMap")) return;
     var tempColor;
     $.getJSON(src.url, function (data) {
@@ -101,10 +100,8 @@ function addCustBaseMap(src) {
             rendererFactory: L.svg.tile,
             vectorTileLayerStyles: {
                 sliced: function (properties, zoom) {
-                    // console.log(properties)
                     let p = properties[src.propoertyName];
                     tempColor = src.colors.hasOwnProperty(p) ? src.colors[p] : src.colors.default;
-                    // console.log(tempColor,p)
                     return {
                         color: tempColor,
                         fillOpacity: 0.5,
@@ -124,10 +121,8 @@ function addCustBaseMap(src) {
             " data-type='static' class='input checked'><p class='key'>" + src.name + "</p></li>";
         var ctxLayerLegend = document.getElementById("sortable");
         ctxLayerLegend.innerHTML += lst_item;
-
         config.mapLayers['customBaseMap'] = {fn: 'customBaseMap'};
         updateLayerZIndex()
-        // tileLayer.bringToFront()
     });
 }
 
@@ -139,33 +134,6 @@ function toggDiv(a) {
     _elm.css('display', _switch[_elm.css('display')]);
     _elm_mini.css('display', _switch[_elm_mini.css('display')]);
 }
-
-// function toggLyrStd(e) {
-//     let is_checked = e.checked;
-//     let lyr_id = e.value;
-//     let sel = $(e);
-//     let fn = lyr_id;
-//
-//     if (!(is_checked)) {
-//         sel.css("background-color", "");
-//         leaflet_layers[fn].remove()
-//
-//     } else {
-//         sel.css("background-color", '#2d4e45'); //"#359AFF");
-//         $.each(
-//             $('#con0').find("input[type='checkbox']:checked"),
-//             function (ix, ele) {
-//                 if (ele.value != sel[0].value) $(ele).css("background-color", 'rgb(175, 193, 126)');
-//             }
-//         );
-//         if (leaflet_layers[fn] === undefined) {
-//             contextLayerLoader(fn)
-//         } else {
-//             leaflet_layers[fn].addTo(map)
-//         }
-//     }
-// }
-
 
 let kmzload = function (fn_path, fn) {
 //         var layerID;
@@ -222,10 +190,6 @@ function contextLayerLoader(fnPath,key) {
                 dataType: "json",
                 url: fnPath,
                 success: function (data) {
-                    // add GeoJSON layer to the map once the file is loaded
-                    // rvr_net = L.geoJson(data);
-                    // console.log(data);
-                    //TODO: check why tile for points cut some of the points
                     map.createPane(fn);
                     var tileLayer = L.vectorGrid.slicer(data, {
                         rendererFactory: L.svg.tile,
@@ -233,7 +197,6 @@ function contextLayerLoader(fnPath,key) {
                             sliced: function (properties, zoom) {
                                 let p = properties.h_order;
                                 return style
-                                //return style()
                             }
                         },
                         pane: fn
@@ -269,7 +232,6 @@ function loadTileLayer(layer, map, fn) {
     });
     map.addLayer(tileLayer);
     tileLayer.bringToFront();
-    // console.log(tileLayer)
     leaflet_layers[fn] = tileLayer;
 }
 
@@ -295,7 +257,7 @@ function GetElementInsideContainer(containerID, childID) {
     return elm;
 }
 
-
+// TODO : File Upload data types
 function fileUpload(evt) {
     function humanFileSize(size) {
         var i = Math.floor(Math.log(size) / Math.log(1024));
@@ -303,7 +265,6 @@ function fileUpload(evt) {
     }
 
     var files = evt.target.files; // FileList object e.dataTransfer.files[0];
-    console.log(files);
     for (var i = 0, fObject; fObject = files[i]; i++) {
         let fn = fObject.name;
         try {
@@ -316,7 +277,6 @@ function fileUpload(evt) {
                     dropArea.innerHTML += " " + elapsed + "ms";
                     switch (ext) {
                         case 'geojson':
-                            console.log(event.target.result);
                             layer_GeoJSON = JSON.parse(event.target.result);
                             loadTileLayer(layer_GeoJSON, map, fn);
                             break;

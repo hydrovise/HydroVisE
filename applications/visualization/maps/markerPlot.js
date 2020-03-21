@@ -170,9 +170,7 @@ function getStyle() {
 
 
 function colorCodeMapMarkers(attrName) {
-    // console.log(attrName)
     let _config = config.controls.markerAttrs[attrName];
-    // console.log(_config)
     let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
     let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
     let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
@@ -192,7 +190,6 @@ function colorCodeMapMarkers(attrName) {
                 layer.feature.properties[attrName] = filtered[0][attrName];
             });
             layer.options.fillColor = getColor(filtered[0][systemState.markerAttrs]);
-
             layer.options.fillOpacity = 1;
             layer._tooltip._content = tooltipStrGen(layer.feature);
         }
@@ -246,7 +243,6 @@ function generateColorBar1(selected) {
     var str_div_bars = '<div id="colorbar">' +
         '<p style="font-size:20px;font-weight: 400;color: #111111">' + colorbarTitle + '</p>';
     zipped.forEach(element => {
-            console.log(element)
             str_div_bars += ('<div class="bar-row" style="height: {2}px">' +
                 '<div class="bar bar-label">{0}</div>' +
                 '<div class="bar" style="background-color:{1}")></div></div>')
@@ -257,3 +253,33 @@ function generateColorBar1(selected) {
 }
 
 
+function colorCodeMapMarkersSubYear(attrName,markerAttrs) {
+    let _config = config.controls.markerAttrs[attrName];
+    let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
+    let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
+    let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
+    let _range = _config.range;
+    getColor = function (val) {
+        return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
+    };
+    //todo: change the headernames to dynamic names in the config file
+    leaflet_layers['mapMarkers'].eachLayer(layer => {
+        _comID = layer.feature.properties[comIDName];
+        filtered = markerAttrs.filter(f => f[comIDName] == _comID &
+            f['year'] == systemState.yr & f['prod'] == systemState.prod)
+        attr = systemState.markerAttrs;
+        if (filtered.length > 0) {
+            Object.keys(config.controls.markerAttrs).forEach(k => {
+                attrName = config.controls.markerAttrs[k].var_id;
+                layer.feature.properties[attrName] = filtered[0][attrName];
+            });
+            layer.options.fillColor = getColor(filtered[0][systemState.markerAttrs]);
+
+            layer.options.fillOpacity = 1;
+            layer._tooltip._content = tooltipStrGen(layer.feature);
+        }
+    });
+    leaflet_layers['mapMarkers'].remove();
+    leaflet_layers['mapMarkers'].addTo(map);
+    generateColorBar1(attr)
+}

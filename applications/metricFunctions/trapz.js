@@ -53,14 +53,12 @@ function trapzIntegral(Array, dt) {
     dt1 = dt.slice(0, dt.length - 1);
     dt2 = dt.slice(1, dt.length);
     var deltaT = vecOperator(dt2, dt1, 'subtract', 'date');
-//     console.log(deltaT)
+
     let arr1, arr2 = [];
     arr1 = Array.slice(0, Array.length - 1);
     arr2 = Array.slice(1, Array.length);
     var meanval = vecOperator(arr1, arr2, 'mean', 'value');
-//     console.log(meanval)
     mult = vecOperator(meanval, deltaT, 'multiply', 'value');
     integral = math.sum(mult);
-//     console.log(integral)
     return integral
 }

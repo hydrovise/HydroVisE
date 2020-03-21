@@ -8,7 +8,6 @@ function IsMember(a, b) {
         if (b.includes(value)) {
             // Output
             idxA.push(a.indexOf(value));
-//             console.log("B doesn't have", value, "at position", a.indexOf(value), "in A")
         }
     });
     // Loop through B using array.some() => value
@@ -19,9 +18,6 @@ function IsMember(a, b) {
             idxB.push(b.indexOf(value));
         }
     });
-//           var t1 = performance.now();
-//                         console.log("Call to doSomething took " + ((t1 - t0)/1000).toFixed(1) + " seconds.")
-
     return [idxA, idxB]
 }
 
