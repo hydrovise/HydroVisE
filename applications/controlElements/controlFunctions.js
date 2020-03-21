@@ -11,7 +11,7 @@ function select_sim_type(_selected) {
     }
 
     if (zoom_metric_state) {
-        draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
+        colorCodeMapMarkersSubYear(systemState.markerAttrs,metrics_subyear)
     } else {
         // draw_markers(metrics, systemState.metric, systemState.yr, systemState.sim_type);
         if (systemState.markerAttrs) colorCodeMapMarkers(systemState.markerAttrs)
@@ -29,7 +29,7 @@ function selectMetric(_selected) {
     systemState.markerAttrs = _sel.data('value');
 
     if (zoom_metric_state) {
-        draw_markers_sub_year(metrics_subyear, systemState.metric, systemState.sim_type)
+        colorCodeMapMarkersSubYear(systemState.markerAttrs,metrics_subyear)
     } else {
         // draw_markers(markerAttrs, systemState.metricType, systemState.yr, systemState.prod);
         // generateColorBar1(systemState.metricType,val)
@@ -38,7 +38,6 @@ function selectMetric(_selected) {
 }
 
 function changeYear(val) {
-    // console.log(val)
     zoom_state = false;
     zoom_metric_state = false;
     use_yr = parseInt(systemState.yr) + (parseInt(val) * parseInt(config.data_part.step));

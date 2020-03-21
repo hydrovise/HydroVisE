@@ -209,6 +209,7 @@ function ini() {
         return false;
     };
 
+
     document.getElementById('drop').addEventListener('change', fileUpload, false);
 
     if (config.hasOwnProperty('spatialData')) {
@@ -226,6 +227,7 @@ function ini() {
     if (config.hasOwnProperty('calcMetrics')) {
         metricDIV = document.getElementById('claculatemetricsButton');
         metricDIV.style.display = 'block';
+        metricDIV.disabled = '';
     }
 
 }

@@ -15,28 +15,24 @@ function move(progress) {
     elem.innerHTML = String(progress) + '%';
 }
 
-
-function returnFileList(lid) {
-//   for (var i = 0; i < arguments.length; i++) {
-//     console.log(arguments[i]);
-//   }
+function returnFileList(comID) {
     let fnList = [];
-    let traceKeys = Object.keys(ts_Config);
+
+    let traceKeys = Object.keys(config.traces);
+
     traceKeys.forEach(function (key) {
-        let f = ts_Config[key].root + '/'
-            + init.yr + '/'
-            + ts_Config[key].subfolder + '/'
-            + String(lid)
-            + ts_Config[key].extension;
-
-
+        let c = config.traces[key].template;
+        let use_values = c.var.map(
+            varKey => (varKey !== 'yr') ? comID : systemState[varKey]
+        );
+        let f = formatArray(c.path_format, use_values)
         fnList.push(f)
-    })
+    });
     return fnList
 }
 
 
-pointDataCSV = 'data/lid_usgs.csv';
+
 dtFormatRounded = 'YYYY-MM-DD';
 dtFormatGeneral = 'YYYY-MM-DD HH:mm';
 
@@ -61,7 +57,7 @@ function unpack(data, key) {
 
 //#### Get DateTime from string using Moment.js ####//
 function getDatetime(arr, key) {
-//     console.log(arr)
+
     if (key) {
         return arr.map(
             (row) => {
@@ -87,29 +83,6 @@ function roundToDay(dt) {
     }
 }
 
-function loadCSV(file) {
-    return new Promise(function (resolve, reject) {
-        d3.csv(file, function (error, request) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(request);
-            }
-        });
-    });
-}
-
-async function loadMultiCSV(fnList) {
-
-    return new Promise(function (resolve, reject) {
-        let dt = [];
-        for (var i = 0; i < fnList.length; i++) {
-            file = fnList[i];
-            dt[file] = loadCSV(file);
-        }
-        resolve(dt)
-    });
-}
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -123,113 +96,83 @@ function arraysEqual(a1, a2) {
 }
 
 let metrics_subyear;
+function calcEvntMetrics() {
 
-function readData(metrics, selectedRange) {
-    // for testing the performance
-    const num_comaprisons = 2;
-    const test_p_num = 5;
-    //
-
-    let pointData = [];
-    let match = [];
-    let processed_points = 0;
+    let metricList = config.calcMetrics.metricList;
+    let features = mapMarkers.features;
+    let nFeatures = features.length;
+    let processedFeatures = 0;
     let progress = 0;
-    const metrics_local = [];
 
-    let all = [];
-    for (keymet in metrics) {
-        metrics_local[keymet] = []
-    }
-    let points = [];
-
-    let elem = [];
     let elem_width = 0;
-    let pointdatacsv = 'data/lid_usgs.csv';
+
+
     document.getElementById('progressbar').style.display = 'block';
     document.getElementById('progressDIV').style.display = 'block';
-////////////////////new
-    d3.csv(pointdatacsv, function (data) {
-        points = data;
 
-        asyncForEach(points.slice(0, test_p_num), async (point) => {
-            var lid = String(point['lid']);
-            var usgs_id = String(point['USGS_id']);
-            var fnList = returnFileList(lid);
-            var dt1 = [];
+    let metrics_local = [];
 
-            fnList.forEach(function (fn) {
 
-                Papa.parse(fn, {
-                    download: true,
-                    header: true,
-                    dynamicTyping: true,
-                    complete: function (results) {
+    asyncForEach(features.slice(0, nFeatures), async (feature) => {
+        var comID = String(feature.properties[comIDName]);
+        var fnList = returnFileList(comID);
+        var dt1 = [];
+        let itemsProcessed = 0;
+        fnList.forEach(function (fn) {
+            Papa.parse(fn, {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                complete: function (results) {
+                    dt1[fn] = results['data'];
+                    itemsProcessed++;
+                    if(itemsProcessed === fnList.length) {
+                        let pointmetric = [];
+                        pointmetric = analyse(dt1, feature);
+                        Object.keys(pointmetric).forEach(d =>  metrics_local.push(pointmetric[d]))
 
-                        dt1[fn] = results['data'];
-                        if (Object.keys(dt1).length === 3) {
-                            let pointmetric = [];
-                            pointmetric = analyse(dt1, point, selectedRange);
-                            for (let keymet in metrics) {
-                                if (keymet !== 'year') {
-//                                 console.log(pointmetric[keymet]);
-                                    if (pointmetric[keymet] !== undefined) {
-                                        pointmetric[keymet].forEach(item1 => {
-                                            metrics_local[keymet].push(item1);
-                                        })
-                                    }
-                                }
-                            }
-                            processed_points += 1;
-                            progress = (processed_points / test_p_num) * 100;
-                            elem_width = document.getElementById("progressbar").style.width;
-                            move(progress)
-                            if (metrics_local.lon.length === num_comaprisons * test_p_num) {
-                                draw_markers_sub_year(metrics_local, metric_name, init.sim_type)
-                                document.getElementById('progressbar').style.display = 'none';
-                                document.getElementById('progressDIV').style.display = 'none';
-                                document.getElementById("progressbar").style.width = String(0) + '%';
-                                document.getElementById("progressbar").innerHTML = String(0) + '%';
-                                metrics_subyear = metrics_local;
-                                zoom_metric_state = true;
-                            }
+                        processedFeatures += 1;
+                        progress = ((processedFeatures / nFeatures) * 100).toFixed(2);
+                        elem_width = document.getElementById("progressbar").style.width;
+                        move(progress);
+                        if (processedFeatures ===  nFeatures) {
+                            colorCodeMapMarkersSubYear(systemState.markerAttrs,metrics_local)
+                            document.getElementById('progressbar').style.display = 'none';
+                            document.getElementById('progressDIV').style.display = 'none';
+                            document.getElementById("progressbar").style.width = String(0) + '%';
+                            document.getElementById("progressbar").innerHTML = String(0) + '%';
+                            metrics_subyear = metrics_local;
+                            zoom_metric_state = true;
                         }
-
                     }
-                });
+                }
             })
 
 
-        })
-    })
+        });
 
 
+    });
 }
 
-
 //#### Data Analysis ####//
-function analyse(dt1, point, selectedRange, metric_name) {
-//     console.log(IsMember(roundToDay(selectedRange), getDatetime(dataArr[files[1]], 'dt')))
+function analyse(dataArr, feature) {
+    selectedRange = systemState.xRange;
     let indices = [];
-    lid = String(point['lid']);
-    usgs_id = String(point['USGS_id']);
+    lid = String(feature.properties[comIDName]);
     fnList = returnFileList(lid);
-//     console.log(fnList)
-    let dataArr = [];
-    dataArr = dt1;
-//     const dataArr =  loadCSV(fnList[1]);
 
-//     console.log(dataArr)
     fnList.forEach(function (f) {
-//         console.log(f)
         indices[f] = IsMember(roundToDay(selectedRange), getDatetime(dataArr[f], 'dt'))
 
-    })
-    let metrics = [];
+    });
     let dataArray = [];
     let comparisonArray = [];
+    // Take a subset of the data for matching the timestamps
     fnList.forEach(function (f) {
         dataArray[f] = dataArr[f].slice(indices[f][1][0], indices[f][1][1]);
-    })
+    });
+    // uses the first element of the defined traces as reference data
     let fnObs = fnList[0];
     let MatchIdx = [];
     let obs = [];
@@ -241,71 +184,50 @@ function analyse(dt1, point, selectedRange, metric_name) {
         MatchIdx[fn] = IsMember(
             getDatetime(dataArray[fn], 'dt'),
             getDatetime(dataArray[fnObs], 'dt')
-        )
-
-//         console.log(MatchIdx[fn][1])
-//         console.log(unpack(dataArray[fnObs],'Q'))
-//         console.log(GetValFromIndices(unpack(dataArray[fnObs],'Q'), MatchIdx[fn][1]))
-        obs = GetValFromIndices(dataArray[fnObs], MatchIdx[fn][1])
-        sim = GetValFromIndices(dataArray[fn], MatchIdx[fn][0])
+        );
+        obs = GetValFromIndices(dataArray[fnObs], MatchIdx[fn][1]);
+        sim = GetValFromIndices(dataArray[fn], MatchIdx[fn][0]);
         comparisonArray[fn] = [sim, obs];
     }
-    // console.log(comparisonArray)
+
     //#### Generate an array with objects for feeding to MetricCalculator Function ####//
     let compreadyArray = [];
-    for (let i = 1; i < fnList.length; i += 1) {
+    for (let i = 1; i < fnList.length; i++) {
         compreadyArray[fnList[i]] = [];
-        for (let j = 0; j < comparisonArray[fnList[i]][0].length; j += 1) {
-//             console.log(fnList[i])
+        for (let j = 0; j < comparisonArray[fnList[i]][0].length; j++) {
             compreadyArray[fnList[i]].push({
                 obs: comparisonArray[fnList[i]][1][j].Q,
-                pred: Number(comparisonArray[fnList[i]][0][j].Q),
+                sim: Number(comparisonArray[fnList[i]][0][j].Q),
                 dt: comparisonArray[fnList[i]][0][j].dt
 
             })
         }
     }
-//     console.log(compreadyArray)
+
     metric_name_list = ['volume_error', 'agreementindex', 'bias', 'correlationcoefficient', 'covariance',
         'decomposed_mse', 'kge', 'log_p', 'mae', 'mse', 'nashsutcliffe',
         'pbias', 'rmse', 'rrmse', 'rsquared', 'rsr', 'nRMSE',
         'nMAE', 'timing', 'norm_bias', 'ppd', 'peak_qsim', 'qsim_vol',
         'qobs_vol', 'pt_change_vol'];
-    metrics_local = [];
-    // initialize metrics object with the array names
-    metric_name_list.forEach(function (key) {
-        metrics_local[key] = [];
-    })
+    metrics_local = {};
 
-    for (key1 in point) {
-        metrics_local[key1] = [];
-    }
-    lut_SimType = ['Q_ol', 'Q_assim_norm_v2'];
-    metrics_local['sim_type'] = [];
-    j = 0;
-    for (key in compreadyArray) {
-        for (key1 in point) {
-            metrics_local[key1].push(point[key1]);
+    let products = Object.keys(config.controls.prod);
+    let j = 0;
+    Object.keys(compreadyArray).forEach(key => {
+        try{
+            point_metrics = allMetrics(compreadyArray, key, feature);
+            point_metrics['prod'] = products[j];
+            point_metrics['year'] = systemState.yr;
+            point_metrics[comIDName] = feature.properties[comIDName];
+
+            metrics_local[j]= Object.assign({},point_metrics);
+
+        } catch {
+            console.log('Data missing on feature comID = ' +  feature.properties[comIDName])
         }
-        point_metrics = allMetrics(compreadyArray, key, point, metric_name)
-        metric_name_list.forEach(function (metric_name) {
-            try {
-                metrics_local[metric_name].push(point_metrics[metric_name]);
-            } catch {
 
-            }
-
-
-        });
-        metrics_local['sim_type'].push(lut_SimType[j]);
-//         console.log(point)
-//         console.log(metrics_local)
         j = j + 1;
-    }
-
-//     console.log(metrics_local)
+    });
     return metrics_local
 }
-
-// dt = readData();
 

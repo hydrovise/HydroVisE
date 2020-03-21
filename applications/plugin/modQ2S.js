@@ -162,7 +162,6 @@ function evntQ2Stage (butt, hGrid){
     let pltPath = c[use_mod].pltPath;// + '.text';
     let pltVal = c[use_mod].val;
     div_plot.layout.shapes = hGrid[use_mod];
-    console.log(pltPath, pltVal);
     div_plot.data.forEach(          // was_mod use_mod to make decisions on show hide ?
         v => {
             v.visible = !v.visible;
