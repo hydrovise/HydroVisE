@@ -61,13 +61,14 @@ function ini() {
 
     let controlList = []; //['markerAttrs', 'prod', 'baseMapType'];
     let attr_ctrl = config.hasOwnProperty('mapMarkers') && config.mapMarkers.hasOwnProperty('markerAttrs');
+    let prod_ctrl = config.controls.hasOwnProperty('prod');
     let ensemble_ctrl = Object.keys(config.traces).find(
         v => {
             return config.traces[v].ensemble;
         }
     ) !== undefined;
     useCtrlContainer(attr_ctrl, 'markerAttrs');
-    useCtrlContainer(ensemble_ctrl || attr_ctrl, 'prod');
+    useCtrlContainer((ensemble_ctrl || attr_ctrl) & prod_ctrl, 'prod');
     useCtrlContainer(true, 'baseMapType');
 
     for (let i = 0; i < controlList.length; i++) {

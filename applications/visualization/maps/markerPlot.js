@@ -57,13 +57,14 @@ function tooltipStrGen(el) {
     let p = el.properties;
     if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
     let c = config.mapMarkers.tooltip.template;
-
+    let metricDecimalP;
+    c.hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  2;
     let vals = [];
     c.var.forEach(
         v => {
             if (v === 'metric') {
                 vals.push(
-                    $.isNumeric(p[systemState.markerAttrs]) ? parseFloat(p[systemState.markerAttrs]).toFixed(2) : p[systemState.markerAttrs]
+                    $.isNumeric(p[systemState.markerAttrs]) ? parseFloat(p[systemState.markerAttrs]).toFixed(metricDecimalP) : p.hasOwnProperty(systemState.markerAttrs)? p[systemState.markerAttrs] : 'N/A'
                 )
             } else if (v === 'metricName') {
                 vals.push(
@@ -171,25 +172,24 @@ function getStyle() {
 
 function colorCodeMapMarkers(attrName) {
     let _config = config.controls.markerAttrs[attrName];
+    if (_config.hasOwnProperty('classes')) _classes = _config.classes;
     let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
-    let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
-    let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
-    let _range = _config.range;
-    getColor = function (val) {
-        return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
-    };
+    let _nBins = _config.hasOwnProperty('classes') ? _classes.length : _config.nBins;
+    let _range = _config.hasOwnProperty('range') ? _config.range : [Math.min(_classes), Math.max(_classes)]
+    let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
     //todo: change the headernames to dynamic names in the config file
     leaflet_layers['mapMarkers'].eachLayer(layer => {
         _comID = layer.feature.properties[comIDName];
-        filtered = markerAttrs.filter(f => f[comIDName] == _comID &
-            f['year'] == systemState.yr & f['prod'] == systemState.prod)
+        filtered = markerAttrs.filter(f => f[comIDName] == _comID &&
+        (f.hasOwnProperty('year') ? f['year'] === systemState.yr : true) &&
+            (f.hasOwnProperty('prod') ? f['prod'] === systemState.prod: true));
         attr = systemState.markerAttrs;
         if (filtered.length > 0) {
             Object.keys(config.controls.markerAttrs).forEach(k => {
                 attrName = config.controls.markerAttrs[k].var_id;
                 layer.feature.properties[attrName] = filtered[0][attrName];
             });
-            layer.options.fillColor = getColor(filtered[0][systemState.markerAttrs]);
+            layer.options.fillColor = _scale(filtered[0][systemState.markerAttrs]);
             layer.options.fillOpacity = 1;
             layer._tooltip._content = tooltipStrGen(layer.feature);
         }
@@ -200,45 +200,34 @@ function colorCodeMapMarkers(attrName) {
 }
 
 function generateColorBar1(selected) {
-    let defaultColorBar = {
-        title: 'generic title',
-        units: '(cm^3/cm^3)',
-        steps: 4,
-        decimals: 2,
-        width: 300,
-        height: 20,
-        position: 'bottomright',
-        background: '#888888',
-        textColor: '#ffffff',
-        labels: [],
-        labelFontSize: 15,
-        invalid: -9999
-    };
+
+
     let defaultChromaSettings = {
         colorPalette: ['#fafa6e', '#2A4858'],
         nBins: 5,
         method: 'quantiles'
     };
+    let _classes,_labels;
     let _config = config.controls.markerAttrs[selected];
     let colorbarTitle = _config.hasOwnProperty('var_name') ? _config.var_name : selected;
+    // let _dynStyle = _config[styleObjName];
+    if (_config.hasOwnProperty('classes')) _classes = _config.classes;
     let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
-    let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
-    let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
-    let _range = _config.range;
-    getColor = function (val) {
-
-        return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
-    };
-    colorBar = {};
-
-
+    let _nBins = _config.hasOwnProperty('classes') ? _classes.length : _config.nBins;
+    if (_config.hasOwnProperty('labels')) _labels = _config.labels;
+    // let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
+    let _range = _config.hasOwnProperty('range') ? _config.range : [Math.min(_classes), Math.max(_classes)]
+    let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
     decimalP = _config.hasOwnProperty('decimals') ? parseInt(_config.decimals) : 2;
-    delta = Math.round((_range[1] - _range[0]) / _nBins * 10 ** decimalP) / 10 ** decimalP;
-    _labels = Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) + parseFloat(_range[0])).toFixed(decimalP)))
-    colors = (_colorPalette.length == _nBins) ? _colorPalette : _labels.map(l => String(getColor(l)))
-    zipped = d3.zip(colors, _labels).reverse()
 
-    // }
+    delta = Math.round((_range[1] - _range[0]) / _nBins * 10 ** decimalP) / 10 ** decimalP;
+    if (_labels == undefined){
+        _labels = _classes ? _classes.map(v => parseFloat(v.toFixed(decimalP))) :
+            Array.from(Array(_nBins).keys()).map(v => parseFloat((parseFloat(v) * parseFloat(delta) +
+                parseFloat(_range[0])).toFixed(decimalP)))
+    }
+    colors = _classes.map(l => String(_scale(l)))
+    zipped = d3.zip(colors, _labels).reverse();
 
     var str_div_bars = '<div id="colorbar">' +
         '<p style="font-size:20px;font-weight: 400;color: #111111">' + colorbarTitle + '</p>';
