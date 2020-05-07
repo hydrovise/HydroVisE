@@ -85,11 +85,11 @@
             cache: true,
             url: config_url,
             success: function (data) {
-                console.log("HyGIS v0.9 Beta: Platform Initialized - Config: ", config_url);
+                console.log("HydroVisE v0.9 Beta: Platform Initialized - Config: ", config_url);
                 config = data;
             }
         });
-        document.title = config.hasOwnProperty("page") ? config.page.title: "HyGIS Web Platform";
+        document.title = config.hasOwnProperty("page") ? config.page.title: "HydroVisE Web Platform";
 
         // System State keeps the state of
         // the controls and time for the plots
