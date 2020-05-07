@@ -58,7 +58,7 @@ function tooltipStrGen(el) {
     if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
     let c = config.mapMarkers.tooltip.template;
     let metricDecimalP;
-    c.hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  2;
+    metricDecimalP = c.hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  2;
     let vals = [];
     c.var.forEach(
         v => {
@@ -72,7 +72,7 @@ function tooltipStrGen(el) {
                 )
             } else {
                 vals.push(
-                    $.isNumeric(p[v]) ? Math.round(p[v], 1) : p[v]
+                    $.isNumeric(p[v]) ? Math.round(p[v], 2) : p[v]
                 )
             }
         }
@@ -181,8 +181,8 @@ function colorCodeMapMarkers(attrName) {
     leaflet_layers['mapMarkers'].eachLayer(layer => {
         _comID = layer.feature.properties[comIDName];
         filtered = markerAttrs.filter(f => f[comIDName] == _comID &&
-        (f.hasOwnProperty('year') ? f['year'] === systemState.yr : true) &&
-            (f.hasOwnProperty('prod') ? f['prod'] === systemState.prod: true));
+        (f.hasOwnProperty('year') ? f['year'] == systemState.yr : true) &&
+            (f.hasOwnProperty('prod') ? f['prod'] == systemState.prod: true));
         attr = systemState.markerAttrs;
         if (filtered.length > 0) {
             Object.keys(config.controls.markerAttrs).forEach(k => {
