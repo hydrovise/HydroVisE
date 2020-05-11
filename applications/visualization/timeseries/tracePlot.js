@@ -348,7 +348,6 @@ function addTraces(lifespan = 'semi-permanent') {
         if (traceInstalled(src, lifespan)) {
             return
         }
-        ;
         $.ajax({
             url: src,
             dataType: 'text',
@@ -357,7 +356,7 @@ function addTraces(lifespan = 'semi-permanent') {
                 data = d3.csvParse(data);
                 let _trace = getTrace(data, key, src);
                 _trace.lifespan = lifespan;
-                _trace.showlegend = false;
+                _trace.showlegend = true;
                 adding_traces.push(_trace);
 
                 if (config.hasOwnProperty('modTrace') &&

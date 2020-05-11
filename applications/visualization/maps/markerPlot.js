@@ -57,8 +57,8 @@ function tooltipStrGen(el) {
     let p = el.properties;
     if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
     let c = config.mapMarkers.tooltip.template;
-    let metricDecimalP;
-    metricDecimalP = c.hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  2;
+	let metricDecimalP = config.controls.hasOwnProperty('markerAttrs') ? config.controls.markerAttrs[systemState.markerAttrs].metricDecimalP : 2;
+    // let metricDecimalP = .hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  3;
     let vals = [];
     c.var.forEach(
         v => {
