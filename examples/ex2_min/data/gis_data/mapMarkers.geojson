@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "mapMarkers",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "lid": 399598, "usgs_id": "05412340", "usgs_name": "Volga River at Fayette (05412340)", "area": 336.6987, "lat": 42.844139, "lon": -91.818167 }, "geometry": { "type": "Point", "coordinates": [ -91.81817, 42.84414 ] } },
+{ "type": "Feature", "properties": { "lid": 399711, "usgs_id": "05412400", "usgs_name": "Volga River at Littleport (05412400)", "area": 909.08649, "lat": 42.753875, "lon": -91.369025 }, "geometry": { "type": "Point", "coordinates": [ -91.36902, 42.75388 ] } },
+{ "type": "Feature", "properties": { "lid": 483619, "usgs_id": "05411600", "usgs_name": "Turkey River at Spillville (05411600)", "area": 458.42823, "lat": 43.207278, "lon": -91.950333 }, "geometry": { "type": "Point", "coordinates": [ -91.95033, 43.20728 ] } },
+{ "type": "Feature", "properties": { "lid": 434365, "usgs_id": "05411850", "usgs_name": "Turkey River near Eldorado (EDRI4-05411850)", "area": 1667.95356, "lat": 43.054188, "lon": -91.809098 }, "geometry": { "type": "Point", "coordinates": [ -91.8091, 43.05419 ] } },
+{ "type": "Feature", "properties": { "lid": 434478, "usgs_id": "05412020", "usgs_name": "Turkey River above French Hollow Cr at Elkader (EKDI4-05412020)", "area": 2359.48089, "lat": 42.843485, "lon": -91.401277 }, "geometry": { "type": "Point", "coordinates": [ -91.40128, 42.84349 ] } },
+{ "type": "Feature", "properties": { "lid": 434514, "usgs_id": "05412500", "usgs_name": "Turkey River at Garber (GRBI4-05412500)", "area": 4032.61443, "lat": 42.739988, "lon": -91.261799 }, "geometry": { "type": "Point", "coordinates": [ -91.2618, 42.73999 ] } }
+]
+}

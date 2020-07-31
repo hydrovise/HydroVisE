@@ -1,0 +1,368 @@
+{
+  "page":{
+    "title": "HydroVisE - Hydrologic Forecast Evaluations Lead Time "
+  },
+  "data_part": {
+    "min_val": 2017,
+    "max_val": 2018,
+    "step": 1,
+    "initial": 2017
+  },
+  "traces": {
+    "t1": {
+      "prod": "Q",
+      "x_name": "dt",
+      "y_name": "Q",
+      "modEnabled": 1,
+      "dynamic": 0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "comID",
+          "yr"
+        ],
+        "path_format": "http://visualriver.net/services/read_usgs.php?sid={0}&yr={1}&par=00060&utc"
+      },
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "USGS",
+		"line": {
+          "width": 2,
+          "color": "black"
+        }
+      }
+    },
+    "t4": {
+      "prod": "hlm_ifc",
+      "x_name": "dt",
+      "y_name": "Q",
+      "modEnabled": 1,
+      "dynamic": 1,
+      "ensemble": 1,
+      "template": {
+        "var": [
+          "yr",
+          "comID",
+          "sliderState"
+        ],
+        "path_format": "http://visualriver.net/services/read_noaa_gz.php?path=/noaa_nws/lead_time/{0}_hlm_ifc/{1}/{2}.csv",
+        "argConv": {
+          "var": "sliderState",
+          "arguments": "v",
+          "body": "return ('000' + String(v)).slice(-3);"
+        } 
+      },
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "HLM(IFC)",
+        "line": {
+          "color": "#00429d"
+        }
+      }
+    },
+    "t5": {
+      "prod": "hlm_mrms",
+      "x_name": "dt",
+      "y_name": "Q",
+      "modEnabled": 1,
+      "dynamic": 1,
+      "ensemble": 1,
+      "template": {
+        "var": [
+          "yr",
+          "comID",
+          "sliderState"
+        ],
+        "path_format": "http://visualriver.net/services/read_noaa_gz.php?path=/noaa_nws/lead_time/{0}_hlm_mrms/{1}/{2}.csv",
+        "argConv": {
+          "var": "sliderState",
+          "arguments": "v",
+          "body": "return ('000' + String(v)).slice(-3);"
+        } 
+      },
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "HLM(MRMS)",
+        "line": {
+          "color": "red"
+        }
+      }
+    }
+  },
+  "modTrace": {
+    "modJS": "./applications/plugin/modQ2S.js",
+    "modMethod": "Q2Stage",
+    "modEvnt": "evntQ2Stage",
+    "default": "flw",
+	"customEval": "translate_id=true",
+    "mod": {
+      "default": {
+        "button": "Discharge",
+        "pltPath": "yaxis.title",
+        "val": "Q (m3/s)"
+      },
+      "derived": {
+        "button": "Stage",
+        "pltPath": "yaxis.title",
+        "val": "Stage (ft)"
+      }
+    }
+  },
+  "timeSlider": {
+    "min": 0,
+    "max": 119,
+    "step": 1,
+    "value": 0,
+    "label": {
+      "arguments": "v",
+      "body": "return 'Lead time:' + String(v) + 'hrs'"
+    }
+  },
+    "horizontalGrid": {
+    "filename": "http://localhost:8080/hydrovise/examples/ex2/data/flow_categories/sig_stage_flow_usgs.csv",
+    "comID": "usgs_id",
+    "unit_convert": 0.0283168,
+    "style": {
+      "type": "line",
+      "xref": "paper",
+      "x0": 0,
+      "x1": 1,
+      "yref": "y",
+      "y0": 0,
+      "y1": 0,
+      "line": {
+        "color": "gray",
+        "width": 0.75
+      }
+    },
+    "lines": {
+      "flw_action": {
+        "color": "#ffff00"
+      },
+      "flw_flood": {
+        "color": "#f89500"
+      },
+      "flw_moderate": {
+        "color": "#ff0000"
+      },
+      "flw_major": {
+        "color": "#d836ff"
+      }
+    }
+  },
+  "mapMarkers": {
+    "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapMarkers.geojson",
+    "comIDName": "usgs_id",
+    "geomType":"point",
+    "onEachFeature":{
+      "click": "clickFeature"
+    },
+	"style": {
+      "fillColor": "green",
+      "color": "black",
+      "fillOpacity": 1,
+      "radius": 6
+    },
+    "plotTitle": {
+      "template": {
+        "var": ["usgs_name","area"],
+        "format": "{0}<br>Area: {1} km<sup>2</sup>"
+      }
+    },
+    "tooltip": {
+      "template": {
+        "var": [
+          "usgs_id",
+          "area"
+        ],
+        "format": "USGS Name: 0{0}<br>Area:{1} km<sup>2</sup>"
+      },
+      "format": "",
+      "propertires": [
+        "usgs_name",
+        "area",
+        "metric"
+      ]
+    },
+	
+    "additionalShapes":{
+        "template": {
+          "var": ["comID"],
+          "format": "http://visualriver.net/services/get_boundary.php?id={0}"
+        }
+    }
+  },
+  "controls": {
+    "prod": {
+      "v4": {
+        "var_id": "hlm_ifc",
+        "var_name": "HLM (IFC)",
+        "onEvent": "select_sim_type",
+        "selected": 0
+      },
+      "v5": {
+        "var_id": "hlm_mrms",
+        "var_name": "HLM (MRMS)",
+        "onEvent": "select_sim_type",
+        "selected": 0
+      }
+    },
+    "baseMapType": {
+      "v1": {
+        "var_id": "light_all",
+        "var_name": "Light",
+        "onEvent": "basemap_changer",
+        "selected": 1
+      },
+      "v2": {
+        "var_id": "Dark",
+        "var_name": "Dark",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      },
+      "v3": {
+        "var_id": "Esri Imagery",
+        "var_name": "Esri Imagery",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      },
+      "v4": {
+        "var_id": "Toner",
+        "var_name": "Toner",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      }
+    }
+  },
+  "mapLayers": {
+    "eqd_nexrad.kmz": {
+      "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapLayers/eqd_nexrad.kmz",
+      "fn": "eqd_nexrad.kmz",
+      "var_name": "Thiessen Polygon",
+      "onEvent": "toggLyrStd",
+      "selected": false
+    },
+    "nexrad_150_wgs84.kmz": {
+      "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapLayers/nexrad_150_wgs84.kmz",
+      "fn": "nexrad_150_wgs84.kmz",
+      "var_name": "NEXRAD 150 km",
+      "onEvent": "toggLyrStd",
+      "selected": false
+    },
+    "nexrad230km.kmz": {
+      "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapLayers/nexrad230km.kmz",
+      "fn": "nexrad230km.kmz",
+      "var_name": "NEXRAD 230 km",
+      "onEvent": "toggLyrStd",
+      "selected": false
+    }
+  },
+  "plotlyLayout": {
+    "margin": {
+      "l": 100,
+      "r": 80,
+      "b": 70,
+      "t": 50,
+      "pad": 1
+    },
+    "titlefont": {
+      "size": 16,
+      "color": "black"
+    },
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "traceorder": "normal",
+      "font": {
+        "size": 14,
+        "color": "#000"
+      },
+      "bgcolor": "rgba(255,255,255,0.90)",
+      "bordercolor": "#000000",
+      "borderwidth": 1,
+      "orientation": "h"
+    },
+    "xaxis": {
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "type": "date"
+    },
+    "yaxis": {
+      "title": "Q (m3/s)",
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "autorange": true,
+      "rangemode": "tozero",
+      "hoverformat": ".1f"
+    },
+    "plot_bgcolor": "#fff",
+    "paper_bgcolor": "#eee",
+    "hovermode": "closest",
+    "updatemenus": [
+      {
+        "buttons": [],
+        "direction": "left",
+        "pad": {
+          "r": 10,
+          "t": 10
+        },
+        "showactive": true,
+        "type": "buttons",
+        "x": 0,
+        "xanchor": "left",
+        "y": 1.15,
+        "yanchor": "top"
+      }
+    ],
+    "initMD": "-04-01 00:00:00",
+    "finalMD": "-12-01 00:00:00"
+  },
+	"map": {
+    "center": [
+      43.041,
+      -91.57
+    ],
+    "defaultZoom": 10,
+    "maxZoom": 15,
+    "basemapList": {
+      "default": {
+        "id": "light_all",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "subdomains": "abcd"
+      }
+    },
+	"geoSearch": true
+  },
+  "customBaseMap": {
+    "url": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/customBaseMap.geojson",
+    "colors": {
+      "3": "#00e4ff",
+      "4": "#00c5ff",
+      "5": "#00acff",
+      "6": "#018eff",
+      "7": "#007dff",
+      "8": "#007bff",
+      "9": "#0055ff",
+      "10": "#000000",
+      "11": "#321321"
+    },
+    "propoertyName": "h_order",
+    "name" : "River Network"
+  }
+}
