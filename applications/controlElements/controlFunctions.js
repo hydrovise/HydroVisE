@@ -203,7 +203,6 @@ function hideShowCanvas() {
 function removeCTXLayer(e) {
     let lyr_id = e.value;
     let elem = document.getElementById('li_' + lyr_id)
-    // let fn = standard[lyr_id].fn
 
     elem.parentNode.removeChild(elem);
     if (leaflet_layers[lyr_id]) {
@@ -222,7 +221,7 @@ function updateLayerZIndex(){
         if (leaflet_layers[tr_id]!==undefined) {
             map.getPane(tr_id).style.zIndex = 1000 - layer_idx;
         }
-        map.getPane('overlayPane').style.zIndex = 1000;
+        map.getPane('overlayPane').style.zIndex = 1010;
     });
 }
 

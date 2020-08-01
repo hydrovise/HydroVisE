@@ -1,6 +1,6 @@
 {
   "page":{
-    "title": "HyGIS - Hydrologic Assessment of Satellite-based Soil Moisture"
+    "title": "HydroVisE - Hydrologic Assessment of Satellite-based Soil Moisture"
   },
   "data_part": {
     "min_val": 2010,
@@ -438,7 +438,5 @@
     "name" : "River Network",
     "propoertyName": "h_order"
   },
-  "calcMetrics":{
-	"metricList":["kge","mse","nse"]
-	}
+  "calcMetrics": true
 }

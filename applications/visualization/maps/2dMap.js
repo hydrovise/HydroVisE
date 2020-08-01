@@ -37,18 +37,13 @@ async function initializeGeom(dynamicGeomID) {
                 });
                 break;
             case 'pbf':
+                const loadPBF = async fnPath => {
+                    const response = await fetch(fnPath)
+                    const buffer = await response.arrayBuffer()
+                    return geobuf.decode(new Pbf(new Uint8Array(buffer)))
+                }
 
-            async function loadPBF() {
-                var myRequest = new Request(fnPath);
-                fetch(myRequest).then(function (response) {
-                    return response.arrayBuffer();
-                }).then(function (buffer) {
-                    srcData = geobuf.decode(new Pbf(buffer));
-                    return srcData
-                });
-            }
-
-                srcData = await loadPBF()
+                srcData = await loadPBF(fnPath)
                 break;
         }
         return new Promise(function (resolve, reject) {
@@ -453,17 +448,17 @@ function twoDMapPlotter(twoDDataName, unix_time) {
     if (!_config.hasOwnProperty('geom')) {
         readRaster(fn).then(geo => {
                 addRaster(geo);
-            if (!twoDLegend.hasOwnProperty(twoDDataName)) generateColorBarGeneral(twoDDataName, 'style');
-            let use_config = config.spatialData[twoDDataName];
-            let lst_item = "<li id='li_" + twoDDataName + "' class='ui-state-default'> " +
-                "<span class='ui-icon ui-icon-arrowthick-2-n-s'></span> " +
-                "<input type='checkbox' onclick=\"toggLyrStd(this)\" value=" + twoDDataName +
-                " data-type='dynamic' class='checked'><p class='key'> "
-                + use_config.name + " </p></li>";
+                if (!twoDLegend.hasOwnProperty(twoDDataName)) generateColorBarGeneral(twoDDataName, 'style');
+                let use_config = config.spatialData[twoDDataName];
+                let lst_item = "<li id='li_" + twoDDataName + "' class='ui-state-default'> " +
+                    "<span class='ui-icon ui-icon-arrowthick-2-n-s'></span> " +
+                    "<input type='checkbox' onclick=\"toggLyrStd(this)\" value=" + twoDDataName +
+                    " data-type='dynamic' class='checked'><p class='key'> "
+                    + use_config.name + " </p></li>";
 
-            var ctxLayerLegend = document.getElementById("sortable")
-            ctxLayerLegend.innerHTML += lst_item;
-            updateLayerZIndex()
+                var ctxLayerLegend = document.getElementById("sortable")
+                ctxLayerLegend.innerHTML += lst_item;
+                updateLayerZIndex()
             }
         );
 
@@ -596,7 +591,7 @@ function colorcodeGeomBin(_data, twoDDataName) {
     }
 
     if (_dynStyle.hasOwnProperty('spatialColFunc') & _dynStyle.spatialColFunc ==='RiverNetwork') {
-            leaflet_layers[twoDDataName].settings.color =  getFloodPotential
+        leaflet_layers[twoDDataName].settings.color =  getFloodPotential
     } else {
         leaflet_layers[twoDDataName].settings.color = getColor
     }
@@ -605,7 +600,7 @@ function colorcodeGeomBin(_data, twoDDataName) {
 
     leaflet_layers[twoDDataName].settings.color =
 
-    leaflet_layers[twoDDataName].render();
+        leaflet_layers[twoDDataName].render();
 
 }
 
@@ -676,7 +671,7 @@ function animateData() {
     playAnimation = true
 
     function animate() {
-        if (i < time_vec.length) {
+        if (i < time_vec.length-1) {
             i = i + 1;
             let fn = pathGeneratorGeneral(_config, time_vec[i]);
             colorcodeGeometry(fn, twoDDataName);

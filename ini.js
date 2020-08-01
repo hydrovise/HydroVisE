@@ -226,9 +226,11 @@ function ini() {
 
 
     if (config.hasOwnProperty('calcMetrics')) {
-        metricDIV = document.getElementById('claculatemetricsButton');
-        metricDIV.style.display = 'block';
-        metricDIV.disabled = '';
+        if (config.calcMetrics){
+            metricDIV = document.getElementById('claculatemetricsButton');
+            metricDIV.style.display = 'block';
+            metricDIV.disabled = '';
+        }
     }
 
 }

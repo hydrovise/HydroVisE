@@ -57,8 +57,8 @@ function tooltipStrGen(el) {
     let p = el.properties;
     if (!config.mapMarkers.hasOwnProperty('tooltip')) return false;
     let c = config.mapMarkers.tooltip.template;
-	let metricDecimalP = config.controls.hasOwnProperty('markerAttrs') ? config.controls.markerAttrs[systemState.markerAttrs].metricDecimalP : 2;
-    // let metricDecimalP = .hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  3;
+    let metricDecimalP;
+    metricDecimalP = c.hasOwnProperty('metricDecimalP') ? c.metricDecimalP :  2;
     let vals = [];
     c.var.forEach(
         v => {
@@ -79,6 +79,7 @@ function tooltipStrGen(el) {
     );
     return formatArray(c.format, vals);
 }
+
 
 function draw_markers(pointList, pointListID) {
     if (map.hasLayer(group)) {
@@ -175,13 +176,13 @@ function colorCodeMapMarkers(attrName) {
     if (_config.hasOwnProperty('classes')) _classes = _config.classes;
     let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
     let _nBins = _config.hasOwnProperty('classes') ? _classes.length : _config.nBins;
-    let _range = _config.hasOwnProperty('range') ? _config.range : [Math.min(_classes), Math.max(_classes)]
+    let _range = _config.hasOwnProperty('range') ? _config.range : [Math.min(..._classes), Math.max(..._classes)];
     let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
     //todo: change the headernames to dynamic names in the config file
     leaflet_layers['mapMarkers'].eachLayer(layer => {
         _comID = layer.feature.properties[comIDName];
         filtered = markerAttrs.filter(f => f[comIDName] == _comID &&
-        (f.hasOwnProperty('year') ? f['year'] == systemState.yr : true) &&
+            (f.hasOwnProperty('year') ? f['year'] == systemState.yr : true) &&
             (f.hasOwnProperty('prod') ? f['prod'] == systemState.prod: true));
         attr = systemState.markerAttrs;
         if (filtered.length > 0) {
@@ -244,25 +245,24 @@ function generateColorBar1(selected) {
 
 function colorCodeMapMarkersSubYear(attrName,markerAttrs) {
     let _config = config.controls.markerAttrs[attrName];
+    if (_config.hasOwnProperty('classes')) _classes = _config.classes;
     let _colorPalette = _config.hasOwnProperty('colorPalette') ? _config.colorPalette : defaultChromaSettings.colorPalette;
-    let _nBins = _config.hasOwnProperty('nBins') ? _config.nBins : defaultChromaSettings.nBins;
-    let _colorMethod = _config.hasOwnProperty('method') ? _config.method : defaultChromaSettings.method;
-    let _range = _config.range;
-    getColor = function (val) {
-        return chroma.scale(_colorPalette).domain(_range, _nBins, _colorMethod)(val).hex()
-    };
+    let _nBins = _config.hasOwnProperty('classes') ? _classes.length : _config.nBins;
+    let _range = _config.hasOwnProperty('range') ? _config.range : [Math.min(..._classes), Math.max(..._classes)]
+    let _scale = chroma.scale(_colorPalette).domain(_range).classes(_classes);
+    //todo: change the headernames to dynamic names in the config file
     //todo: change the headernames to dynamic names in the config file
     leaflet_layers['mapMarkers'].eachLayer(layer => {
         _comID = layer.feature.properties[comIDName];
-        filtered = markerAttrs.filter(f => f[comIDName] == _comID &
-            f['year'] == systemState.yr & f['prod'] == systemState.prod)
+        filtered = markerAttrs.filter(f => f[comIDName] == _comID &&
+            f['year'] == systemState.yr && f['prod'] == systemState.prod)
         attr = systemState.markerAttrs;
         if (filtered.length > 0) {
             Object.keys(config.controls.markerAttrs).forEach(k => {
                 attrName = config.controls.markerAttrs[k].var_id;
                 layer.feature.properties[attrName] = filtered[0][attrName];
             });
-            layer.options.fillColor = getColor(filtered[0][systemState.markerAttrs]);
+            layer.options.fillColor = _scale(filtered[0][systemState.markerAttrs]);
 
             layer.options.fillOpacity = 1;
             layer._tooltip._content = tooltipStrGen(layer.feature);

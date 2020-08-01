@@ -6,10 +6,10 @@
     "min_val": 2017,
     "max_val": 2018,
     "step": 1,
-    "initial": 2016
+    "initial": 2017
   },
  "traces": {
-    "t1": {
+    "ts1": {
       "prod": "Q",
       "x_name": "dt",
       "y_name": "Q",
@@ -33,7 +33,7 @@
         }
       }
     },
-    "t2": {
+    "ts2": {
       "prod": "hlm_mrms",
       "x_name": "dt",
       "y_name": "Q",
@@ -62,7 +62,7 @@
         }
       }
     },
-    "t5": {
+    "ts3": {
       "prod": "hlm_ifc",
       "x_name": "dt",
       "y_name": "Q",
@@ -126,7 +126,7 @@
     }
   },
   "horizontalGrid": {
-    "filename": "http://localhost:8080/hydrovise/examples/ex2/data/flow_categories/sig_stage_flow_usgs.csv",
+    "filename": "http://localhost:8080/hydrovise/examples/ex2_min/data/flow_categories/sig_stage_flow_usgs.csv",
     "comID": "usgs_id",
     "unit_convert": 0.0283168,
     "style": {
@@ -158,7 +158,7 @@
     }
   },
   "mapMarkers": {
-    "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapMarkers.geojson",
+    "fnPath": "http://localhost:8080/hydrovise/examples/ex2_min/data/gis_data/mapMarkers.geojson",
     "comIDName": "usgs_id",
     "geomType":"point",
     "disabled_markerAttrs": {
@@ -315,21 +315,21 @@
   },
   "mapLayers": {
     "eqd_nexrad.kmz": {
-      "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapLayers/eqd_nexrad.kmz",
+      "fnPath": "http://localhost:8080/hydrovise/examples/ex2_min/data/gis_data/mapLayers/eqd_nexrad.kmz",
       "fn": "eqd_nexrad.kmz",
       "var_name": "Thiessen Polygon",
       "onEvent": "toggLyrStd",
       "selected": false
     },
     "nexrad_150_wgs84.kmz": {
-      "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapLayers/nexrad_150_wgs84.kmz",
+      "fnPath": "http://localhost:8080/hydrovise/examples/ex2_min/data/gis_data/mapLayers/nexrad_150_wgs84.kmz",
       "fn": "nexrad_150_wgs84.kmz",
       "var_name": "NEXRAD 150 km",
       "onEvent": "toggLyrStd",
       "selected": false
     },
     "nexrad230km.kmz": {
-      "fnPath": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/mapLayers/nexrad230km.kmz",
+      "fnPath": "http://localhost:8080/hydrovise/examples/ex2_min/data/gis_data/mapLayers/nexrad230km.kmz",
       "fn": "nexrad230km.kmz",
       "var_name": "NEXRAD 230 km",
       "onEvent": "toggLyrStd",
@@ -354,7 +354,7 @@
 	"geoSearch": true
   },
   "customBaseMap": {
-    "url": "http://localhost:8080/hydrovise/examples/ex1/data/gis_data/customBaseMap.geojson",
+    "url": "http://localhost:8080/hydrovise/examples/ex2_min/data/gis_data/customBaseMap.geojson",
     "colors": {
       "3": "#00e4ff",
       "4": "#00c5ff",

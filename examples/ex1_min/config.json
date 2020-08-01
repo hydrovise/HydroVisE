@@ -438,7 +438,5 @@
     "name" : "River Network",
     "propoertyName": "h_order"
   },
-  "calcMetrics":{
-	"metricList":["kge","mse","nse"]
-	}
+	"calcMetrics": true
 }

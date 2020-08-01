@@ -136,19 +136,26 @@ function toggDiv(a) {
 }
 
 let kmzload = function (fn_path, fn) {
-//         var layerID;
-    let kmzParser = new L.KMZParser({
-        async: false,
-        onKMZLoaded: function (layer, name) {
-            layer.addTo(map);
-            layer.setStyle({'fillOpacity': 0.1});
-            layer.setInteractive(false);
-            layer.pane = fn;
-            leaflet_layers[fn] = [];
-            leaflet_layers[fn] = layer;
-        }
-    });
-    kmzParser.load(fn_path);
+// //         var layerID;
+//     let kmzParser = new L.KMZParser({
+//         async: false,
+//         onKMZLoaded: function (layer, name) {
+//             layer.addTo(map);
+//             layer.setStyle({'fillOpacity': 0.1});
+//             layer.setInteractive(false);
+//             layer.pane = fn;
+//             leaflet_layers[fn] = [];
+//             leaflet_layers[fn] = layer;
+//         }
+//     });
+//     kmzParser.load(fn_path);
+    var layer = L.kmzLayer().addTo(map);
+    layer.load(fn_path)
+    layer.setStyle({'fillOpacity': 0.1});
+    layer.setInteractive(false);
+    layer.pane = fn;
+    leaflet_layers[fn] = [];
+    leaflet_layers[fn] = layer;
 };
 
 //TODO: KML file name should not start with numbers / check what is going on in KML file because mostly it takes long time
@@ -263,7 +270,7 @@ function fileUpload(evt) {
         var i = Math.floor(Math.log(size) / Math.log(1024));
         return Math.round(100 * (size / Math.pow(1024, i))) / 100 + ' ' + ['B', 'kB', 'MB', 'GB'][i];
     }
-
+    var dropArea = document.getElementById('drop');
     var files = evt.target.files; // FileList object e.dataTransfer.files[0];
     for (var i = 0, fObject; fObject = files[i]; i++) {
         let fn = fObject.name;
@@ -274,7 +281,7 @@ function fileUpload(evt) {
                 let layer;
                 reader.readAsText(fObject);
                 reader.onload = function (event) {
-                    dropArea.innerHTML += " " + elapsed + "ms";
+//                     dropArea.innerHTML += " " + elapsed + "ms";
                     switch (ext) {
                         case 'geojson':
                             layer_GeoJSON = JSON.parse(event.target.result);
@@ -329,9 +336,9 @@ function fileUpload(evt) {
                     }
 
                     function getDynamicRange(data) {
-                            let filtered = [];
-                            data.forEach(arr => filtered.push(arr.filter(v => v > -9999)));
-                            return [math.min(filtered), math.max(filtered)]
+                        let filtered = [];
+                        data.forEach(arr => filtered.push(arr.filter(v => v > -9999)));
+                        return [math.min(filtered), math.max(filtered)]
                     }
                     function getColorbar(_range) {
                         let colorBar = {};

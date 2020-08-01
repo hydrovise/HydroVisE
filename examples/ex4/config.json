@@ -1,4 +1,7 @@
 {
+  "page":{
+    "title": "HydroVisE - River network-based flood potential visualization"
+  },
   "data_part": {
     "min_val": 2016,
     "max_val": 2016,
@@ -32,93 +35,6 @@
       }
     }
   },
-  "plotly_Q_Stage": [
-    {
-      "buttons": [
-        {
-          "args": [
-            {
-              "visible": [
-                true,
-                false,
-                true,
-                false,
-                true,
-                false,
-                true,
-                false,
-                true,
-                false
-              ]
-            },
-            {
-              "yaxis": {
-                "title": "Q (m3/s)",
-                "titlefont": {
-                  "size": 18,
-                  "color": "#1c1c1c"
-                },
-                "tickfont": {
-                  "size": 18,
-                  "color": "black"
-                },
-                "autorange": true,
-                "rangemode": "tozero"
-              }
-            }
-          ],
-          "label": "Discharge",
-          "method": "skip"
-        },
-        {
-          "args": [
-            {
-              "visible": [
-                false,
-                true,
-                false,
-                true,
-                false,
-                true,
-                false,
-                true,
-                false,
-                true
-              ]
-            },
-            {
-              "yaxis": {
-                "title": "Stage (ft)",
-                "titlefont": {
-                  "size": 18,
-                  "color": "#1c1c1c"
-                },
-                "tickfont": {
-                  "size": 18,
-                  "color": "black"
-                },
-                "autorange": true,
-                "rangemode": "tozero"
-              }
-            }
-          ],
-          "label": "Stage",
-          "method": "skip"
-        }
-      ],
-      "direction": "left",
-      "pad": {
-        "r": 10,
-        "t": 10
-      },
-      "showactive": true,
-      "type": "buttons",
-      "x": 0,
-      "xanchor": "left",
-      "y": 1.15,
-      "yanchor": "top"
-    }
-  ],
   "plotlyLayout": {
     "margin": {
       "l": 100,
@@ -197,91 +113,7 @@
     "autosize": true,
     "paper_bgcolor": "#ccc"
   },
-  "point_data_config": {
-    "pList1": {
-      "fn": "smap_grid_csv",
-      "root": "configs/",
-      "subfolder": "project3",
-      "extension": ".csv",
-      "comIDName": "comID",
-      "displayName": "comID",
-      "types": {
-        "IFC": {
-          "marker": {
-            "size": 9,
-            "radius": 9,
-            "fillOpacity": 1,
-            "color": "blue",
-            "fillColor": "black",
-            "weight": 1
-          }
-        },
-        "USGS": {
-          "marker": {
-            "size": 10,
-            "radius": 9,
-            "fillOpacity": 1,
-            "color": "green",
-            "fillColor": "black",
-            "weight": 1
-          }
-        }
-      }
-    }
-  },
   "controls": {
-    "markerAttrs": {
-      "v1": {
-        "var_id": "kge",
-        "var_name": "KGE",
-        "onEvent": "selectMetric",
-        "selected": true
-      },
-      "v3": {
-        "var_id": "cc",
-        "var_name": "Correlation",
-        "onEvent": "selectMetric",
-        "selected": false
-      },
-      "v4": {
-        "var_id": "nrmse",
-        "var_name": "nRMSE",
-        "onEvent": "selectMetric",
-        "selected": false
-      },
-      "v5": {
-        "var_id": "mae",
-        "var_name": "nMAE",
-        "onEvent": "selectMetric",
-        "selected": false
-      }
-    },
-    "prod": {
-      "v1": {
-        "var_id": "ifc_hlm",
-        "var_name": "IFC (HLM)",
-        "onEvent": "select_sim_type",
-        "selected": true
-      },
-      "v2": {
-        "var_id": "ifc_nwm",
-        "var_name": "IFC (NWM)",
-        "onEvent": "select_sim_type",
-        "selected": false
-      },
-      "v3": {
-        "var_id": "mrms_hlm",
-        "var_name": "MRMS (HLM)",
-        "onEvent": "select_sim_type",
-        "selected": false
-      },
-      "v4": {
-        "var_id": "mrms_nwm",
-        "var_name": "MRMS (NWM)",
-        "onEvent": "select_sim_type",
-        "selected": false
-      }
-    },
     "baseMapType": {
       "v1": {
         "var_id": "light_all",
@@ -320,10 +152,10 @@
   },
   "map": {
     "center": [
-      43.041,
-      -91.57
+      41.9472,
+      -93.5403
     ],
-    "defaultZoom": 10,
+    "defaultZoom": 8,
     "maxZoom": 15,
     "basemapList": {
       "default": {
@@ -332,17 +164,16 @@
         "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
         "subdomains": "abcd"
       }
-    },
-	"geoSearch": true
+    }
   },
 "spatialData": {
     "Flow":{
 		"name": "Flow",
 		"geom": {
-			"fnPath": "http://localhost:8080/hydrovise/examples/ex4/data/gis_data/rvr_horder_lid_Aup.geojson",
-			"fn": "rvr_horder_lid_Aup.geojson",
+			"fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/configs/project3/rvr_net.pbf",
+			"fn": "rvr_net.pbf",
 			"alias": "River Network",
-			"extension": "geojson",
+			"extension": "pbf",
 			"geomType":"Line",
 			"defaultStyle": {
 				"weight": 2,
@@ -359,7 +190,7 @@
 			"var":[
 				"unix_time"
 			],
-			"path_format":"http://localhost:8080/hydrovise/examples/ex4/data/spatialTS/binary_flow_fullyear_turkey/{0}"
+			"path_format":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/binary_flow_2016/{0}"
 		},
 		"comIDName":"link_id",
 		"clickFeature": true,
@@ -373,7 +204,7 @@
 			"opacity":1,
 			"width": {
 				"featProp": "h_order",
-				"multiplier" : 0.3
+				"multiplier" : 0.16
 			}
 		},
 		"dynStyle":{
@@ -405,7 +236,7 @@
 				"fillColor": "black"
 			}
 		},
-		"animation":true,
+		"animation":false,
 		"webGLRenderer":true,
 		"pathTemplate":{
 			"var":[
