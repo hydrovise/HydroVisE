@@ -1,0 +1,542 @@
+{
+  "page":{
+    "title": "HydroVisE - Satellite and Model Soil Moisture Evaluation"
+  },
+  "data_part": {
+    "min_val": 2015,
+    "max_val": 2018,
+    "step": 1,
+    "initial": 2015
+  },
+  "traces": {
+    "P10": {
+      "prod": "C1_1",
+      "x_name": "date",
+      "y_name": "tl",
+      "modEnabled": 0,
+      "dynamic":  0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/upsc_tl/P10/{0}/{1}.csv"
+      },
+      "style": {
+        "type": "scatter",
+		"fill": "tonexty",
+		"fillcolor": "rgba(26,150,65,0)",
+        "mode": "lines",
+        "name": "P10",
+        "line": {
+          "color": "#6baed6"
+        }
+      }
+    },
+	"P25": {
+      "prod": "C1_1",
+      "x_name": "date",
+      "y_name": "tl",
+      "modEnabled": 0,
+      "dynamic":  0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/upsc_tl/P25/{0}/{1}.csv"
+      },
+      "style": {
+        "type": "scatter",
+		"fill": "tonexty",
+        "mode": "lines",
+        "name": "P25",
+		"fillcolor":"#deebf7",
+        "line": {
+          "color": "#deebf7"
+        }
+      }
+    },
+	"P50": {
+      "prod": "C1_1",
+      "x_name": "date",
+      "y_name": "tl",
+      "modEnabled": 0,
+      "dynamic":  0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/upsc_tl/P50/{0}/{1}.csv"
+      },
+      "style": {
+        "type": "scatter",
+		"fill": "tonexty",
+		"fillcolor":"#3182bd",
+        "name": "P50",
+        "line": {
+          "color": "blue"
+        }
+      }
+    },
+	"P75": {
+      "prod": "C1_1",
+      "x_name": "date",
+      "y_name": "tl",
+      "modEnabled": 0,
+      "dynamic":  0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/upsc_tl/P75/{0}/{1}.csv"
+      },
+      "style": {
+        "type": "scatter",
+		"fill": "tonexty",
+		"fillcolor":"#3182bd",
+        "mode": "lines",
+        "name": "P75",
+        "line": {
+          "color": "#deebf7"
+        }
+      }
+    },
+	"P90": {
+      "prod": "C1_1",
+      "x_name": "date",
+      "y_name": "tl",
+      "modEnabled": 0,
+      "dynamic":  0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/upsc_tl/P90/{0}/{1}.csv"
+      },
+      "style": {
+        "type": "scatter",
+		"fill": "tonexty",
+        "mode": "lines",
+        "name": "P90",
+		"fillcolor":"#deebf7",
+        "line": {
+          "color": "#6baed6"
+        }
+      }
+    },
+	"t7": {
+      "prod": "sm",
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/services/get_smap.php?path=smap_l3/{0}/{1}"
+      },
+      "dynamic": 0,
+      "group": 0,
+      "modeEnabled": false,
+      "x_name": "dt",
+      "y_name": "sm",
+      "style": {
+        "type": "scattergl",
+        "mode": "markers",
+		"yaxis":"y2",
+        "name": "SMAP L3",
+        "line": {
+          "width": 3,
+          "color": "red"
+        }
+      }
+    },
+	"t8": {
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://hydroiowa.org/dserv/get_sm_top.php?path=/{0}/{1}"
+      },
+      "dynamic": 0,
+      "group": 0,
+      "prod": "sm",
+      "modeEnabled": false,
+      "x_name": "dt",
+      "y_name": "sm",
+      "style": {
+        "type": "scattergl",
+        "mode": "markers",
+        "name": "Sensor Soil Moisture",
+        "line": {
+          "width": 2,
+          "color": "black"
+        },
+		"yaxis":"y2"
+      }
+    },
+    "t9": {
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/services/get_smap.php?path=smos/{0}/{1}"
+      },
+      "dynamic": 0,
+      "group": 0,
+      "prod": "sm",
+      "modeEnabled": false,
+      "x_name": "dt",
+      "y_name": "sm",
+      "style": {
+        "type": "scattergl",
+        "mode": "markers",
+        "name": "SMOS Soil Moisture",
+        "line": {
+          "width": 2,
+          "color": "orange"
+        },
+		"yaxis":"y2"
+      }
+    }
+  },
+  "plotlyLayout": {
+    "margin": {
+      "l": 80,
+      "r": 80,
+      "b": 70,
+      "t": 50,
+      "pad": 1
+    },
+    "titlefont": {
+      "size": 16,
+      "color": "black"
+    },
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "traceorder": "normal",
+      "font": {
+        "size": 14,
+        "color": "#000"
+      },
+      "bgcolor": "rgba(255,255,255,0.90)",
+      "bordercolor": "#000000",
+      "borderwidth": 1,
+      "orientation": "h"
+    },
+    "xaxis": {
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "type": "date"
+    },
+    "yaxis": {
+      "title": "Model Storage (m)",
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "autorange": true,
+      "rangemode": "tozero",
+      "hoverformat": ".1f"
+    },
+    "yaxis2": {
+      "title": "Satellite SM (cm<sup>3</sup>/cm<sup>3</sup>)",
+      "overlaying": "y",
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "rangemode": "tozero",
+      "hoverformat": ".1f",
+      "side": "right"
+    },
+	"plot_bgcolor": "#fff",
+    "paper_bgcolor": "#eee",
+    "hovermode": "closest",
+    "updatemenus": [
+      {
+        "buttons": [],
+        "direction": "left",
+        "pad": {
+          "r": 10,
+          "t": 10
+        },
+        "showactive": true,
+        "type": "buttons",
+        "x": 0,
+        "xanchor": "left",
+        "y": 1.15,
+        "yanchor": "top"
+      }
+    ],
+    "initMD": "-04-01 00:00:00",
+    "finalMD": "-11-01 00:00:00",
+	"displayModeBar": true
+  },
+  "timeSelectorLayout": {
+    "margin": {
+      "l": 100,
+      "r": 80,
+      "b": 30,
+      "t": 10,
+      "pad": 0
+    },
+    "yaxis": {
+      "fixedrange": true,
+      "visible": false,
+      "autorange": true
+    },
+    "xaxis": {
+      "type": "date"
+    },
+    "autosize": true,
+    "paper_bgcolor": "#ccc"
+  },
+  "controls": {
+    "baseMapType": {
+      "v1": {
+        "var_id": "light_all",
+        "var_name": "Light",
+        "onEvent": "basemap_changer",
+        "selected": true
+      },
+      "v2": {
+        "var_id": "Dark",
+        "var_name": "Dark",
+        "onEvent": "basemap_changer",
+        "selected": false
+      },
+      "v3": {
+        "var_id": "Esri Imagery",
+        "var_name": "Esri Imagery",
+        "onEvent": "basemap_changer",
+        "selected": false
+      },
+      "v4": {
+        "var_id": "Toner",
+        "var_name": "Toner",
+        "onEvent": "basemap_changer",
+        "selected": false
+      }
+    }
+  },
+  "mapLayers": {
+    "smGages.geojson": {
+      "fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/data/staticLayers/kmls/smGages.geojson",
+      "fn": "smGages.geojson",
+      "var_name": "Soil Moisture Gage",
+      "onEvent": "toggLyrStd",
+      "selected": true
+    },
+    "IACounties.geojson": {
+      "fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/data/staticLayers/kmls/IACounties.geojson",
+      "fn": "IACounties.geojson",
+      "var_name": "IA Counties",
+      "onEvent": "toggLyrStd",
+      "selected": false
+    },
+	"IFC_domain.geojson": {
+      "fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/data/staticLayers/kmls/IFC_domain.geojson",
+      "fn": "IFC_domain.geojson",
+      "var_name": "Model Domain",
+      "onEvent": "toggLyrStd",
+      "selected": false,
+	  "style":{
+	    "fillOpacity": 0,
+        "stroke": true,
+        "color": "black",
+        "fill": false,
+        "weight": 3
+	  }
+    }
+  },
+  "map": {
+    "center": [
+      41.9472,
+      -93.5403
+    ],
+    "defaultZoom": 8,
+    "maxZoom": 15,
+    "basemapList": {
+      "default": {
+        "id": "light_all",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "subdomains": "abcd"
+      }
+    }
+  },
+  "mapMarkers": {
+    "fnPath": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/configs/project4/smap_grid.geojson",
+    "geomType": "grid",
+    "alias": "SMAP Grid",
+    "extension": "geojson",
+    "comIDName": "grid_xy",
+    "disabled_markerAttrs": {
+      "template": {
+        "var": [],
+        "path_format": "http://s-iihr51.iihr.uiowa.edu/hydro-analytics.net/metricsV1.csv"
+      },
+      "comID": "grid_xy"
+    },
+    "onEachFeature":{
+      "click": "clickFeature",
+      "mouseover": "highlightFeature",
+      "mouseout": "resetHighlight"
+    },
+    "plotTitle": {
+      "template": {
+        "var": ["grid_xy"],
+        "format": "grid_xy: {0}"
+      }
+    },
+    "tooltip": {
+      "template": {
+        "var": [
+          "grid_xy"
+        ],
+        "format": "comID: {0}"
+      },
+      "format": "",
+      "propertires": [
+        "grid_xy",
+        "area",
+        "metric"
+      ]
+    },
+    "style": {
+      "radius": 8,
+      "color": "gray",
+      "weight": 1,
+      "opacity": 0.5,
+	  "fillOpacity": 0
+    }
+  },
+  "spatialData": {
+    "SMAP":{
+		"pathTemplate":{
+			"var":["unix_time"],
+			"path_format":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/SMAPL3v2/{0}.tif"
+		},
+		"name":"SMAP",
+		"timestamps":{
+			"fnPath":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/timestamps/SMAPL3v2.json",
+			"extension":"json"
+		},
+		"style":{
+			"nBins":5,
+			"method":"equidistant",
+			"range":[0,0.5],
+			"classes":[0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4,0.45, 0.5],
+			"labels":[0,"", 0.1,"", 0.2,"",  0.3,"", 0.4, ""],
+			"colorPalette":"YlGnBu",
+			"title":"SMAP L3 Soil Moisture (cm3/cm3)"
+		}
+	},
+	"Model_P50": {
+		"pathTemplate": {
+			"var": [
+			  "unix_time"
+			],
+			"path_format": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/GeoTiff/Tl/P50_{0}.tif"
+		},
+		"name": "Model SM (P50)",
+		"timestamps": {
+		"fnPath": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/evapexdata/C1_1/GeoTiff/tl_p50_timestamp.json",
+		"extension": "json"
+		},
+		"style":{
+			"nBins": 5,
+			"method": "equidistant",
+			"range" :[0, 0.1],
+			"classes":[0,0.01, 0.02, 0.03,  0.04,0.05,  0.06, 0.07, 0.08, 0.09, 0.1],
+			"labels":[0, "", 0.02, "",  0.04,"",  0.06,"", 0.08, ""],
+			"colorPalette":"YlGnBu",
+			"title": "Model Median Soil Moisture (m)"
+		}
+    },
+	"MRMS":{
+		"geom": {
+			"fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/configs/project3/mrms_grid.pbf",
+			"fn": "mrms_grid.pbf",
+			"alias": "MRMS Grid",
+			"extension": "pbf",
+			"geomType":"Polygon",
+			"defaultStyle": {
+				"weight": 2,
+				"opacity": 1,
+				"color": "black",
+				"dashArray": "3",
+				"fillOpacity": 0.7,
+				"fillColor": "black"
+			}
+		},
+		"animation":true,
+		"webGLRenderer":true,
+		"pathTemplate":{
+			"var":[
+				"unix_time"
+			],
+			"path_format":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/bin_precip_mrms/{0}"
+		},
+		"style":{
+			"color": "{r:1,g:1,b:1,a:0}"
+		},
+		"dataType": "binary",
+		"name": "MRMS",
+		"timestamps":{
+			"fnPath":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/timestamps/mrms_timestamps.json",
+			"extension":"json"
+		},
+		"dynStyle":{
+			"classes":[0, 1, 5, 10, 15, 20, 25, 30, 35, 40,45,50, 60],
+			"labels":[0, 1, 5, 10, 15, 20, 25, 30, 35, 40,45,50],
+			"method":"equidistant",
+			"colorPalette":["#C5FCE5","#54CFFE", "#09A2D2", "#DBFF9B", "#ADFD04", "#55BB00", "#FEFF71", "#F7E300", "#E79903", "#EF2E22", "#A80100", "#382600"],
+			"title":"MRMS Rainfall (mm)"
+		}
+	}
+  },
+  "timeSelectorLayout":{"margin":{"l":100,"r":80,"b":30,"t":10,"pad":0},"yaxis":{"fixedrange":true,"visible":false,"autorange":true},"xaxis":{"type":"date"},"autosize":true,"paper_bgcolor":"#ccc"
+  },
+  "customBaseMap": {
+    "url": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/data/staticLayers/kmls/ifc_net3_simp.geojson",
+    "name" : "River Network",
+    "colors": {
+      "3": "#00e4ff",
+      "4": "#00c5ff",
+      "5": "#00acff",
+      "6": "#018eff",
+      "7": "#007dff",
+      "8": "#007bff",
+      "9": "#0055ff",
+      "10": "#000000",
+      "11": "#321321"
+    },
+    "propoertyName": "h_order"
+  }
+}

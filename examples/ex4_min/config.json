@@ -1,0 +1,267 @@
+{
+  "page":{
+    "title": "HydroVisE - River network-based flood potential visualization - Minified"
+  },
+  "data_part": {
+    "min_val": 2016,
+    "max_val": 2016,
+    "step": 1,
+    "initial": 2016
+  },
+  "traces": {
+    "t1": {
+      "template": {
+        "var": [
+          "yr",
+          "comID"
+        ],
+        "path_format": "http://s-iihr50.iihr.uiowa.edu/smap/data/example_large_dataset/csv_flow_{0}/{1}.csv"
+      },
+      "dynamic": 0,
+      "group": 0,
+      "prod": "Q",
+      "extension": ".csv",
+      "modeEnabled": false,
+      "x_name": "dt",
+      "y_name": "Q",
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "Model",
+        "line": {
+          "width": 2,
+          "color": "blue"
+        }
+      }
+    }
+  },
+  "plotlyLayout": {
+    "margin": {
+      "l": 100,
+      "r": 80,
+      "b": 70,
+      "t": 50,
+      "pad": 1
+    },
+    "titlefont": {
+      "size": 16,
+      "color": "black"
+    },
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "traceorder": "normal",
+      "font": {
+        "size": 14,
+        "color": "#000"
+      },
+      "bgcolor": "rgba(255,255,255,0.90)",
+      "bordercolor": "#000000",
+      "borderwidth": 1,
+      "orientation": "h"
+    },
+    "xaxis": {
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "type": "date"
+    },
+    "yaxis": {
+      "title": "Q (m3/s)",
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "autorange": true,
+      "rangemode": "tozero",
+      "hoverformat": ".1f"
+    },
+    "plot_bgcolor": "#fff",
+    "paper_bgcolor": "#eee",
+    "hovermode": "closest",
+    "initMD": "-04-01 00:00:00",
+    "finalMD": "-12-01 00:00:00"
+  },
+  "timeSelectorLayout": {
+    "margin": {
+      "l": 100,
+      "r": 80,
+      "b": 30,
+      "t": 10,
+      "pad": 0
+    },
+    "yaxis": {
+      "fixedrange": true,
+      "visible": false,
+      "range": [
+        0,
+        3
+      ]
+    },
+    "xaxis": {
+      "type": "date"
+    },
+    "autosize": true,
+    "paper_bgcolor": "#ccc"
+  },
+  "controls": {
+    "baseMapType": {
+      "v1": {
+        "var_id": "light_all",
+        "var_name": "Light",
+        "onEvent": "basemap_changer",
+        "selected": true
+      },
+      "v2": {
+        "var_id": "Dark",
+        "var_name": "Dark",
+        "onEvent": "basemap_changer",
+        "selected": false
+      },
+      "v3": {
+        "var_id": "Esri Imagery",
+        "var_name": "Esri Imagery",
+        "onEvent": "basemap_changer",
+        "selected": false
+      },
+      "v4": {
+        "var_id": "Toner",
+        "var_name": "Toner",
+        "onEvent": "basemap_changer",
+        "selected": false
+      }
+    }
+  },
+  "mapLayers": {
+    "IACounties.geojson": {
+      "fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/data/staticLayers/kmls/IACounties.geojson",
+      "fn": "IACounties.geojson",
+      "var_name": "IA Counties",
+      "onEvent": "toggLyrStd",
+      "selected": false
+    }
+  },
+  "map": {
+    "center": [
+      43.041,
+      -91.57
+    ],
+    "defaultZoom": 10,
+    "maxZoom": 15,
+    "basemapList": {
+      "default": {
+        "id": "light_all",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "subdomains": "abcd"
+      }
+    },
+	"geoSearch": true
+  },
+"spatialData": {
+    "Flow":{
+		"name": "Flow",
+		"geom": {
+			"fnPath": "http://localhost:8080/hydrovise/examples/ex4_min/data/gis_data/rvr_horder_lid_Aup.geojson",
+			"fn": "rvr_horder_lid_Aup.geojson",
+			"alias": "River Network",
+			"extension": "geojson",
+			"geomType":"Line",
+			"defaultStyle": {
+				"weight": 2,
+				"opacity": 1,
+				"color": "black",
+				"dashArray": "3",
+				"fillOpacity": 0.7,
+				"fillColor": "black"
+			}
+		},
+		"animation":true,
+		"webGLRenderer":true,
+		"pathTemplate":{
+			"var":[
+				"unix_time"
+			],
+			"path_format":"http://localhost:8080/hydrovise/examples/ex4_min/data/spatialTS/binary_flow_fullyear_turkey/{0}"
+		},
+		"comIDName":"link_id",
+		"clickFeature": true,
+		"dataType": "binary",
+		"timestamps":{
+			"fnPath":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/timestamps/flow_timestamps_2016.json",
+			"extension":"json"
+		},
+		"style":{
+			"color":"black",
+			"opacity":1,
+			"width": {
+				"featProp": "h_order",
+				"multiplier" : 0.3
+			}
+		},
+		"dynStyle":{
+			"classes":[0.01, 0.3, 0.4, 0.5,0.6,1,1.5,2.5, 3],
+			"labels":["Low", "", "", "","","","","High"],
+			"method":"quantiles",
+			"range":[0.01, 2.5],
+			"colorPalette":["#6b6b6b", "#4bd5fa", "#00a9d3",
+                       "#0072e6","#ffdf01","#ff9f03",
+                       "#ff4400", "#910000"],
+			"title":"Flood Potential",
+			"steps":8,
+			"spatialColFunc":"RiverNetwork"
+		}
+	},
+	"MRMS":{
+		"geom": {
+			"fnPath": "http://s-iihr50.iihr.uiowa.edu/hygis-dev/configs/project3/mrms_grid.pbf",
+			"fn": "mrms_grid.pbf",
+			"alias": "MRMS Grid",
+			"extension": "pbf",
+			"geomType":"Polygon",
+			"defaultStyle": {
+				"weight": 2,
+				"opacity": 1,
+				"color": "black",
+				"dashArray": "3",
+				"fillOpacity": 0.7,
+				"fillColor": "black"
+			}
+		},
+		"animation":true,
+		"webGLRenderer":true,
+		"pathTemplate":{
+			"var":[
+				"unix_time"
+			],
+			"path_format":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/bin_precip_mrms/{0}"
+		},
+		"style":{
+			"color": "{r:1,g:1,b:1,a:0}"
+		},
+		"dataType": "binary",
+		"name": "MRMS",
+		"timestamps":{
+			"fnPath":"http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/SpatialData/timestamps/mrms_timestamps.json",
+			"extension":"json"
+		},
+		"dynStyle":{
+			"classes":[0, 1, 5, 10, 15, 20, 25, 30, 35, 40,45,50, 60],
+			"labels":[0, 1, 5, 10, 15, 20, 25, 30, 35, 40,45,50],
+			"method":"equidistant",
+			"colorPalette":["#C5FCE5","#54CFFE", "#09A2D2", "#DBFF9B", "#ADFD04", "#55BB00", "#FEFF71", "#F7E300", "#E79903", "#EF2E22", "#A80100", "#382600"],
+			"title":"MRMS Rainfall (mm)"
+		}
+	}
+  },
+  "timeSelectorLayout":{"margin":{"l":100,"r":80,"b":30,"t":10,"pad":0},"yaxis":{"fixedrange":true,"visible":false,"autorange":true},"xaxis":{"type":"date"},"autosize":true,"paper_bgcolor":"#ccc"}
+}
