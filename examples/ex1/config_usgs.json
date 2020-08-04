@@ -1,0 +1,298 @@
+{
+  "page":{
+    "title": "HydroVisE - Historial & Real-Time USGS Streamflow Data Browser"
+  },
+  "data_part": {
+    "min_val": 1980,
+    "max_val": 2020,
+    "step": 1,
+    "initial": 2020
+  },
+  "traces": {
+    "t1": {
+      "prod": "Q",
+      "x_name": "dt",
+      "y_name": "Q",
+      "modEnabled": 1,
+      "dynamic": 0,
+      "ensemble": 0,
+      "template": {
+        "var": [
+          "comID",
+          "yr"
+        ],
+        "path_format": "http://visualriver.net/services/read_usgs.php?sid={0}&yr={1}&par=00060"
+      },
+      "style": {
+        "type": "scattergl",
+        "mode": "lines",
+        "name": "USGS",
+        "line": {
+          "width": 2,
+          "color": "black"
+        }
+      }
+    }
+  },
+  "modTrace": {
+    "modJS": "./applications/plugin/modQ2S.js",
+    "modMethod": "Q2Stage",
+    "modEvnt": "evntQ2Stage",
+	"customEval": "translate_id=true",
+    "default": "flw",
+    "mod": {
+      "default": {
+        "button": "Discharge",
+        "pltPath": "yaxis.title",
+        "val": "Q (m3/s)"
+      },
+      "derived": {
+        "button": "Stage",
+        "pltPath": "yaxis.title",
+        "val": "Stage (ft)"
+      }
+    }
+  },
+  "horizontalGrid": {
+    "filename": "http://hydrovise.com/app/examples/ex2/data/flow_categories/sig_stage_flow_usgs.csv",
+    "comID": "usgs_id",
+    "unit_convert": 0.0283168,
+    "style": {
+      "type": "line",
+      "xref": "paper",
+      "x0": 0,
+      "x1": 1,
+      "yref": "y",
+      "y0": 0,
+      "y1": 0,
+      "line": {
+        "color": "gray",
+        "width": 0.75
+      }
+    },
+    "lines": {
+      "flw_action": {
+        "color": "#ffff00"
+      },
+      "flw_flood": {
+        "color": "#f89500"
+      },
+      "flw_moderate": {
+        "color": "#ff0000"
+      },
+      "flw_major": {
+        "color": "#d836ff"
+      }
+    }
+  },
+  "mapMarkers": {
+    "fnPath": "http://hydrovise.com/app/examples/ex1/data/gis_data/mapMarkers.geojson",
+    "comIDName": "usgs_id",
+    "geomType":"point",
+    "disabled_markerAttrs": {
+      "template": {
+        "var": [],
+        "path_format": "./data/metrics.csv"
+      },
+      "comID": "USGS_ID"
+    },
+    "onEachFeature":{
+      "click": "clickFeature"
+    },
+    "plotTitle": {
+      "template": {
+        "var": ["usgs_name","area"],
+        "format": "{0}<br>Area: {1} km<sup>2</sup>"
+      }
+    },
+	"style": {
+      "fillColor": "green",
+      "color": "black",
+      "fillOpacity": 1,
+      "radius": 6
+    },
+    "tooltip": {
+      "template": {
+        "var": [
+          "usgs_name",
+          "area"
+        ],
+        "format": "<b>USGS Name:</b><br> {0}<br><b>Area: </b>{1} km<sup>2</sup>"
+      }
+    },
+    "additionalShapes":{
+      "template": {
+        "var": ["comID"],
+        "format": "http://visualriver.net/services/get_boundary.php?id={0}"
+      }
+    }
+  },
+  "controls": {
+    "baseMapType": {
+      "v1": {
+        "var_id": "light_all",
+        "var_name": "Light",
+        "onEvent": "basemap_changer",
+        "selected": 1
+      },
+      "v2": {
+        "var_id": "Dark",
+        "var_name": "Dark",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      },
+      "v3": {
+        "var_id": "Esri Imagery",
+        "var_name": "Esri Imagery",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      },
+      "v4": {
+        "var_id": "Toner",
+        "var_name": "Toner",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      },
+      "v5": {
+      	"var_id": 	"RiverFloodABI",
+        "var_name": "RiverFloodABI",
+        "onEvent": "basemap_changer",
+        "selected": 0
+      }
+
+    }
+  },
+  "plotlyLayout": {
+    "margin": {
+      "l": 100,
+      "r": 80,
+      "b": 70,
+      "t": 50,
+      "pad": 1
+    },
+    "titlefont": {
+      "size": 16,
+      "color": "black"
+    },
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "traceorder": "normal",
+      "font": {
+        "size": 14,
+        "color": "#000"
+      },
+      "bgcolor": "rgba(255,255,255,0.90)",
+      "bordercolor": "#000000",
+      "borderwidth": 1,
+      "orientation": "h"
+    },
+    "xaxis": {
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "type": "date"
+    },
+    "yaxis": {
+      "title": "Q (m3/s)",
+      "titlefont": {
+        "size": 18,
+        "color": "#1c1c1c"
+      },
+      "tickfont": {
+        "size": 18,
+        "color": "black"
+      },
+      "autorange": true,
+      "rangemode": "tozero",
+      "hoverformat": ".1f"
+    },
+    "plot_bgcolor": "#fff",
+    "paper_bgcolor": "#eee",
+    "hovermode": "closest",
+    "updatemenus": [
+      {
+        "buttons": [],
+        "direction": "left",
+        "pad": {
+          "r": 10,
+          "t": 10
+        },
+        "showactive": true,
+        "type": "buttons",
+        "x": 0,
+        "xanchor": "left",
+        "y": 1.15,
+        "yanchor": "top"
+      }
+    ],
+	"displayModeBar": false
+  },
+  "mapLayers": {
+    "eqd_nexrad.kmz": {
+          "fnPath": "http://hydrovise.com/app/examples/ex1/data/gis_data/mapLayers/eqd_nexrad.kmz",
+          "fn": "eqd_nexrad.kmz",
+          "var_name": "Thiessen Polygon",
+          "onEvent": "toggLyrStd",
+          "selected": false
+        },
+        "nexrad_150_wgs84.kmz": {
+          "fnPath": "http://hydrovise.com/app/examples/ex1/data/gis_data/mapLayers/nexrad_150_wgs84.kmz",
+          "fn": "nexrad_150_wgs84.kmz",
+          "var_name": "NEXRAD 150 km",
+          "onEvent": "toggLyrStd",
+          "selected": false
+        },
+        "nexrad230km.kmz": {
+          "fnPath": "http://hydrovise.com/app/examples/ex1/data/gis_data/mapLayers/nexrad230km.kmz",
+          "fn": "nexrad230km.kmz",
+          "var_name": "NEXRAD 230 km",
+          "onEvent": "toggLyrStd",
+          "selected": false
+        }
+  },
+  "map": {
+    "center": [
+      42.267,
+      -93.592
+    ],
+    "defaultZoom": 8,
+    "maxZoom": 15,
+    "basemapList": {
+      "default": {
+        "id": "light_all",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "subdomains": "abcd"
+      },
+      "RiverFloodABI": {
+        "id": "River-Flood ABI",
+        "url": "http://realearth.ssec.wisc.edu/tiles/River-Flood-ABI/{z}/{x}/{y}.png",
+        "attribution": "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors, &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "subdomains": "abcd"
+      }
+    },
+	"geoSearch": true
+  },
+  "customBaseMap": {
+    "url": "http://s-iihr50.iihr.uiowa.edu/hydro-analytics.net/data/staticLayers/kmls/ifc_net3_simp.geojson",
+    "colors": {
+      "3": "#00e4ff",
+      "4": "#00c5ff",
+      "5": "#00acff",
+      "6": "#018eff",
+      "7": "#007dff",
+      "8": "#007bff",
+      "9": "#0055ff",
+      "10": "#000000",
+      "11": "#321321"
+    },
+    "propoertyName": "h_order",
+    "name" : "River Network"
+  }
+}
