@@ -1,6 +1,5 @@
-# Welcome to HydroVisE
-### Software for Hydrologic Data Visualization and Evaluation
-![**General layout for HydroVisE**](https://github.com/njadid/HydroVisE/wiki/images/logo/hydroviseLogo.svg?sanitize=true)
+# Welcome to the HydroVisE wiki page!
+![**General layout for HydroVisE**](https://github.com/hydrovise/HydroVisE/wiki/images/logo/hydroviseLogo.svg?sanitize=true)
 
 This page provides brief information about HydroVisE.
 
@@ -22,7 +21,7 @@ Anyone interested in visualization and evaluation of their data in a web-based i
 
 ## **How does HydroVisE work?**
 
-Overall, HydroVisE uses **configuration** file provided by the user to understand the data sources, metadata, styling, and etc. But the uder does not need to understand the complexity of the internal architecture of the system. Because the config file allows user to connect data sources, control styling, etc.. Users can create different config files and re-utilize the data for different projects.
+Overall, HydroVisE uses **configuration** file provided by the user to understand the data sources, metadata, styling, and etc. But the user does not need to understand the complexity of the internal architecture of the system, because the config file allows user to connect data sources, control styling, etc. Users can create different config files and re-utilize the data for different projects.
 
 HydroVisE is a software written mainly in JavaScript, CSS(Cascading Style Sheet), HTML (Hyper Text Markup Language). It leverages the most popular web technologies, tools, and libraries for visualizations. These libraries are listed and described briefly in dependencies.
 
@@ -33,7 +32,7 @@ HydroVisE is a software written mainly in JavaScript, CSS(Cascading Style Sheet)
 In general, **Deployment** of the code, **Data preparation** and **Configuration** are the three steps needed to use HydroVisE.
 
 
-| ![Three-step setup for HydroVisE](https://github.com/njadid/HydroVisE/wiki/images/3step_resized.png)|
+| ![Three-step setup for HydroVisE](https://github.com/hydrovise/HydroVisE/wiki/images/3step_resized.png)|
 |:--:|
 | *Three-step setup of HydroVisE* |
 
@@ -41,22 +40,35 @@ In general, **Deployment** of the code, **Data preparation** and **Configuration
 
 Users of the source code are strongly encouraged to review these three pages before using the code:
 
-**1.** [**Architecture and workflow**](https://github.com/njadid/HydroVisE/wiki/Architecture-and-Workflow)
+**1.** [**Architecture and workflow**](https://github.com/hydrovise/HydroVisE/wiki/Architecture-and-Workflow)
 
 _Reason: It is important to learn HydroVisE rationale before starting to use it. This will save you significant amount of time in future usages._
 
-**2.** [**Supported data types**](https://github.com/njadid/HydroVisE/wiki/Supported-data-types)
+**2.** [**Supported data types**](https://github.com/hydrovise/HydroVisE/wiki/Supported-data-types)
 
 _Reason: Although the supported data types are among most common data types, there are requirements for data in HydroVisE._
 
-**3.** [**Configuration**](https://github.com/njadid/HydroVisE/wiki/Configuration)
+**3.** [**Configuration**](https://github.com/hydrovise/HydroVisE/wiki/Configuration)
 
 _Reason: HydroVisE configuration plays significant role in relating data to functions embedded in HydroVisE. Therefore, understanding Configuration is essential in deploying a working HydroVisE web application._  
 
+## How to cite HydroVisE?
+Jadidoleslam, N., Goska, R., Mantilla, R., Krajewski, W.F., 2020. Hydrovise: A non-proprietary open-source software for hydrologic model and data visualization and evaluation. Environ. Model. Softw. 134, 104853.
+DOI: [**10.1016/j.envsoft.2020.104853**](https://doi.org/10.1016/j.envsoft.2020.104853)
+
+ [**Download PDF**](http://hydrovise.com/Jadidoleslam_et_al_2020_Hydrovise.pdf)
 
 ## Acknowledgements
 HydroVisE is developed mainly by Navid Jadidoleslam and Radoslaw Goska at the Iowa Flood Center, University of Iowa.
 
+The project was funded by:
+
+
+![NASA](https://github.com/hydrovise/HydroVisE/wiki/images/fundingsources/NASA_logo.png)
+
+![IWC](https://github.com/hydrovise/HydroVisE/wiki/images/fundingsources/IWC_logo.png)
+
+![MATC](https://github.com/hydrovise/HydroVisE/wiki/images/fundingsources/MATC_logo.png)
 
 ## License
-Refer to [**Licence**](https://github.com/njadid/HydroVisE/blob/master/LICENSE) page for further information and license agreements.
+Refer to [**Licence**](https://github.com/hydrovise/HydroVisE/blob/master/LICENSE) page for further information and license agreements.
