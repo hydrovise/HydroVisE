@@ -5,45 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>HydroVisE</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,400">
-    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" type="text/css" href="dist/loading-bar.css"/>
-    <link rel="stylesheet" type="text/css" href="dist/leaflet.loader.css"/>
-    <link rel="stylesheet" type="text/css" href="dist/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/angular-loading-bar@latest/build/loading-bar.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet-loading@latest/dist/leaflet.loading.css"/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@latest/dist/leaflet.css"/>
     <link rel="stylesheet" type="text/css" href="applications/leaflet_plugins/Control.OSMGeocoder.css"/>
     <link rel="stylesheet" type="text/css" href="applications/leaflet_plugins/Control.OSMGeocoder.js"/>
 
     <link rel="stylesheet" type="text/css" href="css/hydrovise.css"/>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
-    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-image/v0.0.4/leaflet-image.js'></script>
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>
+    <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-image@latest/leaflet-image.js"></script>
     <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
-    <script src="https://unpkg.com/@tmcw/togeojson@3.0.1/dist/togeojsons.min.js"></script>
-    <script src="https://unpkg.com/geojson-vt@3.0.0/geojson-vt.js"></script>
+    <script src="https://unpkg.com/@tmcw/togeojson@latest/dist/togeojson.umd.js"></script>
+    <script src="https://unpkg.com/geojson-vt@latest/geojson-vt.js"></script>
     <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
-    <script src="dist/leaflet.canvaslayer.field.js"></script>
-    <script src="dist/leaflet.loader.js"></script>
+    <script src="https://unpkg.com/leaflet.canvaslayer.field@1.4.1/dist/leaflet.canvaslayer.field.js"></script>
+    <script src="https://unpkg.com/leaflet-loading@latest/dist/leaflet.loading.js"></script>
     <script src="dist/KML.js"></script>
-    <script src="dist/geotiff.js"></script>
+    <script src="https://app.unpkg.com/geotiff@2.1.3/files/dist-browser/geotiff.js"></script>
+    
     <script src="dist/GeotiffParser.js"></script>
-    <script src="applications/leaflet_plugins/bundle.js"></script>          <!-- ??? -->
+    <script src="applications/leaflet_plugins/bundle.js"></script>
 
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.2.3/math.js"></script>
-    <script src="dist/numeric.js"></script>
-    <script src="https://unpkg.com/jszip@3.1.5/dist/jszip.min.js"></script>
-    <script src="dist/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/latest/math.js"></script>
+    <script src="https://unpkg.com/numeric@latest/numeric-1.2.6.min.js"></script>
+    <script src="https://unpkg.com/jszip@latest/dist/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/latest/moment.min.js"></script>
     <script src="applications/leaflet_plugins/glify_var_opacity.js"></script>
-    <script src="https://unpkg.com/pbf@3.0.5/dist/pbf.js"></script>
-    <script src="https://unpkg.com/geobuf@3.0.1/dist/geobuf.js"></script>
+    <script src="https://unpkg.com/pbf@latest/dist/pbf.js"></script>
+    <script src="https://unpkg.com/geobuf@latest/dist/geobuf.js"></script>
 
     <script type="text/javascript" src="applications/general/common.js"></script>
     <script type="text/javascript" src="applications/controlElements/mapControlElements.js"></script>
@@ -63,9 +61,9 @@
     <script type="text/javascript" src="applications/metricFunctions/evntMetricMain.js"></script>
 
 
-    <script type="text/javascript" src='dist/html2canvas.min.js'></script>
-    <script type="text/javascript" src='dist/FileSaver.js'></script>
-    <script type="text/javascript" src="dist/chroma.min.js"></script>
+    <script src="https://unpkg.com/html2canvas@latest/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/file-saver@latest/dist/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/chroma-js@3.1.2/dist/chroma.min.cjs"></script>
 
     <script type="text/javascript" src="dist/colors.js"></script>
     <script type="text/javascript" src="dist/loading-bar.js"></script>
