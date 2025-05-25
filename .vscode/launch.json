@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to Chrome (localhost:3000)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 3000,
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:3000/?config=examples/ex1_min/config.json"
+    }
+  ]
+}
