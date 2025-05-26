@@ -1,0 +1,2301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydroVisE Configuration Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            max-width: 1000px; /* Increased max-width */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .form-section {
+            border: 1px solid #e5e7eb; /* Light border */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            background-color: #f9fafb; /* Slightly darker background for sections */
+            position: relative; /* Needed for absolute positioning of remove button */
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151; /* Darker text for labels */
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* Light border */
+            border-radius: 0.75rem; /* Rounded input fields */
+            font-size: 1rem;
+            color: #1f2937;
+            background-color: #ffffff;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        input[type="color"] {
+            width: 100%;
+            height: 40px; /* Adjust height for color picker */
+            padding: 0.25rem; /* Smaller padding for color picker */
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus,
+        input[type="color"]:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo focus ring */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25); /* Soft focus shadow */
+        }
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.2); /* Slightly larger checkbox */
+        }
+        button {
+            padding: 1rem 2rem;
+            background-color: #4f46e5; /* Indigo button */
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+        }
+        button:hover {
+            background-color: #4338ca; /* Darker indigo on hover */
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .remove-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #ef4444; /* Red for remove */
+            font-size: 0.875rem;
+            border-radius: 0.5rem;
+            box-shadow: none;
+        }
+        .remove-btn:hover {
+            background-color: #dc2626;
+            transform: translateY(-1px);
+        }
+        textarea#configOutput {
+            min-height: 400px; /* Increased height for JSON output */
+            font-family: 'Consolas', 'Monaco', monospace; /* Monospace for config output */
+            background-color: #1f2937; /* Dark background for code */
+            color: #e5e7eb; /* Light text for code */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            white-space: pre; /* Preserve whitespace and newlines */
+            overflow-x: auto; /* Enable horizontal scrolling for long lines */
+        }
+        h2 {
+            font-size: 2.25rem; /* Larger heading */
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        h3 {
+            font-size: 1.5rem; /* Larger sub-heading */
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        h4 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-top: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .flex-row > div {
+            flex: 1 1 calc(50% - 0.5rem); /* Two columns on larger screens */
+            min-width: 280px; /* Minimum width for columns */
+        }
+        .flex-row.three-col > div {
+            flex: 1 1 calc(33.33% - 0.7rem); /* Three columns */
+            min-width: 200px;
+        }
+        .flex-row.four-col > div {
+            flex: 1 1 calc(25% - 0.75rem); /* Four columns */
+            min-width: 180px;
+        }
+        @media (max-width: 768px) {
+            .flex-row > div,
+            .flex-row.three-col > div,
+            .flex-row.four-col > div {
+                flex: 1 1 100%; /* Single column on small screens */
+            }
+            .container {
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 1.75rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">HydroVisE Configuration Setup</h2>
+
+        <div id="page-section" class="form-section">
+            <h3>Page Settings (`page`)</h3>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="pageTitle">Page Title:</label>
+                    <input type="text" id="pageTitle" placeholder="Example HydroVisE web-app title" value="My HydroVisE Web-App">
+                </div>
+            </div>
+        </div>
+
+        <div id="data-part-section" class="form-section">
+            <h3>Data Partitioning (`data_part`)</h3>
+            <div class="flex-row four-col">
+                <div class="form-group">
+                    <label for="dataPartMinVal">Minimum Value:</label>
+                    <input type="number" id="dataPartMinVal" step="1" value="2016">
+                </div>
+                <div class="form-group">
+                    <label for="dataPartMaxVal">Maximum Value:</label>
+                    <input type="number" id="dataPartMaxVal" step="1" value="2018">
+                </div>
+                <div class="form-group">
+                    <label for="dataPartStep">Step:</label>
+                    <input type="number" id="dataPartStep" step="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="dataPartInitial">Initial Value:</label>
+                    <input type="number" id="dataPartInitial" step="1" value="2016">
+                </div>
+            </div>
+        </div>
+
+        <div id="traces-main-section" class="form-section">
+            <h3>Time-series Data Visualization Styles (`traces`)</h3>
+            <div id="traceTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-trace-btn">Remove Trace</button>
+                <h4>Trace <span class="trace-number"></span></h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="trace_PROD_Prod">Product/Data Source Name:</label>
+                        <input type="text" id="trace_PROD_Prod" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_XName">X-axis Column Name:</label>
+                        <input type="text" id="trace_PROD_XName" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_YName">Y-axis Column Name:</label>
+                        <input type="text" id="trace_PROD_YName" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_Group">Group (0 or 1):</label>
+                        <input type="number" id="trace_PROD_Group" class="trace-input" min="0" max="1" step="1">
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="trace_PROD_ModEnabled" class="trace-input">
+                        <label for="trace_PROD_ModEnabled" class="mb-0">modTraces Enabled</label>
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="trace_PROD_Dynamic" class="trace-input">
+                        <label for="trace_PROD_Dynamic" class="mb-0">Dynamic</label>
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="trace_PROD_Ensemble" class="trace-input">
+                        <label for="trace_PROD_Ensemble" class="mb-0">Ensemble</label>
+                    </div>
+                </div>
+                <h4>Template</h4>
+                <div class="flex-row">
+                    <div class="form-group w-full">
+                        <label for="trace_PROD_TemplateVar">Template Variables (comma-separated):</label>
+                        <input type="text" id="trace_PROD_TemplateVar" class="trace-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="trace_PROD_TemplatePathFormat">Template Path Format:</label>
+                        <input type="text" id="trace_PROD_TemplatePathFormat" class="trace-input">
+                    </div>
+                </div>
+                <h4>Template Argument Conversion (`argConv`)</h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="trace_PROD_ArgConvVar">Variable:</label>
+                        <input type="text" id="trace_PROD_ArgConvVar" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_ArgConvArguments">Arguments:</label>
+                        <input type="text" id="trace_PROD_ArgConvArguments" class="trace-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="trace_PROD_ArgConvBody">Body (JS function body):</label>
+                        <textarea id="trace_PROD_ArgConvBody" class="trace-input" rows="2"></textarea>
+                    </div>
+                </div>
+                <h4>Style</h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleYaxis">Y-axis ID:</label>
+                        <input type="text" id="trace_PROD_StyleYaxis" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleType">Type:</label>
+                        <input type="text" id="trace_PROD_StyleType" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleMode">Mode:</label>
+                        <input type="text" id="trace_PROD_StyleMode" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleName">Name:</label>
+                        <input type="text" id="trace_PROD_StyleName" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleLineColor">Line Color:</label>
+                        <input type="color" id="trace_PROD_StyleLineColor" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleLineWidth">Line Width:</label>
+                        <input type="number" id="trace_PROD_StyleLineWidth" step="0.1" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleFill">Fill:</label>
+                        <input type="text" id="trace_PROD_StyleFill" class="trace-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="trace_PROD_StyleFillColor">Fill Color:</label>
+                        <input type="color" id="trace_PROD_StyleFillColor" class="trace-input">
+                    </div>
+                </div>
+            </div>
+
+            <div id="tracesContainer">
+                </div>
+
+            <button id="addTraceBtn" class="mt-4">Add New Trace</button>
+        </div>
+
+        <div id="modTraces-section" class="form-section">
+            <h3>Unit Conversion Extension (`modTraces`)</h3>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="modTracesModJS">JavaScript Source:</label>
+                    <input type="text" id="modTracesModJS" value="./applications/plugin/modQ2S.js">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesModMethod">Conversion Function:</label>
+                    <input type="text" id="modTracesModMethod" value="Q2Stage">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesModEvnt">Event Function:</label>
+                    <input type="text" id="modTracesModEvnt" value="evntQ2Stage">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesDefault">Default Header Name:</label>
+                    <input type="text" id="modTracesDefault" value="flw">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesCustomEval">Custom Eval:</label>
+                    <input type="text" id="modTracesCustomEval" value="">
+                </div>
+            </div>
+            <h4>Default Module Properties (`mod.default`)</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="modTracesDefaultButton">Button Text:</label>
+                    <input type="text" id="modTracesDefaultButton" value="Discharge">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesDefaultPltPath">Plot Y-axis Title Pointer:</label>
+                    <input type="text" id="modTracesDefaultPltPath" value="yaxis.title">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesDefaultVal">Y-axis Value:</label>
+                    <input type="text" id="modTracesDefaultVal" value="Q (m3/s)">
+                </div>
+            </div>
+            <h4>Derived Module Properties (`mod.derived`)</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="modTracesDerivedButton">Button Text:</label>
+                    <input type="text" id="modTracesDerivedButton" value="Stage">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesDerivedPltPath">Plot Y-axis Title Pointer:</label>
+                    <input type="text" id="modTracesDerivedPltPath" value="yaxis.title">
+                </div>
+                <div class="form-group">
+                    <label for="modTracesDerivedVal">Y-axis Value:</label>
+                    <input type="text" id="modTracesDerivedVal" value="Stage (ft)">
+                </div>
+            </div>
+        </div>
+
+        <div id="horizontalGrid-section" class="form-section">
+            <h3>Horizontal Grid Lines (`horizontalGrid`)</h3>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="horizontalGridFilename">Data File Path:</label>
+                    <input type="text" id="horizontalGridFilename" value="./data/sig_stage_flow_usgs.csv">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridComID">Common Identifier (comID):</label>
+                    <input type="text" id="horizontalGridComID" value="usgs_id">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridUnitConvert">Unit Conversion Multiplier:</label>
+                    <input type="number" id="horizontalGridUnitConvert" step="0.0000001" value="0.0283168">
+                </div>
+            </div>
+            <h4>Style</h4>
+            <div class="flex-row three-col">
+                <div class="form-group">
+                    <label for="horizontalGridStyleType">Type:</label>
+                    <input type="text" id="horizontalGridStyleType" value="line">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleXref">X Reference:</label>
+                    <input type="text" id="horizontalGridStyleXref" value="paper">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleX0">X0:</label>
+                    <input type="number" id="horizontalGridStyleX0" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleX1">X1:</label>
+                    <input type="number" id="horizontalGridStyleX1" step="0.1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleYref">Y Reference:</label>
+                    <input type="text" id="horizontalGridStyleYref" value="y">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleY0">Y0:</label>
+                    <input type="number" id="horizontalGridStyleY0" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleY1">Y1:</label>
+                    <input type="number" id="horizontalGridStyleY1" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleLineColor">Line Color:</label>
+                    <input type="color" id="horizontalGridStyleLineColor" value="#808080">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridStyleLineWidth">Line Width:</label>
+                    <input type="number" id="horizontalGridStyleLineWidth" step="0.1" value="0.75">
+                </div>
+            </div>
+            <h4>Lines (Example: `flw_action`)</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="horizontalGridLinesFlwActionColor">flw_action Color:</label>
+                    <input type="color" id="horizontalGridLinesFlwActionColor" value="#FFFF00">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridLinesFlwFloodColor">flw_flood Color:</label>
+                    <input type="color" id="horizontalGridLinesFlwFloodColor" value="#F89500">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridLinesFlwModerateColor">flw_moderate Color:</label>
+                    <input type="color" id="horizontalGridLinesFlwModerateColor" value="#FF0000">
+                </div>
+                <div class="form-group">
+                    <label for="horizontalGridLinesFlwMajorColor">flw_major Color:</label>
+                    <input type="color" id="horizontalGridLinesFlwMajorColor" value="#D836FF">
+                </div>
+            </div>
+        </div>
+
+        <div id="timeSlider-section" class="form-section">
+            <h3>Ensemble Time Slider (`timeSlider`)</h3>
+            <div class="flex-row four-col">
+                <div class="form-group">
+                    <label for="timeSliderMin">Minimum (number or string template):</label>
+                    <input type="text" id="timeSliderMin" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="timeSliderMax">Maximum (number or string template):</label>
+                    <input type="text" id="timeSliderMax" value="119">
+                </div>
+                <div class="form-group">
+                    <label for="timeSliderStep">Step:</label>
+                    <input type="number" id="timeSliderStep" step="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="timeSliderValue">Initial Value:</label>
+                    <input type="number" id="timeSliderValue" step="1" value="0">
+                </div>
+            </div>
+            <h4>Label</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="timeSliderLabelArguments">Arguments:</label>
+                    <input type="text" id="timeSliderLabelArguments" value="v">
+                </div>
+                <div class="form-group">
+                    <label for="timeSliderLabelBody">Body (JS function body):</label>
+                    <input type="text" id="timeSliderLabelBody" value="return 'Lead time:' + String(v) + 'hrs'">
+                </div>
+            </div>
+            <h4>Dynamic Range</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="timeSliderDynamicRangeArguments">Arguments:</label>
+                    <input type="text" id="timeSliderDynamicRangeArguments" value="v">
+                </div>
+                <div class="form-group w-full">
+                    <label for="timeSliderDynamicRangeBody">Body (JS function body):</label>
+                    <textarea id="timeSliderDynamicRangeBody" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="mapMarkers-section" class="form-section">
+            <h3>Map Markers (`mapMarkers`)</h3>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="mapMarkersFnPath">Geometry File Path:</label>
+                    <input type="text" id="mapMarkersFnPath" value="lid_usgs.geojson">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersComIDName">Common ID Name:</label>
+                    <input type="text" id="mapMarkersComIDName" value="usgs_id">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersGeomType">Geometry Type:</label>
+                    <select id="mapMarkersGeomType">
+                        <option value="point">point</option>
+                        <option value="polygon">polygon</option>
+                        <option value="line">line</option>
+                        <option value="grid">grid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersAlias">Alias:</label>
+                    <input type="text" id="mapMarkersAlias" value="">
+                </div>
+            </div>
+            <h4>Marker Attributes (`markerAttrs`)</h4>
+            <div class="flex-row">
+                <div class="form-group w-full">
+                    <label for="mapMarkersMarkerAttrsTemplateVar">Template Variables (comma-separated):</label>
+                    <input type="text" id="mapMarkersMarkerAttrsTemplateVar" value="">
+                </div>
+                <div class="form-group w-full">
+                    <label for="mapMarkersMarkerAttrsPathFormat">Path Format:</label>
+                    <input type="text" id="mapMarkersMarkerAttrsPathFormat" value="./data/noaa_nws/metric_retro.csv">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersMarkerAttrsComID">Common ID:</label>
+                    <input type="text" id="mapMarkersMarkerAttrsComID" value="comid">
+                </div>
+            </div>
+            <h4>Disabled Marker Attributes (`disabled_markerAttrs`)</h4>
+            <div class="form-group w-full">
+                <label for="mapMarkersDisabledMarkerAttrsJson">Disabled Marker Attributes (JSON String):</label>
+                <textarea id="mapMarkersDisabledMarkerAttrsJson" rows="3" placeholder='{"template": {"var": [], "path_format": "./data/metrics.csv"}, "comID": "usgs_id"}'></textarea>
+            </div>
+            <h4>On Each Feature (`onEachFeature`)</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="mapMarkersOnEachFeatureClick">Click Function Name:</label>
+                    <input type="text" id="mapMarkersOnEachFeatureClick" value="clickFeature">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersOnEachFeatureMouseover">Mouseover Function Name:</label>
+                    <input type="text" id="mapMarkersOnEachFeatureMouseover" value="">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersOnEachFeatureMouseout">Mouseout Function Name:</label>
+                    <input type="text" id="mapMarkersOnEachFeatureMouseout" value="">
+                </div>
+            </div>
+            <h4>Plot Title (`plotTitle`)</h4>
+            <div class="flex-row">
+                <div class="form-group w-full">
+                    <label for="mapMarkersPlotTitleTemplateVar">Template Variables (comma-separated):</label>
+                    <input type="text" id="mapMarkersPlotTitleTemplateVar" value="usgs_name,area">
+                </div>
+                <div class="form-group w-full">
+                    <label for="mapMarkersPlotTitleTemplateFormat">Format String:</label>
+                    <input type="text" id="mapMarkersPlotTitleTemplateFormat" value="{0}<br>Area: {1} km<sup>2</sup>">
+                </div>
+            </div>
+            <h4>Tooltip (`tooltip`)</h4>
+            <div class="flex-row">
+                <div class="form-group w-full">
+                    <label for="mapMarkersTooltipTemplateVar">Template Variables (comma-separated):</label>
+                    <input type="text" id="mapMarkersTooltipTemplateVar" value="usgs_id,area">
+                </div>
+                <div class="form-group w-full">
+                    <label for="mapMarkersTooltipTemplateFormat">Template Format String:</label>
+                    <input type="text" id="mapMarkersTooltipTemplateFormat" value="USGS id: {0}<br>Area:{1} km<sup>2</sup>">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersTooltipFormat">Format:</label>
+                    <input type="text" id="mapMarkersTooltipFormat" value="">
+                </div>
+                <div class="form-group w-full">
+                    <label for="mapMarkersTooltipProperties">Properties (comma-separated):</label>
+                    <input type="text" id="mapMarkersTooltipProperties" value="usgs_id,area,metric">
+                </div>
+            </div>
+            <h4>Additional Shapes (`additionalShapes`)</h4>
+            <div class="flex-row">
+                <div class="form-group w-full">
+                    <label for="mapMarkersAdditionalShapesTemplateVar">Template Variables (comma-separated):</label>
+                    <input type="text" id="mapMarkersAdditionalShapesTemplateVar" value="comID">
+                </div>
+                <div class="form-group w-full">
+                    <label for="mapMarkersAdditionalShapesTemplateFormat">Format String:</label>
+                    <input type="text" id="mapMarkersAdditionalShapesTemplateFormat" value="./services/get_boundary.php?id={0}">
+                </div>
+            </div>
+            <h4>Style (`mapMarkers.style`)</h4>
+            <div class="flex-row three-col">
+                <div class="form-group">
+                    <label for="mapMarkersStyleRadius">Radius:</label>
+                    <input type="number" id="mapMarkersStyleRadius" step="0.1" value="6">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleColor">Color:</label>
+                    <input type="color" id="mapMarkersStyleColor" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleFillColor">Fill Color:</label>
+                    <input type="color" id="mapMarkersStyleFillColor" value="#008000">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleFillOpacity">Fill Opacity:</label>
+                    <input type="number" id="mapMarkersStyleFillOpacity" step="0.1" min="0" max="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleWeight">Weight:</label>
+                    <input type="number" id="mapMarkersStyleWeight" step="0.1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleOpacity">Opacity:</label>
+                    <input type="number" id="mapMarkersStyleOpacity" step="0.1" min="0" max="1" value="0.5">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleWidthFeatProp">Width Feature Property:</label>
+                    <input type="text" id="mapMarkersStyleWidthFeatProp" value="">
+                </div>
+                <div class="form-group">
+                    <label for="mapMarkersStyleWidthMultiplier">Width Multiplier:</label>
+                    <input type="number" id="mapMarkersStyleWidthMultiplier" step="0.1" value="1">
+                </div>
+            </div>
+        </div>
+
+        <div id="controls-main-section" class="form-section">
+            <h3>Control Elements (`controls`)</h3>
+
+            <div id="controlsMarkerAttrsTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-control-item-btn">Remove Attribute</button>
+                <h4>Marker Attribute: <span class="control-item-name"></span></h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_VarID">Variable ID:</label>
+                        <input type="text" id="controls_MARKERATTRS_VarID" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_VarName">Variable Name:</label>
+                        <input type="text" id="controls_MARKERATTRS_VarName" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_OnEvent">On Event Function:</label>
+                        <input type="text" id="controls_MARKERATTRS_OnEvent" class="control-input">
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="controls_MARKERATTRS_Selected" class="control-input">
+                        <label for="controls_MARKERATTRS_Selected" class="mb-0">Selected</label>
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="controls_MARKERATTRS_Range">Range (comma-separated numbers):</label>
+                        <input type="text" id="controls_MARKERATTRS_Range" class="control-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="controls_MARKERATTRS_ColorPalette">Color Palette (comma-separated Hex or single string):</label>
+                        <input type="text" id="controls_MARKERATTRS_ColorPalette" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_NBins">Number of Bins:</label>
+                        <input type="number" id="controls_MARKERATTRS_NBins" step="1" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_Method">Method:</label>
+                        <input type="text" id="controls_MARKERATTRS_Method" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_Classes">Classes (comma-separated numbers):</label>
+                        <input type="text" id="controls_MARKERATTRS_Classes" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_Labels">Labels (comma-separated strings):</label>
+                        <input type="text" id="controls_MARKERATTRS_Labels" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_MARKERATTRS_Decimals">Decimals:</label>
+                        <input type="number" id="controls_MARKERATTRS_Decimals" step="1" class="control-input">
+                    </div>
+                </div>
+            </div>
+            <div id="controlsMarkerAttrsContainer"></div>
+            <button id="addControlsMarkerAttrsBtn" class="mt-4">Add New Marker Attribute</button>
+
+            <div id="controlsProdTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-control-item-btn">Remove Product</button>
+                <h4>Product: <span class="control-item-name"></span></h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="controls_PROD_VarID">Variable ID:</label>
+                        <input type="text" id="controls_PROD_VarID" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_PROD_VarName">Variable Name:</label>
+                        <input type="text" id="controls_PROD_VarName" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_PROD_OnEvent">On Event Function:</label>
+                        <input type="text" id="controls_PROD_OnEvent" class="control-input">
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="controls_PROD_Selected" class="control-input">
+                        <label for="controls_PROD_Selected" class="mb-0">Selected</label>
+                    </div>
+                </div>
+            </div>
+            <div id="controlsProdContainer"></div>
+            <button id="addControlsProdBtn" class="mt-4">Add New Product</button>
+
+            <div id="controlsBaseMapTypeTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-control-item-btn">Remove Basemap Type</button>
+                <h4>Basemap Type: <span class="control-item-name"></span></h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="controls_BASEMAPTYPE_VarID">Variable ID:</label>
+                        <input type="text" id="controls_BASEMAPTYPE_VarID" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_BASEMAPTYPE_VarName">Variable Name:</label>
+                        <input type="text" id="controls_BASEMAPTYPE_VarName" class="control-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="controls_BASEMAPTYPE_OnEvent">On Event Function:</label>
+                        <input type="text" id="controls_BASEMAPTYPE_OnEvent" class="control-input">
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="controls_BASEMAPTYPE_Selected" class="control-input">
+                        <label for="controls_BASEMAPTYPE_Selected" class="mb-0">Selected</label>
+                    </div>
+                </div>
+            </div>
+            <div id="controlsBaseMapTypeContainer"></div>
+            <button id="addControlsBaseMapTypeBtn" class="mt-4">Add New Basemap Type</button>
+        </div>
+
+        <div id="plotlyLayout-section" class="form-section">
+            <h3>Plotly Layout (`plotlyLayout`)</h3>
+            <div class="form-group flex items-center">
+                <input type="checkbox" id="plotlyLayoutDisplayModeBar" checked>
+                <label for="plotlyLayoutDisplayModeBar" class="mb-0">Display Mode Bar</label>
+            </div>
+            <h4>Margin</h4>
+            <div class="flex-row four-col">
+                <div class="form-group">
+                    <label for="plotlyLayoutMarginL">Left:</label>
+                    <input type="number" id="plotlyLayoutMarginL" step="1" value="80">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutMarginR">Right:</label>
+                    <input type="number" id="plotlyLayoutMarginR" step="1" value="80">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutMarginB">Bottom:</label>
+                    <input type="number" id="plotlyLayoutMarginB" step="1" value="70">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutMarginT">Top:</label>
+                    <input type="number" id="plotlyLayoutMarginT" step="1" value="50">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutMarginPad">Padding:</label>
+                    <input type="number" id="plotlyLayoutMarginPad" step="1" value="1">
+                </div>
+            </div>
+            <h4>Title Font</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="plotlyLayoutTitleFontSize">Size:</label>
+                    <input type="number" id="plotlyLayoutTitleFontSize" step="1" value="16">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutTitleFontColor">Color:</label>
+                    <input type="color" id="plotlyLayoutTitleFontColor" value="#000000">
+                </div>
+            </div>
+            <h4>Legend</h4>
+            <div class="flex-row three-col">
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendX">X Position:</label>
+                    <input type="number" id="plotlyLayoutLegendX" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendY">Y Position:</label>
+                    <input type="number" id="plotlyLayoutLegendY" step="0.1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendTraceorder">Trace Order:</label>
+                    <input type="text" id="plotlyLayoutLegendTraceorder" value="normal">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendFontSize">Font Size:</label>
+                    <input type="number" id="plotlyLayoutLegendFontSize" step="1" value="14">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendFontColor">Font Color:</label>
+                    <input type="color" id="plotlyLayoutLegendFontColor" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendBgcolor">Background Color:</label>
+                    <input type="color" id="plotlyLayoutLegendBgcolor" value="#FFFFFF">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendBordercolor">Border Color:</label>
+                    <input type="color" id="plotlyLayoutLegendBordercolor" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendBorderwidth">Border Width:</label>
+                    <input type="number" id="plotlyLayoutLegendBorderwidth" step="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutLegendOrientation">Orientation:</label>
+                    <input type="text" id="plotlyLayoutLegendOrientation" value="h">
+                </div>
+            </div>
+            <h4>X-axis</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="plotlyLayoutXaxisTitleFontSize">Title Font Size:</label>
+                    <input type="number" id="plotlyLayoutXaxisTitleFontSize" step="1" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutXaxisTitleFontColor">Title Font Color:</label>
+                    <input type="color" id="plotlyLayoutXaxisTitleFontColor" value="#1c1c1c">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutXaxisTickFontSize">Tick Font Size:</label>
+                    <input type="number" id="plotlyLayoutXaxisTickFontSize" step="1" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutXaxisTickFontColor">Tick Font Color:</label>
+                    <input type="color" id="plotlyLayoutXaxisTickFontColor" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutXaxisType">Type:</label>
+                    <input type="text" id="plotlyLayoutXaxisType" value="date">
+                </div>
+            </div>
+            <h4>Y-axis (Primary)</h4>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisTitle">Title:</label>
+                    <input type="text" id="plotlyLayoutYaxisTitle" value="Q (m3/s)">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisTitleFontSize">Title Font Size:</label>
+                    <input type="number" id="plotlyLayoutYaxisTitleFontSize" step="1" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisTitleFontColor">Title Font Color:</label>
+                    <input type="color" id="plotlyLayoutYaxisTitleFontColor" value="#1c1c1c">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisTickFontSize">Tick Font Size:</label>
+                    <input type="number" id="plotlyLayoutYaxisTickFontSize" step="1" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisTickFontColor">Tick Font Color:</label>
+                    <input type="color" id="plotlyLayoutYaxisTickFontColor" value="#000000">
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="plotlyLayoutYaxisAutorange" checked>
+                    <label for="plotlyLayoutYaxisAutorange" class="mb-0">Autorange</label>
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisRangemode">Range Mode:</label>
+                    <input type="text" id="plotlyLayoutYaxisRangemode" value="tozero">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxisHoverformat">Hover Format:</label>
+                    <input type="text" id="plotlyLayoutYaxisHoverformat" value=".1f">
+                </div>
+            </div>
+            <div class="form-group flex items-center">
+                <input type="checkbox" id="enableYaxis2">
+                <label for="enableYaxis2" class="mb-0">Enable Secondary Y-axis (`yaxis2`)</label>
+            </div>
+            <div id="yaxis2-section" class="flex-row hidden">
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2Title">Title:</label>
+                    <input type="text" id="plotlyLayoutYaxis2Title" value="Satellite SM (cm³/cm³)">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2Overlaying">Overlaying:</label>
+                    <input type="text" id="plotlyLayoutYaxis2Overlaying" value="y">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2TitleFontSize">Title Font Size:</label>
+                    <input type="number" id="plotlyLayoutYaxis2TitleFontSize" step="1" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2TitleFontColor">Title Font Color:</label>
+                    <input type="color" id="plotlyLayoutYaxis2TitleFontColor" value="#1c1c1c">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2TickFontSize">Tick Font Size:</label>
+                    <input type="number" id="plotlyLayoutYaxis2TickFontSize" step="1" value="18">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2TickFontColor">Tick Font Color:</label>
+                    <input type="color" id="plotlyLayoutYaxis2TickFontColor" value="#000000">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2Rangemode">Range Mode:</label>
+                    <input type="text" id="plotlyLayoutYaxis2Rangemode" value="tozero">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2Hoverformat">Hover Format:</label>
+                    <input type="text" id="plotlyLayoutYaxis2Hoverformat" value=".1f">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutYaxis2Side">Side:</label>
+                    <input type="text" id="plotlyLayoutYaxis2Side" value="right">
+                </div>
+            </div>
+
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="plotlyLayoutPlotBgcolor">Plot Background Color:</label>
+                    <input type="color" id="plotlyLayoutPlotBgcolor" value="#FFFFFF">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutPaperBgcolor">Paper Background Color:</label>
+                    <input type="color" id="plotlyLayoutPaperBgcolor" value="#EEEEEE">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutHovermode">Hover Mode:</label>
+                    <input type="text" id="plotlyLayoutHovermode" value="closest">
+                </div>
+            </div>
+            <h4>Update Menus (First Item)</h4>
+            <div class="flex-row three-col">
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusDirection">Direction:</label>
+                    <input type="text" id="plotlyLayoutUpdatemenusDirection" value="left">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusPadR">Pad Right:</label>
+                    <input type="number" id="plotlyLayoutUpdatemenusPadR" step="1" value="10">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusPadT">Pad Top:</label>
+                    <input type="number" id="plotlyLayoutUpdatemenusPadT" step="1" value="10">
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="plotlyLayoutUpdatemenusShowactive" checked>
+                    <label for="plotlyLayoutUpdatemenusShowactive" class="mb-0">Show Active</label>
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusType">Type:</label>
+                    <input type="text" id="plotlyLayoutUpdatemenusType" value="buttons">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusX">X Position:</label>
+                    <input type="number" id="plotlyLayoutUpdatemenusX" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusXanchor">X Anchor:</label>
+                    <input type="text" id="plotlyLayoutUpdatemenusXanchor" value="left">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusY">Y Position:</label>
+                    <input type="number" id="plotlyLayoutUpdatemenusY" step="0.1" value="1.15">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutUpdatemenusYanchor">Y Anchor:</label>
+                    <input type="text" id="plotlyLayoutUpdatemenusYanchor" value="top">
+                </div>
+            </div>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="plotlyLayoutInitMD">Initial Month-Day-Hour (e.g., -04-01 00:00:00):</label>
+                    <input type="text" id="plotlyLayoutInitMD" value="-04-01 00:00:00">
+                </div>
+                <div class="form-group">
+                    <label for="plotlyLayoutFinalMD">Final Month-Day-Hour (e.g., -12-01 00:00:00):</label>
+                    <input type="text" id="plotlyLayoutFinalMD" value="-12-01 00:00:00">
+                </div>
+            </div>
+        </div>
+
+        <div id="mapLayers-main-section" class="form-section">
+            <h3>Contextual Map Layers (`mapLayers`)</h3>
+            <div id="mapLayerTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-map-layer-btn">Remove Layer</button>
+                <h4>Map Layer: <span class="map-layer-name"></span></h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_FnPath">File Path:</label>
+                        <input type="text" id="mapLayer_PROD_FnPath" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_Fn">File Name:</label>
+                        <input type="text" id="mapLayer_PROD_Fn" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_VarName">Variable Name:</label>
+                        <input type="text" id="mapLayer_PROD_VarName" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_OnEvent">On Event Function:</label>
+                        <input type="text" id="mapLayer_PROD_OnEvent" class="map-layer-input">
+                    </div>
+                    <div class="form-group flex items-center">
+                        <input type="checkbox" id="mapLayer_PROD_Selected" class="map-layer-input">
+                        <label for="mapLayer_PROD_Selected" class="mb-0">Selected</label>
+                    </div>
+                </div>
+                <h4>Style (`mapLayers.style`)</h4>
+                <div class="flex-row three-col">
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleFillOpacity">Fill Opacity:</label>
+                        <input type="number" id="mapLayer_PROD_StyleFillOpacity" step="0.1" min="0" max="1" value="1" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleStroke">Stroke:</label>
+                        <input type="checkbox" id="mapLayer_PROD_StyleStroke" checked class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleColor">Color:</label>
+                        <input type="color" id="mapLayer_PROD_StyleColor" value="#000000" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleFill">Fill:</label>
+                        <input type="checkbox" id="mapLayer_PROD_StyleFill" checked class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleFillColor">Fill Color:</label>
+                        <input type="color" id="mapLayer_PROD_StyleFillColor" value="#008000" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleWeight">Weight:</label>
+                        <input type="number" id="mapLayer_PROD_StyleWeight" step="0.1" value="1" class="map-layer-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="mapLayer_PROD_StyleRadius">Radius:</label>
+                        <input type="number" id="mapLayer_PROD_StyleRadius" step="0.1" value="4" class="map-layer-input">
+                    </div>
+                </div>
+            </div>
+
+            <div id="mapLayersContainer">
+                </div>
+
+            <button id="addMapLayerBtn" class="mt-4">Add New Map Layer</button>
+        </div>
+
+        <div id="map-section" class="form-section">
+            <h3>Leaflet Map Properties (`map`)</h3>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="mapCenterLat">Center Latitude:</label>
+                    <input type="number" id="mapCenterLat" step="0.0001" value="41.9472">
+                </div>
+                <div class="form-group">
+                    <label for="mapCenterLon">Center Longitude:</label>
+                    <input type="number" id="mapCenterLon" step="0.0001" value="-93.5403">
+                </div>
+                <div class="form-group">
+                    <label for="mapDefaultZoom">Default Zoom:</label>
+                    <input type="number" id="mapDefaultZoom" step="1" value="8">
+                </div>
+                <div class="form-group">
+                    <label for="mapMaxZoom">Max Zoom:</label>
+                    <input type="number" id="mapMaxZoom" step="1" value="15">
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="mapGeoSearch">
+                    <label for="mapGeoSearch" class="mb-0">Geo Search Enabled</label>
+                </div>
+            </div>
+            <h4>Basemap List</h4>
+            <div id="basemapTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-basemap-btn">Remove Basemap</button>
+                <h4>Basemap: <span class="basemap-name"></span></h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="basemap_PROD_ID">ID:</label>
+                        <input type="text" id="basemap_PROD_ID" class="basemap-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="basemap_PROD_URL">URL:</label>
+                        <input type="text" id="basemap_PROD_URL" class="basemap-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="basemap_PROD_Attribution">Attribution (HTML):</label>
+                        <textarea id="basemap_PROD_Attribution" rows="2" class="basemap-input"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="basemap_PROD_Subdomains">Subdomains:</label>
+                        <input type="text" id="basemap_PROD_Subdomains" class="basemap-input">
+                    </div>
+                </div>
+            </div>
+            <div id="basemapListContainer"></div>
+            <button id="addBasemapBtn" class="mt-4">Add New Basemap</button>
+        </div>
+
+        <div id="customBaseMap-section" class="form-section">
+            <h3>Custom Basemap (`customBaseMap`)</h3>
+            <div class="flex-row">
+                <div class="form-group">
+                    <label for="customBaseMapUrl">Data Source URL:</label>
+                    <input type="text" id="customBaseMapUrl" value="ifc_net3_simp.geojson">
+                </div>
+                <div class="form-group w-full">
+                    <label for="customBaseMapColors">Colors (JSON object, e.g., {"3": "#00e4ff", "4": "#00c5ff"}):</label>
+                    <textarea id="customBaseMapColors" rows="5">{"3": "#00e4ff", "4": "#00c5ff", "5": "#00acff", "6": "#018eff", "7": "#007dff", "8": "#007bff", "9": "#0055ff", "10": "#000000", "11": "#321321"}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="customBaseMapName">Layer Name:</label>
+                    <input type="text" id="customBaseMapName" value="River Network">
+                </div>
+                <div class="form-group">
+                    <label for="customBaseMapPropertyName">Property Name for Color-coding:</label>
+                    <input type="text" id="customBaseMapPropertyName" value="h_order">
+                </div>
+            </div>
+        </div>
+
+        <div id="spatialData-main-section" class="form-section">
+            <h3>Spatio-temporal Data (`spatialData`)</h3>
+            <div id="spatialDataItemTemplate" class="form-section hidden">
+                <button type="button" class="remove-btn remove-spatial-data-btn">Remove Data Item</button>
+                <h4>Spatial Data Item: <span class="spatial-data-name"></span></h4>
+                <div class="form-group">
+                    <label for="spatialDataItem_PROD_Name">Variable Name:</label>
+                    <input type="text" id="spatialDataItem_PROD_Name" class="spatial-data-input">
+                </div>
+                <div class="form-group">
+                    <label for="spatialDataItem_PROD_DataType">Data Type:</label>
+                    <input type="text" id="spatialDataItem_PROD_DataType" class="spatial-data-input">
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="spatialDataItem_PROD_Animation" class="spatial-data-input">
+                    <label for="spatialDataItem_PROD_Animation" class="mb-0">Animation Enabled</label>
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="spatialDataItem_PROD_WebGLRenderer" class="spatial-data-input">
+                    <label for="spatialDataItem_PROD_WebGLRenderer" class="mb-0">WebGL Renderer Enabled</label>
+                </div>
+                <div class="form-group">
+                    <label for="spatialDataItem_PROD_ComIDName">Common ID Name:</label>
+                    <input type="text" id="spatialDataItem_PROD_ComIDName" class="spatial-data-input">
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="spatialDataItem_PROD_ClickFeature" class="spatial-data-input">
+                    <label for="spatialDataItem_PROD_ClickFeature" class="mb-0">Click Feature Enabled</label>
+                </div>
+
+                <h4>Geometry (`geom`)</h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomFnPath">File Path:</label>
+                        <input type="text" id="spatialDataItem_PROD_GeomFnPath" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomFn">File Name:</label>
+                        <input type="text" id="spatialDataItem_PROD_GeomFn" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomAlias">Alias:</label>
+                        <input type="text" id="spatialDataItem_PROD_GeomAlias" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomExtension">Extension:</label>
+                        <input type="text" id="spatialDataItem_PROD_GeomExtension" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomType">Geometry Type:</label>
+                        <select id="spatialDataItem_PROD_GeomType" class="spatial-data-input">
+                            <option value="Point">Point</option>
+                            <option value="Polygon">Polygon</option>
+                            <option value="Line">Line</option>
+                        </select>
+                    </div>
+                </div>
+                <h5>Default Style (`geom.defaultStyle`)</h5>
+                <div class="flex-row three-col">
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomDefaultStyleWeight">Weight:</label>
+                        <input type="number" id="spatialDataItem_PROD_GeomDefaultStyleWeight" step="0.1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomDefaultStyleOpacity">Opacity:</label>
+                        <input type="number" id="spatialDataItem_PROD_GeomDefaultStyleOpacity" step="0.1" min="0" max="1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomDefaultStyleColor">Color:</label>
+                        <input type="color" id="spatialDataItem_PROD_GeomDefaultStyleColor" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomDefaultStyleDashArray">Dash Array:</label>
+                        <input type="text" id="spatialDataItem_PROD_GeomDefaultStyleDashArray" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomDefaultStyleFillOpacity">Fill Opacity:</label>
+                        <input type="number" id="spatialDataItem_PROD_GeomDefaultStyleFillOpacity" step="0.1" min="0" max="1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_GeomDefaultStyleFillColor">Fill Color:</label>
+                        <input type="color" id="spatialDataItem_PROD_GeomDefaultStyleFillColor" class="spatial-data-input">
+                    </div>
+                </div>
+
+                <h4>Path Template (`pathTemplate`)</h4>
+                <div class="flex-row">
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_PathTemplateVar">Variables (comma-separated):</label>
+                        <input type="text" id="spatialDataItem_PROD_PathTemplateVar" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_PathTemplatePathFormat">Path Format:</label>
+                        <input type="text" id="spatialDataItem_PROD_PathTemplatePathFormat" class="spatial-data-input">
+                    </div>
+                </div>
+
+                <h4>Timestamps (`timestamps`)</h4>
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_TimestampsFnPath">File Path:</label>
+                        <input type="text" id="spatialDataItem_PROD_TimestampsFnPath" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_TimestampsExtension">Extension:</label>
+                        <input type="text" id="spatialDataItem_PROD_TimestampsExtension" class="spatial-data-input">
+                    </div>
+                </div>
+
+                <h4>Style (`style`)</h4>
+                <div class="flex-row three-col">
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleColor">Color:</label>
+                        <input type="color" id="spatialDataItem_PROD_StyleColor" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleOpacity">Opacity:</label>
+                        <input type="number" id="spatialDataItem_PROD_StyleOpacity" step="0.1" min="0" max="1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleWidthFeatProp">Width Feature Property:</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleWidthFeatProp" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleWidthMultiplier">Width Multiplier:</label>
+                        <input type="number" id="spatialDataItem_PROD_StyleWidthMultiplier" step="0.1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleNBins">Number of Bins:</label>
+                        <input type="number" id="spatialDataItem_PROD_StyleNBins" step="1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleMethod">Method:</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleMethod" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_StyleRange">Range (comma-separated numbers):</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleRange" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_StyleColorPalette">Color Palette (comma-separated Hex or single string):</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleColorPalette" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_StyleClasses">Classes (comma-separated numbers):</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleClasses" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_StyleLabels">Labels (comma-separated strings):</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleLabels" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleTitle">Title:</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleTitle" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleSteps">Steps:</label>
+                        <input type="number" id="spatialDataItem_PROD_StyleSteps" step="1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_StyleSpatialColFunc">Spatial Color Function:</label>
+                        <input type="text" id="spatialDataItem_PROD_StyleSpatialColFunc" class="spatial-data-input">
+                    </div>
+                </div>
+                <h4>Dynamic Style (`dynStyle`)</h4>
+                <div class="flex-row three-col">
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_DynStyleClasses">Classes (comma-separated numbers):</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleClasses" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_DynStyleLabels">Labels (comma-separated strings):</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleLabels" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_DynStyleMethod">Method:</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleMethod" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_DynStyleRange">Range (comma-separated numbers):</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleRange" class="spatial-data-input">
+                    </div>
+                    <div class="form-group w-full">
+                        <label for="spatialDataItem_PROD_DynStyleColorPalette">Color Palette (comma-separated Hex or single string):</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleColorPalette" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_DynStyleTitle">Title:</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleTitle" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_DynStyleSteps">Steps:</label>
+                        <input type="number" id="spatialDataItem_PROD_DynStyleSteps" step="1" class="spatial-data-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="spatialDataItem_PROD_DynStyleSpatialColFunc">Spatial Color Function:</label>
+                        <input type="text" id="spatialDataItem_PROD_DynStyleSpatialColFunc" class="spatial-data-input">
+                    </div>
+                </div>
+            </div>
+            <div id="spatialDataContainer"></div>
+            <button id="addSpatialDataItemBtn" class="mt-4">Add New Spatial Data Item</button>
+        </div>
+
+        <div id="timeSelectorLayout-section" class="form-section">
+            <h3>Time Selector Layout (`timeSelectorLayout`)</h3>
+            <h4>Margin</h4>
+            <div class="flex-row four-col">
+                <div class="form-group">
+                    <label for="timeSelectorLayoutMarginL">Left:</label>
+                    <input type="number" id="timeSelectorLayoutMarginL" step="1" value="100">
+                </div>
+                <div class="form-group">
+                    <label for="timeSelectorLayoutMarginR">Right:</label>
+                    <input type="number" id="timeSelectorLayoutMarginR" step="1" value="80">
+                </div>
+                <div class="form-group">
+                    <label for="timeSelectorLayoutMarginB">Bottom:</label>
+                    <input type="number" id="timeSelectorLayoutMarginB" step="1" value="30">
+                </div>
+                <div class="form-group">
+                    <label for="timeSelectorLayoutMarginT">Top:</label>
+                    <input type="number" id="timeSelectorLayoutMarginT" step="1" value="10">
+                </div>
+                <div class="form-group">
+                    <label for="timeSelectorLayoutMarginPad">Padding:</label>
+                    <input type="number" id="timeSelectorLayoutMarginPad" step="1" value="0">
+                </div>
+            </div>
+            <h4>Y-axis</h4>
+            <div class="flex-row">
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="timeSelectorLayoutYaxisFixedrange" checked>
+                    <label for="timeSelectorLayoutYaxisFixedrange" class="mb-0">Fixed Range</label>
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="timeSelectorLayoutYaxisVisible">
+                    <label for="timeSelectorLayoutYaxisVisible" class="mb-0">Visible</label>
+                </div>
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="timeSelectorLayoutYaxisAutorange" checked>
+                    <label for="timeSelectorLayoutYaxisAutorange" class="mb-0">Autorange</label>
+                </div>
+                <div class="form-group">
+                    <label for="timeSelectorLayoutYaxisRange">Range (comma-separated numbers):</label>
+                    <input type="text" id="timeSelectorLayoutYaxisRange" value="">
+                </div>
+            </div>
+            <h4>X-axis</h4>
+            <div class="form-group">
+                <label for="timeSelectorLayoutXaxisType">Type:</label>
+                <input type="text" id="timeSelectorLayoutXaxisType" value="date">
+            </div>
+            <div class="flex-row">
+                <div class="form-group flex items-center">
+                    <input type="checkbox" id="timeSelectorLayoutAutosize" checked>
+                    <label for="timeSelectorLayoutAutosize" class="mb-0">Autosize</label>
+                </div>
+                <div class="form-group">
+                    <label for="timeSelectorLayoutPaperBgcolor">Paper Background Color:</label>
+                    <input type="color" id="timeSelectorLayoutPaperBgcolor" value="#CCCCCC">
+                </div>
+            </div>
+        </div>
+
+        <button id="generateConfigBtn">Generate Configuration File</button>
+
+        <div class="form-section">
+            <h3>Generated Configuration (JSON)</h3>
+            <textarea id="configOutput" readonly></textarea>
+            <button id="copyConfigBtn" class="mt-4 w-full">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const configOutput = document.getElementById('configOutput');
+            const generateConfigBtn = document.getElementById('generateConfigBtn');
+            const copyConfigBtn = document.getElementById('copyConfigBtn');
+
+            // Trace elements
+            const traceTemplate = document.getElementById('traceTemplate');
+            const tracesContainer = document.getElementById('tracesContainer');
+            const addTraceBtn = document.getElementById('addTraceBtn');
+            let traceCounter = 0;
+
+            // Controls elements
+            const controlsMarkerAttrsTemplate = document.getElementById('controlsMarkerAttrsTemplate');
+            const controlsMarkerAttrsContainer = document.getElementById('controlsMarkerAttrsContainer');
+            const addControlsMarkerAttrsBtn = document.getElementById('addControlsMarkerAttrsBtn');
+            let controlsMarkerAttrsCounter = 0;
+
+            const controlsProdTemplate = document.getElementById('controlsProdTemplate');
+            const controlsProdContainer = document.getElementById('controlsProdContainer');
+            const addControlsProdBtn = document.getElementById('addControlsProdBtn');
+            let controlsProdCounter = 0;
+
+            const controlsBaseMapTypeTemplate = document.getElementById('controlsBaseMapTypeTemplate');
+            const controlsBaseMapTypeContainer = document.getElementById('controlsBaseMapTypeContainer');
+            const addControlsBaseMapTypeBtn = document.getElementById('addControlsBaseMapTypeBtn');
+            let controlsBaseMapTypeCounter = 0;
+
+            // Map Layers elements
+            const mapLayerTemplate = document.getElementById('mapLayerTemplate');
+            const mapLayersContainer = document.getElementById('mapLayersContainer');
+            const addMapLayerBtn = document.getElementById('addMapLayerBtn');
+            let mapLayerCounter = 0;
+
+            // Basemap List elements
+            const basemapTemplate = document.getElementById('basemapTemplate');
+            const basemapListContainer = document.getElementById('basemapListContainer');
+            const addBasemapBtn = document.getElementById('addBasemapBtn');
+            let basemapCounter = 0;
+
+            // Spatial Data elements
+            const spatialDataItemTemplate = document.getElementById('spatialDataItemTemplate');
+            const spatialDataContainer = document.getElementById('spatialDataContainer');
+            const addSpatialDataItemBtn = document.getElementById('addSpatialDataItemBtn');
+            let spatialDataCounter = 0;
+
+            // Plotly Layout Yaxis2
+            const enableYaxis2Checkbox = document.getElementById('enableYaxis2');
+            const yaxis2Section = document.getElementById('yaxis2-section');
+
+            /**
+             * Helper function to get the value of an input element by its ID and desired type.
+             * @param {string} id - The ID of the input element.
+             * @param {string} type - The desired return type ('string', 'number', 'integer', 'boolean', 'array-string', 'array-number', 'json').
+             * @returns {*} The parsed value of the input element.
+             */
+            const getValue = (id, type = 'string') => {
+                const element = document.getElementById(id);
+                if (!element) return undefined;
+
+                if (element.type === 'checkbox') {
+                    return element.checked;
+                } else if (type === 'number') {
+                    const val = parseFloat(element.value);
+                    return isNaN(val) ? undefined : val;
+                } else if (type === 'integer') {
+                    const val = parseInt(element.value);
+                    return isNaN(val) ? undefined : val;
+                } else if (type === 'boolean') {
+                    return element.checked;
+                } else if (type === 'array-string') {
+                    return element.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                } else if (type === 'array-number') {
+                    return element.value.split(',').map(Number).filter(n => !isNaN(n));
+                } else if (type === 'json') {
+                    try {
+                        const val = element.value.trim();
+                        return val ? JSON.parse(val) : undefined;
+                    } catch (e) {
+                        console.error(`Invalid JSON for ${id}:`, e);
+                        return undefined;
+                    }
+                }
+                const val = element.value.trim();
+                return val === '' ? undefined : val;
+            };
+
+            /**
+             * Creates and appends a new dynamic section to the form.
+             * @param {HTMLElement} template - The hidden template element for the section.
+             * @param {HTMLElement} container - The container to append the new section to.
+             * @param {number} counter - The current counter for unique IDs.
+             * @param {string} prefix - The prefix for generated element IDs (e.g., 'trace', 'mapLayer').
+             * @param {string} namePrefix - The display name prefix (e.g., 'Trace', 'Map Layer').
+             * @param {string} spanClassName - The class name of the span element within the template that displays the name/number.
+             * @param {string} inputClass - The class name for inputs within the template (e.g., 'trace-input').
+             * @param {string} idPlaceholder - The placeholder string used in the template's input IDs (e.g., 'PROD', 'MARKERATTRS').
+             * @param {function} [setupDefaults] - Optional function to set default values for the new section.
+             * @returns {HTMLElement} The newly created section element.
+             */
+            function addDynamicSection(template, container, counter, prefix, namePrefix, spanClassName, inputClass, idPlaceholder, setupDefaults) {
+                const newSection = template.cloneNode(true);
+                newSection.id = `${prefix}Section${counter}`;
+                newSection.classList.remove('hidden');
+                
+                const nameSpan = newSection.querySelector(`.${spanClassName}`);
+                if (nameSpan) {
+                    nameSpan.textContent = `${namePrefix} ${counter}`;
+                } else {
+                    console.warn(`Span with class '${spanClassName}' not found in template for ${namePrefix}.`);
+                }
+
+                newSection.querySelectorAll(`.${inputClass}`).forEach(element => {
+                    // Split using the specific idPlaceholder
+                    const oldIdParts = element.id.split(`_${idPlaceholder}_`);
+                    if (oldIdParts.length > 1) {
+                        const newId = `${prefix}${counter}_${oldIdParts[1]}`;
+                        element.id = newId;
+                        if (element.labels && element.labels.length > 0) {
+                            element.labels[0].htmlFor = newId;
+                        }
+                    }
+                });
+
+                if (setupDefaults) {
+                    setupDefaults(newSection, counter);
+                }
+
+                newSection.querySelector('.remove-btn').addEventListener('click', () => {
+                    newSection.remove();
+                    generateConfigBtn.click();
+                });
+
+                container.appendChild(newSection);
+                return newSection;
+            }
+
+            // --- Trace Functions ---
+            function addTrace() {
+                traceCounter++;
+                const newTrace = addDynamicSection(traceTemplate, tracesContainer, traceCounter, 'trace', 'Trace', 'trace-number', 'trace-input', 'PROD', (section, count) => {
+                    section.querySelector(`#trace${count}_Prod`).value = 'mrms_avg';
+                    section.querySelector(`#trace${count}_XName`).value = 'dt';
+                    section.querySelector(`#trace${count}_YName`).value = 'bmean';
+                    section.querySelector(`#trace${count}_Group`).value = '0';
+                    section.querySelector(`#trace${count}_ModEnabled`).checked = true;
+                    section.querySelector(`#trace${count}_Dynamic`).checked = false;
+                    section.querySelector(`#trace${count}_Ensemble`).checked = false;
+                    section.querySelector(`#trace${count}_TemplateVar`).value = 'yr,comID';
+                    section.querySelector(`#trace${count}_TemplatePathFormat`).value = './services/read_noaa_gz.php?path=/noaa_nws/forcings/meta_MRMS{0}/avg/{1}.csv';
+                    section.querySelector(`#trace${count}_ArgConvVar`).value = '';
+                    section.querySelector(`#trace${count}_ArgConvArguments`).value = '';
+                    section.querySelector(`#trace${count}_ArgConvBody`).value = '';
+                    section.querySelector(`#trace${count}_StyleYaxis`).value = 'y1';
+                    section.querySelector(`#trace${count}_StyleType`).value = 'scattergl';
+                    section.querySelector(`#trace${count}_StyleMode`).value = 'lines';
+                    section.querySelector(`#trace${count}_StyleName`).value = `MRMS(Basin Mean) ${count}`;
+                    section.querySelector(`#trace${count}_StyleLineColor`).value = '#DF5050';
+                    section.querySelector(`#trace${count}_StyleLineWidth`).value = '2';
+                    section.querySelector(`#trace${count}_StyleFill`).value = '';
+                    section.querySelector(`#trace${count}_StyleFillColor`).value = '#000000'; // Default black for fillcolor
+                });
+            }
+
+            // --- Controls Functions ---
+            function addControlsMarkerAttrs() {
+                controlsMarkerAttrsCounter++;
+                const newAttr = addDynamicSection(controlsMarkerAttrsTemplate, controlsMarkerAttrsContainer, controlsMarkerAttrsCounter, 'controlsMarkerAttrs', 'Marker Attribute', 'control-item-name', 'control-input', 'MARKERATTRS', (section, count) => {
+                    section.querySelector(`#controlsMarkerAttrs${count}_VarID`).value = `attr${count}`;
+                    section.querySelector(`#controlsMarkerAttrs${count}_VarName`).value = `Attribute ${count}`;
+                    section.querySelector(`#controlsMarkerAttrs${count}_OnEvent`).value = 'selectMetric';
+                    section.querySelector(`#controlsMarkerAttrs${count}_Selected`).checked = false;
+                    section.querySelector(`#controlsMarkerAttrs${count}_Range`).value = '0,1';
+                    section.querySelector(`#controlsMarkerAttrs${count}_ColorPalette`).value = '#fafa6e,#ff1700';
+                    section.querySelector(`#controlsMarkerAttrs${count}_NBins`).value = '9';
+                    section.querySelector(`#controlsMarkerAttrs${count}_Method`).value = 'quantiles';
+                    section.querySelector(`#controlsMarkerAttrs${count}_Classes`).value = '';
+                    section.querySelector(`#controlsMarkerAttrs${count}_Labels`).value = '';
+                    section.querySelector(`#controlsMarkerAttrs${count}_Decimals`).value = '';
+                });
+            }
+
+            function addControlsProd() {
+                controlsProdCounter++;
+                const newProd = addDynamicSection(controlsProdTemplate, controlsProdContainer, controlsProdCounter, 'controlsProd', 'Product', 'control-item-name', 'control-input', 'PROD', (section, count) => {
+                    section.querySelector(`#controlsProd${count}_VarID`).value = `prod${count}`;
+                    section.querySelector(`#controlsProd${count}_VarName`).value = `Product ${count}`;
+                    section.querySelector(`#controlsProd${count}_OnEvent`).value = 'select_sim_type';
+                    section.querySelector(`#controlsProd${count}_Selected`).checked = false;
+                });
+            }
+
+            function addControlsBaseMapType() {
+                controlsBaseMapTypeCounter++;
+                const newBasemapType = addDynamicSection(controlsBaseMapTypeTemplate, controlsBaseMapTypeContainer, controlsBaseMapTypeCounter, 'controlsBaseMapType', 'Basemap Type', 'control-item-name', 'control-input', 'BASEMAPTYPE', (section, count) => {
+                    section.querySelector(`#controlsBaseMapType${count}_VarID`).value = `basemap${count}`;
+                    section.querySelector(`#controlsBaseMapType${count}_VarName`).value = `Basemap ${count}`;
+                    section.querySelector(`#controlsBaseMapType${count}_OnEvent`).value = 'basemap_changer';
+                    section.querySelector(`#controlsBaseMapType${count}_Selected`).checked = false;
+                });
+            }
+
+            // --- Map Layers Functions ---
+            function addMapLayer() {
+                mapLayerCounter++;
+                const newLayer = addDynamicSection(mapLayerTemplate, mapLayersContainer, mapLayerCounter, 'mapLayer', 'Map Layer', 'map-layer-name', 'map-layer-input', 'PROD', (section, count) => {
+                    section.querySelector(`#mapLayer${count}_FnPath`).value = `data/staticLayers/kmls/layer${count}.geojson`;
+                    section.querySelector(`#mapLayer${count}_Fn`).value = `layer${count}.geojson`;
+                    section.querySelector(`#mapLayer${count}_VarName`).value = `New Layer ${count}`;
+                    section.querySelector(`#mapLayer${count}_OnEvent`).value = 'toggLyrStd';
+                    section.querySelector(`#mapLayer${count}_Selected`).checked = false;
+                    section.querySelector(`#mapLayer${count}_StyleFillOpacity`).value = '1';
+                    section.querySelector(`#mapLayer${count}_StyleStroke`).checked = true;
+                    section.querySelector(`#mapLayer${count}_StyleColor`).value = '#000000';
+                    section.querySelector(`#mapLayer${count}_StyleFill`).checked = true;
+                    section.querySelector(`#mapLayer${count}_StyleFillColor`).value = '#008000';
+                    section.querySelector(`#mapLayer${count}_StyleWeight`).value = '1';
+                    section.querySelector(`#mapLayer${count}_StyleRadius`).value = '4';
+                });
+            }
+
+            // --- Basemap List Functions ---
+            function addBasemap() {
+                basemapCounter++;
+                const newBasemap = addDynamicSection(basemapTemplate, basemapListContainer, basemapCounter, 'basemap', 'Basemap', 'basemap-name', 'basemap-input', 'PROD', (section, count) => {
+                    section.querySelector(`#basemap${count}_ID`).value = `custom_basemap_${count}`;
+                    section.querySelector(`#basemap${count}_URL`).value = `http://{s}.example.com/tiles/{z}/{x}/{y}.png`;
+                    section.querySelector(`#basemap${count}_Attribution`).value = `&copy; Custom Basemap ${count}`;
+                    section.querySelector(`#basemap${count}_Subdomains`).value = `abcd`;
+                });
+            }
+
+            // --- Spatial Data Functions ---
+            function addSpatialDataItem() {
+                spatialDataCounter++;
+                const newItem = addDynamicSection(spatialDataItemTemplate, spatialDataContainer, spatialDataCounter, 'spatialDataItem', 'Spatial Data Item', 'spatial-data-name', 'spatial-data-input', 'PROD', (section, count) => {
+                    section.querySelector(`#spatialDataItem${count}_Name`).value = `SpatialData${count}`;
+                    section.querySelector(`#spatialDataItem${count}_DataType`).value = `binary`;
+                    section.querySelector(`#spatialDataItem${count}_Animation`).checked = true;
+                    section.querySelector(`#spatialDataItem${count}_WebGLRenderer`).checked = true;
+                    section.querySelector(`#spatialDataItem${count}_ComIDName`).value = `link_id`;
+                    section.querySelector(`#spatialDataItem${count}_ClickFeature`).checked = true;
+
+                    // Geom defaults
+                    section.querySelector(`#spatialDataItem${count}_GeomFnPath`).value = `http://localhost/data/geom${count}.geojson`;
+                    section.querySelector(`#spatialDataItem${count}_GeomFn`).value = `geom${count}.geojson`;
+                    section.querySelector(`#spatialDataItem${count}_GeomAlias`).value = `Geometry ${count}`;
+                    section.querySelector(`#spatialDataItem${count}_GeomExtension`).value = `geojson`;
+                    section.querySelector(`#spatialDataItem${count}_GeomType`).value = `Line`;
+                    section.querySelector(`#spatialDataItem${count}_GeomDefaultStyleWeight`).value = '2';
+                    section.querySelector(`#spatialDataItem${count}_GeomDefaultStyleOpacity`).value = '1';
+                    section.querySelector(`#spatialDataItem${count}_GeomDefaultStyleColor`).value = '#000000';
+                    section.querySelector(`#spatialDataItem${count}_GeomDefaultStyleDashArray`).value = '3';
+                    section.querySelector(`#spatialDataItem${count}_GeomDefaultStyleFillOpacity`).value = '0.7';
+                    section.querySelector(`#spatialDataItem${count}_GeomDefaultStyleFillColor`).value = '#000000';
+
+                    // Path Template defaults
+                    section.querySelector(`#spatialDataItem${count}_PathTemplateVar`).value = `unix_time`;
+                    section.querySelector(`#spatialDataItem${count}_PathTemplatePathFormat`).value = `http://localhost/data/spatialTS/{0}`;
+
+                    // Timestamps defaults
+                    section.querySelector(`#spatialDataItem${count}_TimestampsFnPath`).value = `http://localhost/data/timestamps${count}.json`;
+                    section.querySelector(`#spatialDataItem${count}_TimestampsExtension`).value = `json`;
+
+                    // Style defaults
+                    section.querySelector(`#spatialDataItem${count}_StyleColor`).value = '#000000';
+                    section.querySelector(`#spatialDataItem${count}_StyleOpacity`).value = '1';
+                    section.querySelector(`#spatialDataItem${count}_StyleWidthFeatProp`).value = `h_order`;
+                    section.querySelector(`#spatialDataItem${count}_StyleWidthMultiplier`).value = '0.3';
+                    section.querySelector(`#spatialDataItem${count}_StyleNBins`).value = '8';
+                    section.querySelector(`#spatialDataItem${count}_StyleMethod`).value = 'quantiles';
+                    section.querySelector(`#spatialDataItem${count}_StyleRange`).value = '0.01,2.5';
+                    section.querySelector(`#spatialDataItem${count}_StyleColorPalette`).value = '#6b6b6b,#4bd5fa,#00a9d3,#0072e6,#ffdf01,#ff9f03,#ff4400,#910000';
+                    section.querySelector(`#spatialDataItem${count}_StyleClasses`).value = '0.01,0.3,0.4,0.5,0.6,1,1.5,2.5,3';
+                    section.querySelector(`#spatialDataItem${count}_StyleLabels`).value = 'Low,,,,,,,High';
+                    section.querySelector(`#spatialDataItem${count}_StyleTitle`).value = `Spatial Data Title ${count}`;
+                    section.querySelector(`#spatialDataItem${count}_StyleSteps`).value = '8';
+                    section.querySelector(`#spatialDataItem${count}_StyleSpatialColFunc`).value = `RiverNetwork`;
+
+                    // DynStyle defaults
+                    section.querySelector(`#spatialDataItem${count}_DynStyleClasses`).value = '0,1,5,10,15,20,25,30,35,40,45,50,60';
+                    section.querySelector(`#spatialDataItem${count}_DynStyleLabels`).value = '0,1,5,10,15,20,25,30,35,40,45,50';
+                    section.querySelector(`#spatialDataItem${count}_DynStyleMethod`).value = 'equidistant';
+                    section.querySelector(`#spatialDataItem${count}_DynStyleRange`).value = ''; // No default range in example
+                    section.querySelector(`#spatialDataItem${count}_DynStyleColorPalette`).value = '#C5FCE5,#54CFFE,#09A2D2,#DBFF9B,#ADFD04,#55BB00,#FEFF71,#F7E300,#E79903,#EF2E22,#A80100,#382600';
+                    section.querySelector(`#spatialDataItem${count}_DynStyleTitle`).value = `MRMS Rainfall (mm)`;
+                    section.querySelector(`#spatialDataItem${count}_DynStyleSteps`).value = ''; // No default steps in example
+                    section.querySelector(`#spatialDataItem${count}_DynStyleSpatialColFunc`).value = ''; // No default func in example
+                });
+            }
+
+
+            /**
+             * Gathers all form data and constructs the HydroVisE configuration JSON object.
+             * @returns {object} The generated configuration object.
+             */
+            function generateConfiguration() {
+                const config = {};
+
+                // Page Section
+                config.page = {
+                    title: getValue('pageTitle')
+                };
+
+                // Data Part Section
+                config.data_part = {
+                    min_val: getValue('dataPartMinVal', 'integer'),
+                    max_val: getValue('dataPartMaxVal', 'integer'),
+                    step: getValue('dataPartStep', 'integer'),
+                    initial: getValue('dataPartInitial', 'integer')
+                };
+
+                // Traces Section
+                config.traces = {};
+                document.querySelectorAll('#tracesContainer > .form-section').forEach((traceSection, index) => {
+                    const currentTraceNum = index + 1;
+                    const traceKey = `t${currentTraceNum}`; // Default to t1, t2, etc.
+
+                    // Allow user to define trace key by an input field if needed.
+                    // For now, it's based on index. If a 'trace ID' field is added, use that.
+                    // const customTraceId = traceSection.querySelector(`#trace${currentTraceNum}_ID`)?.value;
+                    // traceKey = customTraceId || `t${currentTraceNum}`;
+
+                    const argConvVar = traceSection.querySelector(`#trace${currentTraceNum}_ArgConvVar`).value;
+                    const argConvArguments = traceSection.querySelector(`#trace${currentTraceNum}_ArgConvArguments`).value;
+                    const argConvBody = traceSection.querySelector(`#trace${currentTraceNum}_ArgConvBody`).value;
+
+                    const traceConfig = {
+                        prod: traceSection.querySelector(`#trace${currentTraceNum}_Prod`).value,
+                        x_name: traceSection.querySelector(`#trace${currentTraceNum}_XName`).value,
+                        y_name: traceSection.querySelector(`#trace${currentTraceNum}_YName`).value,
+                        modEnabled: traceSection.querySelector(`#trace${currentTraceNum}_ModEnabled`).checked ? 1 : 0, // Convert boolean to 0 or 1
+                        dynamic: traceSection.querySelector(`#trace${currentTraceNum}_Dynamic`).checked ? 1 : 0,
+                        ensemble: traceSection.querySelector(`#trace${currentTraceNum}_Ensemble`).checked ? 1 : 0,
+                        group: getValue(`trace${currentTraceNum}_Group`, 'integer'), // New 'group' field
+                        template: {
+                            var: getValue(`trace${currentTraceNum}_TemplateVar`, 'array-string'),
+                            path_format: traceSection.querySelector(`#trace${currentTraceNum}_TemplatePathFormat`).value
+                        },
+                        style: {
+                            yaxis: traceSection.querySelector(`#trace${currentTraceNum}_StyleYaxis`).value,
+                            type: traceSection.querySelector(`#trace${currentTraceNum}_StyleType`).value,
+                            mode: traceSection.querySelector(`#trace${currentTraceNum}_StyleMode`).value,
+                            name: traceSection.querySelector(`#trace${currentTraceNum}_StyleName`).value,
+                            line: {
+                                width: getValue(`trace${currentTraceNum}_StyleLineWidth`, 'number'),
+                                color: traceSection.querySelector(`#trace${currentTraceNum}_StyleLineColor`).value
+                            }
+                        }
+                    };
+
+                    // Add argConv if any of its fields are provided
+                    if (argConvVar || argConvArguments || argConvBody) {
+                        traceConfig.template.argConv = {
+                            var: argConvVar,
+                            arguments: argConvArguments,
+                            body: argConvBody
+                        };
+                    }
+
+                    // Add fill and fillcolor if provided
+                    const styleFill = traceSection.querySelector(`#trace${currentTraceNum}_StyleFill`).value;
+                    const styleFillColor = traceSection.querySelector(`#trace${currentTraceNum}_StyleFillColor`).value;
+                    if (styleFill) {
+                        traceConfig.style.fill = styleFill;
+                    }
+                    if (styleFillColor) {
+                        traceConfig.style.fillcolor = styleFillColor;
+                    }
+
+
+                    config.traces[traceKey] = traceConfig;
+                });
+
+                // modTraces Section
+                config.modTrace = {
+                    modJS: getValue('modTracesModJS'),
+                    modMethod: getValue('modTracesModMethod'),
+                    modEvnt: getValue('modTracesModEvnt'),
+                    customEval: getValue('modTracesCustomEval'), // New customEval field
+                    default: getValue('modTracesDefault'),
+                    mod: {
+                        default: {
+                            button: getValue('modTracesDefaultButton'),
+                            pltPath: getValue('modTracesDefaultPltPath'),
+                            val: getValue('modTracesDefaultVal')
+                        },
+                        derived: {
+                            button: getValue('modTracesDerivedButton'),
+                            pltPath: getValue('modTracesDerivedPltPath'),
+                            val: getValue('modTracesDerivedVal')
+                        }
+                    }
+                };
+
+                // Horizontal Grid Section
+                config.horizontalGrid = {
+                    filename: getValue('horizontalGridFilename'),
+                    comID: getValue('horizontalGridComID'),
+                    unit_convert: getValue('horizontalGridUnitConvert', 'number'),
+                    style: {
+                        type: getValue('horizontalGridStyleType'),
+                        xref: getValue('horizontalGridStyleXref'),
+                        x0: getValue('horizontalGridStyleX0', 'number'),
+                        x1: getValue('horizontalGridStyleX1', 'number'),
+                        yref: getValue('horizontalGridStyleYref'),
+                        y0: getValue('horizontalGridStyleY0', 'number'),
+                        y1: getValue('horizontalGridStyleY1', 'number'),
+                        line: {
+                            color: getValue('horizontalGridStyleLineColor'),
+                            width: getValue('horizontalGridStyleLineWidth', 'number')
+                        }
+                    },
+                    lines: {
+                        flw_action: { color: getValue('horizontalGridLinesFlwActionColor') },
+                        flw_flood: { color: getValue('horizontalGridLinesFlwFloodColor') },
+                        flw_moderate: { color: getValue('horizontalGridLinesFlwModerateColor') },
+                        flw_major: { color: getValue('horizontalGridLinesFlwMajorColor') }
+                    }
+                };
+
+                // Time Slider Section
+                const timeSliderConfig = {
+                    min: getValue('timeSliderMin'), // Can be string or number
+                    max: getValue('timeSliderMax'), // Can be string or number
+                    step: getValue('timeSliderStep', 'integer'),
+                    value: getValue('timeSliderValue', 'integer'),
+                    label: {
+                        arguments: getValue('timeSliderLabelArguments'),
+                        body: getValue('timeSliderLabelBody')
+                    }
+                };
+                const dynamicRangeArguments = getValue('timeSliderDynamicRangeArguments');
+                const dynamicRangeBody = getValue('timeSliderDynamicRangeBody');
+                if (dynamicRangeArguments || dynamicRangeBody) {
+                    timeSliderConfig.dynamicRange = {
+                        arguments: dynamicRangeArguments,
+                        body: dynamicRangeBody
+                    };
+                }
+                config.timeSlider = timeSliderConfig;
+
+                // Map Markers Section
+                const mapMarkersConfig = {
+                    fnPath: getValue('mapMarkersFnPath'),
+                    comIDName: getValue('mapMarkersComIDName'),
+                    geomType: getValue('mapMarkersGeomType'),
+                    alias: getValue('mapMarkersAlias'), // New alias field
+                    markerAttrs: {
+                        template: {
+                            var: getValue('mapMarkersMarkerAttrsTemplateVar', 'array-string'),
+                            path_format: getValue('mapMarkersMarkerAttrsPathFormat')
+                        },
+                        comID: getValue('mapMarkersMarkerAttrsComID')
+                    },
+                    onEachFeature: {
+                        click: getValue('mapMarkersOnEachFeatureClick'),
+                        mouseover: getValue('mapMarkersOnEachFeatureMouseover'), // New mouseover
+                        mouseout: getValue('mapMarkersOnEachFeatureMouseout') // New mouseout
+                    },
+                    plotTitle: {
+                        template: {
+                            var: getValue('mapMarkersPlotTitleTemplateVar', 'array-string'),
+                            format: getValue('mapMarkersPlotTitleTemplateFormat')
+                        }
+                    },
+                    tooltip: {
+                        template: {
+                            var: getValue('mapMarkersTooltipTemplateVar', 'array-string'),
+                            format: getValue('mapMarkersTooltipTemplateFormat')
+                        },
+                        format: getValue('mapMarkersTooltipFormat'),
+                        properties: getValue('mapMarkersTooltipProperties', 'array-string')
+                    },
+                    additionalShapes: {
+                        template: {
+                            var: getValue('mapMarkersAdditionalShapesTemplateVar', 'array-string'),
+                            format: getValue('mapMarkersAdditionalShapesTemplateFormat')
+                        }
+                    },
+                    style: { // New style object for mapMarkers
+                        radius: getValue('mapMarkersStyleRadius', 'number'),
+                        color: getValue('mapMarkersStyleColor'),
+                        fillColor: getValue('mapMarkersStyleFillColor'),
+                        fillOpacity: getValue('mapMarkersStyleFillOpacity', 'number'),
+                        weight: getValue('mapMarkersStyleWeight', 'number'),
+                        opacity: getValue('mapMarkersStyleOpacity', 'number')
+                    }
+                };
+                const widthFeatProp = getValue('mapMarkersStyleWidthFeatProp');
+                const widthMultiplier = getValue('mapMarkersStyleWidthMultiplier', 'number');
+                if (widthFeatProp || !isNaN(widthMultiplier)) {
+                    mapMarkersConfig.style.width = {};
+                    if (widthFeatProp) mapMarkersConfig.style.width.featProp = widthFeatProp;
+                    if (!isNaN(widthMultiplier)) mapMarkersConfig.style.width.multiplier = widthMultiplier;
+                }
+                const disabledMarkerAttrsJson = getValue('mapMarkersDisabledMarkerAttrsJson', 'json');
+                if (disabledMarkerAttrsJson) {
+                    mapMarkersConfig.disabled_markerAttrs = disabledMarkerAttrsJson;
+                }
+
+                config.mapMarkers = mapMarkersConfig;
+
+                // Controls Section
+                config.controls = {
+                    markerAttrs: {},
+                    prod: {},
+                    baseMapType: {}
+                };
+
+                document.querySelectorAll('#controlsMarkerAttrsContainer > .form-section').forEach((section, index) => {
+                    const idSuffix = index + 1; // Use 1-based index for keys
+                    const varId = getValue(`controlsMarkerAttrs${idSuffix}_VarID`);
+                    if (varId) {
+                        const markerAttrConfig = {
+                            var_id: varId,
+                            var_name: getValue(`controlsMarkerAttrs${idSuffix}_VarName`),
+                            onEvent: getValue(`controlsMarkerAttrs${idSuffix}_OnEvent`),
+                            selected: getValue(`controlsMarkerAttrs${idSuffix}_Selected`, 'boolean'),
+                            range: getValue(`controlsMarkerAttrs${idSuffix}_Range`, 'array-number'),
+                            nBins: getValue(`controlsMarkerAttrs${idSuffix}_NBins`, 'integer'),
+                            method: getValue(`controlsMarkerAttrs${idSuffix}_Method`),
+                            classes: getValue(`controlsMarkerAttrs${idSuffix}_Classes`, 'array-number'),
+                            labels: getValue(`controlsMarkerAttrs${idSuffix}_Labels`, 'array-string'),
+                            decimals: getValue(`controlsMarkerAttrs${idSuffix}_Decimals`, 'integer')
+                        };
+                        const colorPalette = getValue(`controlsMarkerAttrs${idSuffix}_ColorPalette`);
+                        if (colorPalette) {
+                            // Check if it's a comma-separated list (array) or a single string
+                            if (colorPalette.includes(',')) {
+                                markerAttrConfig.colorPalette = colorPalette.split(',').map(s => s.trim());
+                            } else {
+                                markerAttrConfig.colorPalette = colorPalette;
+                            }
+                        }
+                        config.controls.markerAttrs[varId] = markerAttrConfig;
+                    }
+                });
+
+                document.querySelectorAll('#controlsProdContainer > .form-section').forEach((section, index) => {
+                    const idSuffix = index + 1;
+                    const varId = getValue(`controlsProd${idSuffix}_VarID`);
+                    if (varId) {
+                        config.controls.prod[varId] = {
+                            var_id: varId,
+                            var_name: getValue(`controlsProd${idSuffix}_VarName`),
+                            onEvent: getValue(`controlsProd${idSuffix}_OnEvent`),
+                            selected: getValue(`controlsProd${idSuffix}_Selected`, 'boolean')
+                        };
+                    }
+                });
+
+                document.querySelectorAll('#controlsBaseMapTypeContainer > .form-section').forEach((section, index) => {
+                    const idSuffix = index + 1;
+                    const varId = getValue(`controlsBaseMapType${idSuffix}_VarID`);
+                    if (varId) {
+                        config.controls.baseMapType[varId] = {
+                            var_id: varId,
+                            var_name: getValue(`controlsBaseMapType${idSuffix}_VarName`),
+                            onEvent: getValue(`controlsBaseMapType${idSuffix}_OnEvent`),
+                            selected: getValue(`controlsBaseMapType${idSuffix}_Selected`, 'boolean')
+                        };
+                    }
+                });
+
+
+                // Plotly Layout Section
+                const plotlyLayoutConfig = {
+                    margin: {
+                        l: getValue('plotlyLayoutMarginL', 'integer'),
+                        r: getValue('plotlyLayoutMarginR', 'integer'),
+                        b: getValue('plotlyLayoutMarginB', 'integer'),
+                        t: getValue('plotlyLayoutMarginT', 'integer'),
+                        pad: getValue('plotlyLayoutMarginPad', 'integer')
+                    },
+                    titlefont: {
+                        size: getValue('plotlyLayoutTitleFontSize', 'integer'),
+                        color: getValue('plotlyLayoutTitleFontColor')
+                    },
+                    legend: {
+                        x: getValue('plotlyLayoutLegendX', 'number'),
+                        y: getValue('plotlyLayoutLegendY', 'number'),
+                        traceorder: getValue('plotlyLayoutLegendTraceorder'),
+                        font: {
+                            size: getValue('plotlyLayoutLegendFontSize', 'integer'),
+                            color: getValue('plotlyLayoutLegendFontColor')
+                        },
+                        bgcolor: getValue('plotlyLayoutLegendBgcolor'),
+                        bordercolor: getValue('plotlyLayoutLegendBordercolor'),
+                        borderwidth: getValue('plotlyLayoutLegendBorderwidth', 'integer'),
+                        orientation: getValue('plotlyLayoutLegendOrientation')
+                    },
+                    xaxis: {
+                        titlefont: {
+                            size: getValue('plotlyLayoutXaxisTitleFontSize', 'integer'),
+                            color: getValue('plotlyLayoutXaxisTitleFontColor')
+                        },
+                        tickfont: {
+                            size: getValue('plotlyLayoutXaxisTickFontSize', 'integer'),
+                            color: getValue('plotlyLayoutXaxisTickFontColor')
+                        },
+                        type: getValue('plotlyLayoutXaxisType')
+                    },
+                    yaxis: {
+                        title: getValue('plotlyLayoutYaxisTitle'),
+                        titlefont: {
+                            size: getValue('plotlyLayoutYaxisTitleFontSize', 'integer'),
+                            color: getValue('plotlyLayoutYaxisTitleFontColor')
+                        },
+                        tickfont: {
+                            size: getValue('plotlyLayoutYaxisTickFontSize', 'integer'),
+                            color: getValue('plotlyLayoutYaxisTickFontColor')
+                        },
+                        autorange: getValue('plotlyLayoutYaxisAutorange', 'boolean'),
+                        rangemode: getValue('plotlyLayoutYaxisRangemode'),
+                        hoverformat: getValue('plotlyLayoutYaxisHoverformat')
+                    },
+                    plot_bgcolor: getValue('plotlyLayoutPlotBgcolor'),
+                    paper_bgcolor: getValue('plotlyLayoutPaperBgcolor'),
+                    hovermode: getValue('plotlyLayoutHovermode'),
+                    updatemenus: [
+                        {
+                            buttons: [],
+                            direction: getValue('plotlyLayoutUpdatemenusDirection'),
+                            pad: {
+                                r: getValue('plotlyLayoutUpdatemenusPadR', 'integer'),
+                                t: getValue('plotlyLayoutUpdatemenusPadT', 'integer')
+                            },
+                            showactive: getValue('plotlyLayoutUpdatemenusShowactive', 'boolean'),
+                            type: getValue('plotlyLayoutUpdatemenusType'),
+                            x: getValue('plotlyLayoutUpdatemenusX', 'number'),
+                            xanchor: getValue('plotlyLayoutUpdatemenusXanchor'),
+                            y: getValue('plotlyLayoutUpdatemenusY', 'number'),
+                            yanchor: getValue('plotlyLayoutUpdatemenusYanchor')
+                        }
+                    ],
+                    initMD: getValue('plotlyLayoutInitMD'),
+                    finalMD: getValue('plotlyLayoutFinalMD'),
+                    displayModeBar: getValue('plotlyLayoutDisplayModeBar', 'boolean') // New displayModeBar
+                };
+
+                // Add yaxis2 if enabled
+                if (enableYaxis2Checkbox.checked) {
+                    plotlyLayoutConfig.yaxis2 = {
+                        title: getValue('plotlyLayoutYaxis2Title'),
+                        overlaying: getValue('plotlyLayoutYaxis2Overlaying'),
+                        titlefont: {
+                            size: getValue('plotlyLayoutYaxis2TitleFontSize', 'integer'),
+                            color: getValue('plotlyLayoutYaxis2TitleFontColor')
+                        },
+                        tickfont: {
+                            size: getValue('plotlyLayoutYaxis2TickFontSize', 'integer'),
+                            color: getValue('plotlyLayoutYaxis2TickFontColor')
+                        },
+                        rangemode: getValue('plotlyLayoutYaxis2Rangemode'),
+                        hoverformat: getValue('plotlyLayoutYaxis2Hoverformat'),
+                        side: getValue('plotlyLayoutYaxis2Side')
+                    };
+                }
+                config.plotlyLayout = plotlyLayoutConfig;
+
+                // Map Layers Section
+                config.mapLayers = {};
+                document.querySelectorAll('#mapLayersContainer > .form-section').forEach((layerSection, index) => {
+                    const idSuffix = index + 1;
+                    const fn = getValue(`mapLayer${idSuffix}_Fn`); // Use fn as the key
+                    if (fn) {
+                        const layerConfig = {
+                            fnPath: getValue(`mapLayer${idSuffix}_FnPath`),
+                            fn: fn,
+                            var_name: getValue(`mapLayer${idSuffix}_VarName`),
+                            onEvent: getValue(`mapLayer${idSuffix}_OnEvent`),
+                            selected: getValue(`mapLayer${idSuffix}_Selected`, 'boolean')
+                        };
+
+                        // Add style if any style properties are set
+                        const styleFillOpacity = getValue(`mapLayer${idSuffix}_StyleFillOpacity`, 'number');
+                        const styleStroke = getValue(`mapLayer${idSuffix}_StyleStroke`, 'boolean');
+                        const styleColor = getValue(`mapLayer${idSuffix}_StyleColor`);
+                        const styleFill = getValue(`mapLayer${idSuffix}_StyleFill`, 'boolean');
+                        const styleFillColor = getValue(`mapLayer${idSuffix}_StyleFillColor`);
+                        const styleWeight = getValue(`mapLayer${idSuffix}_StyleWeight`, 'number');
+                        const styleRadius = getValue(`mapLayer${idSuffix}_StyleRadius`, 'number');
+
+                        if (styleFillOpacity !== undefined || styleStroke !== undefined || styleColor !== undefined ||
+                            styleFill !== undefined || styleFillColor !== undefined || styleWeight !== undefined || styleRadius !== undefined) {
+                            layerConfig.style = {};
+                            if (styleFillOpacity !== undefined) layerConfig.style.fillOpacity = styleFillOpacity;
+                            if (styleStroke !== undefined) layerConfig.style.stroke = styleStroke;
+                            if (styleColor !== undefined) layerConfig.style.color = styleColor;
+                            if (styleFill !== undefined) layerConfig.style.fill = styleFill;
+                            if (styleFillColor !== undefined) layerConfig.style.fillColor = styleFillColor;
+                            if (styleWeight !== undefined) layerConfig.style.weight = styleWeight;
+                            if (styleRadius !== undefined) layerConfig.style.radius = styleRadius;
+                        }
+                        config.mapLayers[fn] = layerConfig;
+                    }
+                });
+
+                // Map Section
+                const mapConfig = {
+                    center: [
+                        getValue('mapCenterLat', 'number'),
+                        getValue('mapCenterLon', 'number')
+                    ],
+                    defaultZoom: getValue('mapDefaultZoom', 'integer'),
+                    maxZoom: getValue('mapMaxZoom', 'integer'),
+                    basemapList: {}
+                };
+                if (getValue('mapGeoSearch', 'boolean')) {
+                    mapConfig.geoSearch = true;
+                }
+
+                document.querySelectorAll('#basemapListContainer > .form-section').forEach((basemapSection, index) => {
+                    const idSuffix = index + 1;
+                    const basemapId = getValue(`basemap${idSuffix}_ID`);
+                    if (basemapId) {
+                        mapConfig.basemapList[basemapId] = {
+                            id: basemapId,
+                            url: getValue(`basemap${idSuffix}_URL`),
+                            attribution: getValue(`basemap${idSuffix}_Attribution`),
+                            subdomains: getValue(`basemap${idSuffix}_Subdomains`)
+                        };
+                    }
+                });
+                config.map = mapConfig;
+
+                // Custom Base Map Section
+                config.customBaseMap = {
+                    url: getValue('customBaseMapUrl'),
+                    colors: getValue('customBaseMapColors', 'json'),
+                    name: getValue('customBaseMapName'),
+                    propertyName: getValue('customBaseMapPropertyName')
+                };
+
+
+                // Spatial Data Section
+                config.spatialData = {};
+                document.querySelectorAll('#spatialDataContainer > .form-section').forEach((dataSection, index) => {
+                    const idSuffix = index + 1;
+                    const dataName = getValue(`spatialDataItem${idSuffix}_Name`); // Use name as the key
+                    if (dataName) {
+                        const spatialDataConfig = {
+                            name: dataName,
+                            dataType: getValue(`spatialDataItem${idSuffix}_DataType`),
+                            animation: getValue(`spatialDataItem${idSuffix}_Animation`, 'boolean'),
+                            webGLRenderer: getValue(`spatialDataItem${idSuffix}_WebGLRenderer`, 'boolean'),
+                            comIDName: getValue(`spatialDataItem${idSuffix}_ComIDName`),
+                            clickFeature: getValue(`spatialDataItem${idSuffix}_ClickFeature`, 'boolean'),
+                            geom: {
+                                fnPath: getValue(`spatialDataItem${idSuffix}_GeomFnPath`),
+                                fn: getValue(`spatialDataItem${idSuffix}_GeomFn`),
+                                alias: getValue(`spatialDataItem${idSuffix}_GeomAlias`),
+                                extension: getValue(`spatialDataItem${idSuffix}_GeomExtension`),
+                                geomType: getValue(`spatialDataItem${idSuffix}_GeomType`),
+                                defaultStyle: {
+                                    weight: getValue(`spatialDataItem${idSuffix}_GeomDefaultStyleWeight`, 'number'),
+                                    opacity: getValue(`spatialDataItem${idSuffix}_GeomDefaultStyleOpacity`, 'number'),
+                                    color: getValue(`spatialDataItem${idSuffix}_GeomDefaultStyleColor`),
+                                    dashArray: getValue(`spatialDataItem${idSuffix}_GeomDefaultStyleDashArray`),
+                                    fillOpacity: getValue(`spatialDataItem${iduffix}_GeomDefaultStyleFillOpacity`, 'number'),
+                                    fillColor: getValue(`spatialDataItem${idSuffix}_GeomDefaultStyleFillColor`)
+                                }
+                            },
+                            pathTemplate: {
+                                var: getValue(`spatialDataItem${idSuffix}_PathTemplateVar`, 'array-string'),
+                                path_format: getValue(`spatialDataItem${idSuffix}_PathTemplatePathFormat`)
+                            },
+                            timestamps: {
+                                fnPath: getValue(`spatialDataItem${idSuffix}_TimestampsFnPath`),
+                                extension: getValue(`spatialDataItem${idSuffix}_TimestampsExtension`)
+                            },
+                            style: {
+                                color: getValue(`spatialDataItem${idSuffix}_StyleColor`),
+                                opacity: getValue(`spatialDataItem${idSuffix}_StyleOpacity`, 'number'),
+                                nBins: getValue(`spatialDataItem${idSuffix}_StyleNBins`, 'integer'),
+                                method: getValue(`spatialDataItem${idSuffix}_StyleMethod`),
+                                range: getValue(`spatialDataItem${idSuffix}_StyleRange`, 'array-number'),
+                                classes: getValue(`spatialDataItem${idSuffix}_StyleClasses`, 'array-number'),
+                                labels: getValue(`spatialDataItem${idSuffix}_StyleLabels`, 'array-string'),
+                                title: getValue(`spatialDataItem${idSuffix}_StyleTitle`),
+                                steps: getValue(`spatialDataItem${idSuffix}_StyleSteps`, 'integer'),
+                                spatialColFunc: getValue(`spatialDataItem${idSuffix}_StyleSpatialColFunc`)
+                            },
+                            dynStyle: {
+                                classes: getValue(`spatialDataItem${idSuffix}_DynStyleClasses`, 'array-number'),
+                                labels: getValue(`spatialDataItem${idSuffix}_DynStyleLabels`, 'array-string'),
+                                method: getValue(`spatialDataItem${idSuffix}_DynStyleMethod`),
+                                range: getValue(`spatialDataItem${idSuffix}_DynStyleRange`, 'array-number'),
+                                title: getValue(`spatialDataItem${idSuffix}_DynStyleTitle`),
+                                steps: getValue(`spatialDataItem${idSuffix}_DynStyleSteps`, 'integer'),
+                                spatialColFunc: getValue(`spatialDataItem${idSuffix}_DynStyleSpatialColFunc`)
+                            }
+                        };
+
+                        const styleWidthFeatProp = getValue(`spatialDataItem${idSuffix}_StyleWidthFeatProp`);
+                        const styleWidthMultiplier = getValue(`spatialDataItem${idSuffix}_StyleWidthMultiplier`, 'number');
+                        if (styleWidthFeatProp || !isNaN(styleWidthMultiplier)) {
+                            spatialDataConfig.style.width = {};
+                            if (styleWidthFeatProp) spatialDataConfig.style.width.featProp = styleWidthFeatProp;
+                            if (!isNaN(styleWidthMultiplier)) spatialDataConfig.style.width.multiplier = styleWidthMultiplier;
+                        }
+
+                        const styleColorPalette = getValue(`spatialDataItem${idSuffix}_StyleColorPalette`);
+                        if (styleColorPalette) {
+                            if (styleColorPalette.includes(',')) {
+                                spatialDataConfig.style.colorPalette = styleColorPalette.split(',').map(s => s.trim());
+                            } else {
+                                spatialDataConfig.style.colorPalette = styleColorPalette;
+                            }
+                        }
+
+                        const dynStyleColorPalette = getValue(`spatialDataItem${idSuffix}_DynStyleColorPalette`);
+                        if (dynStyleColorPalette) {
+                            if (dynStyleColorPalette.includes(',')) {
+                                spatialDataConfig.dynStyle.colorPalette = dynStyleColorPalette.split(',').map(s => s.trim());
+                            } else {
+                                spatialDataConfig.dynStyle.colorPalette = dynStyleColorPalette;
+                            }
+                        }
+
+                        config.spatialData[dataName] = spatialDataConfig;
+                    }
+                });
+
+
+                // Time Selector Layout Section
+                const timeSelectorLayoutConfig = {
+                    margin: {
+                        l: getValue('timeSelectorLayoutMarginL', 'integer'),
+                        r: getValue('timeSelectorLayoutMarginR', 'integer'),
+                        b: getValue('timeSelectorLayoutMarginB', 'integer'),
+                        t: getValue('timeSelectorLayoutMarginT', 'integer'),
+                        pad: getValue('timeSelectorLayoutMarginPad', 'integer')
+                    },
+                    yaxis: {
+                        fixedrange: getValue('timeSelectorLayoutYaxisFixedrange', 'boolean'),
+                        visible: getValue('timeSelectorLayoutYaxisVisible', 'boolean'),
+                        autorange: getValue('timeSelectorLayoutYaxisAutorange', 'boolean')
+                    },
+                    xaxis: {
+                        type: getValue('timeSelectorLayoutXaxisType')
+                    },
+                    autosize: getValue('timeSelectorLayoutAutosize', 'boolean'),
+                    paper_bgcolor: getValue('timeSelectorLayoutPaperBgcolor')
+                };
+                const yaxisRange = getValue('timeSelectorLayoutYaxisRange', 'array-number');
+                if (yaxisRange && yaxisRange.length > 0) {
+                    timeSelectorLayoutConfig.yaxis.range = yaxisRange;
+                }
+                config.timeSelectorLayout = timeSelectorLayoutConfig;
+
+                return config;
+            }
+
+            // Event Listeners
+            generateConfigBtn.addEventListener('click', () => {
+                const generatedConfig = generateConfiguration();
+                configOutput.value = JSON.stringify(generatedConfig, null, 2); // Pretty print JSON
+            });
+
+            copyConfigBtn.addEventListener('click', () => {
+                configOutput.select();
+                document.execCommand('copy');
+                const originalText = copyConfigBtn.textContent;
+                copyConfigBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyConfigBtn.textContent = originalText;
+                }, 2000);
+            });
+
+            // Toggle yaxis2 section visibility
+            enableYaxis2Checkbox.addEventListener('change', () => {
+                yaxis2Section.classList.toggle('hidden', !enableYaxis2Checkbox.checked);
+            });
+
+            // Initial additions on load
+            addTrace();
+            addControlsMarkerAttrs();
+            addControlsProd();
+            addControlsBaseMapType();
+            addMapLayer();
+            addBasemap();
+            addSpatialDataItem();
+
+            // Add event listeners for "Add New" buttons
+            addTraceBtn.addEventListener('click', addTrace);
+            addControlsMarkerAttrsBtn.addEventListener('click', addControlsMarkerAttrs);
+            addControlsProdBtn.addEventListener('click', addControlsProd);
+            addControlsBaseMapTypeBtn.addEventListener('click', addControlsBaseMapType);
+            addMapLayerBtn.addEventListener('click', addMapLayer);
+            addBasemapBtn.addEventListener('click', addBasemap);
+            addSpatialDataItemBtn.addEventListener('click', addSpatialDataItem);
+
+            // Generate initial config on load
+            generateConfigBtn.click();
+        });
+    </script>
+</body>
+</html>
