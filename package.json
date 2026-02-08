@@ -1,0 +1,50 @@
+{
+  "name": "hydrovise-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:ex1": "vite --open /?config=ex1_min",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@tmcw/togeojson": "^7.1.1",
+    "@types/leaflet": "^1.9.18",
+    "@types/plotly.js": "^3.0.0",
+    "chroma-js": "^3.1.2",
+    "d3": "^7.9.0",
+    "jszip": "^3.10.1",
+    "leaflet": "^1.9.4",
+    "leaflet-vector-tile-layer": "^0.16.1",
+    "mathjs": "^14.5.2",
+    "moment": "^2.30.1",
+    "papaparse": "^5.5.3",
+    "plotly.js": "^3.0.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-leaflet": "^5.0.0",
+    "react-plotly.js": "^2.6.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/chroma-js": "^3.1.1",
+    "@types/jszip": "^3.4.1",
+    "@types/papaparse": "^5.3.16",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@types/react-plotly.js": "^2.6.3",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5",
+    "vitest": "^4.0.13"
+  }
+}

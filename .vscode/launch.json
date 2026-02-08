@@ -2,12 +2,29 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Chrome (localhost:3000)",
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome with HydroVisE ex1_min",
+      "url": "http://localhost:5174/?config=ex1_min",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "/__vite-root/*": "${webRoot}/*"
+      },
+      "sourceMaps": true,
+      "disableNetworkCache": true,
+      "preLaunchTask": "Start Dev Server",
+      "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile"
+    },
+    {
       "type": "chrome",
       "request": "attach",
-      "port": 3000,
+      "name": "Attach to Chrome",
+      "port": 9222,
       "webRoot": "${workspaceFolder}",
-      "url": "http://localhost:3000/?config=examples/ex1_min/config.json"
+      "url": "http://localhost:5174/?config=ex1_min",
+      "sourceMapPathOverrides": {
+        "/__vite-root/*": "${webRoot}/*"
+      }
     }
   ]
 }

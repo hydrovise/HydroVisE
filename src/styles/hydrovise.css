@@ -1,0 +1,504 @@
+/* HydroVisE React Styles */
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,400');
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
+
+/* General */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background-color: black;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 100;
+  overflow: hidden;
+}
+
+html,
+body,
+#root {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Map Container - Full screen background */
+#map-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Plot Container - matches original div_plot */
+#div_plot {
+  height: 450px;
+  min-height: 300px;
+  width: calc(100% - 300px);
+  min-width: 300px;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100px;
+  right: 150px;
+  z-index: 3;
+  user-select: none;
+  background-color: #eeeeee;
+  border: 0.7px solid #808080;
+  border-top: none;
+  box-sizing: content-box;
+  padding-right: 1px;
+}
+
+#div_plot.visible {
+  display: block;
+}
+
+/* Slider Container */
+#sliderMainDIV {
+  position: absolute;
+  width: calc(100% - 140px);
+  display: none;
+  bottom: 0px;
+  left: -1px;
+  background-color: #eeeeee;
+  padding: 0px 70px 0px 70px;
+  border: 0.7px solid #808080;
+  max-height: 45px;
+  border-top: none;
+}
+
+#sliderMainDIV.visible {
+  display: block;
+}
+
+#slider {
+  width: calc(30%);
+}
+
+.button-slider {
+  margin: 5px 5px 5px 0px;
+  float: left;
+}
+
+#sliderLabelDIV {
+  color: black;
+  float: right;
+  font-weight: 500;
+  font-size: larger;
+  font-weight: 500;
+  font-size: larger;
+}
+
+/* Colorbar - matches original positioning */
+#colorbar {
+  position: absolute;
+  display: inline-grid;
+  top: 55%;
+  left: 8px;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  background-color: rgba(222, 222, 222, 0.5);
+  padding: 6px 4px 8px 4px;
+  width: max-content;
+  z-index: 1;
+  color: black;
+}
+
+#twodcolorbar {
+  position: absolute;
+  display: none;
+  bottom: 20%;
+  right: 8px;
+  background-color: rgba(222, 222, 222, 0.9);
+  padding: 6px 4px 8px 6px;
+  width: 30rem;
+  z-index: 1;
+}
+
+/* Custom Control Container - matches original */
+.custom-control-container {
+  margin: 5px;
+  cursor: pointer;
+  z-index: 3;
+  position: absolute;
+  top: 120px;
+  right: 30px;
+  display: block;
+  color: black;
+}
+
+/* Base Map Controls */
+.baseMapDIV,
+.simTypeDIV,
+.metricTypeDIV {
+  margin-bottom: 10px;
+}
+
+.baseMapControl {
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+}
+
+.baseMapControl:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+.baseMapTypeOptions {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1000;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.baseMapTypeOptions.visible {
+  display: block;
+}
+
+.baseMapTypeOptions > div {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.baseMapTypeOptions > div:hover {
+  background-color: #f0f0f0;
+}
+
+.dropDownArrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 4px;
+  border: 0px;
+}
+
+/* Note: .mini_con styles are now defined inline in MapInventory component */
+div.mini_con {
+    cursor: pointer;
+    border-radius: 5px;
+    background-position: center;
+    padding: 4px;
+    background-repeat: no-repeat;
+    background-image: url(.././dist/images/wlist.png);
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    position: absolute;
+    z-index: 40;
+    box-shadow: 1px 1px 3px 0px #8e8e8e;
+    top: calc(30%);
+    left: calc(10%);
+}
+
+#con0 {
+    display: block;
+    position: absolute;
+    overflow: auto;
+    top: calc(30%);
+    left: calc(10%);
+    min-width: 276px;
+    background: #ffffff;
+    z-index: 30;
+    border: 1px solid #777;
+    box-shadow: 1px 1px 3px 0px #8e8e8e;
+}
+
+#con0.hidden {
+  display: none;
+}
+
+#title_con0 {
+  color: white;
+  background-color: #162d2b;
+  line-height: 30px;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  font-weight: bold;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.legend {
+  padding: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.legend ul li {
+  padding: 5px;
+  margin: 2px 0;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  color: black;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.legend ul li:hover {
+  background-color: #e8f5e8;
+}
+
+/* Progress Bar */
+#progressDIV {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 10000;
+  background-color: #ddd;
+}
+
+.bgLoading {
+  height: 100%;
+  background-color: #4CAF50;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Control Bars */
+.generic-control-bar {
+  position: absolute;
+  display: block;
+  z-index: 3;
+  border: solid 1px rgb(212, 212, 212);
+}
+
+.year-control-bar {
+  top: 8px;
+  right: 18px;
+  min-width: 120px;
+  height: 40px;
+}
+
+.year-button {
+  position: relative;
+  float: left;
+  direction: ltr;
+  overflow: hidden;
+  text-align: center;
+  display: inline-block;
+  color: rgb(0, 0, 0);
+  vertical-align: middle;
+  line-height: 40px;
+  background-color: rgb(255, 255, 255);
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+  font-weight: bold;
+  font-size: inherit;
+}
+
+.year-button:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+#year-selected {
+  min-width: 49px;
+}
+
+#year-selected:hover {
+  background-color: rgb(255, 255, 255);
+}
+
+.plot-control-bar {
+  position: absolute;
+  top: 67px;
+  right: 62px;
+}
+
+.generic-button {
+  position: relative;
+  float: left;
+  direction: ltr;
+  overflow: hidden;
+  text-align: center;
+  display: inline-block;
+  color: rgb(0, 0, 0);
+  user-select: none;
+  vertical-align: middle;
+  line-height: 29px;
+  background-color: rgb(255, 255, 255);
+  width: 44px;
+  height: 38px;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+  font-weight: bold;
+}
+
+.generic-button:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+/* Custom Control Container */
+.custom-control-container {
+  position: absolute;
+  top: 120px;
+  right: 18px;
+  width: 112px;
+  z-index: 3;
+}
+
+.metricTypeDIV,
+.simTypeDIV,
+.baseMapDIV {
+  width: 112px;
+  cursor: pointer;
+  text-align: left;
+  z-index: 3;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.baseMapControl {
+  direction: ltr;
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+  user-select: none;
+  padding: 6px 8px 8px 5px;
+  border-radius: 2px;
+  border: solid 1px rgb(212, 212, 212);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  background-color: rgb(255, 255, 255);
+  line-height: 25px;
+}
+
+.baseMapControl:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+.baseMapTypeOptions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgb(255, 255, 255);
+  border: solid 1px rgb(212, 212, 212);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+  z-index: 1000;
+}
+
+.baseMapTypeOptions > div:hover {
+  background-color: rgb(235, 235, 235);
+}
+
+.dropDownArrow {
+  float: right;
+  margin-top: 5px;
+}
+
+/* Calculate Metrics Button */
+#calculatemetricsButton,
+#claculatemetricsButton {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#calculatemetricsButton:disabled,
+#claculatemetricsButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Slider Styles */
+.button-slider {
+  background-color: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  margin: 0 2px;
+}
+
+.button-slider:hover {
+  background-color: #45a049;
+}
+
+
+.noselect {
+  user-select: none;
+}
+
+/* Legend */
+.legend {
+  line-height: 18px;
+  color: #555;
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+.legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.legend li {
+  padding: 2px 0;
+  cursor: move;
+}
+
+/* Leaflet overrides */
+.leaflet-bar,
+.leaflet-control-layers,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-popup-content-wrapper {
+  border-radius: 0px !important;
+}
+
+/* Time slider positioning */
+#sliderMainDIV {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 1000;
+}
